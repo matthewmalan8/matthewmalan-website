@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "../../public/fonts/fonts.css";
+
+@theme {
+  --color-black: #1C1400;
+  --color-yellow: #FFD721;
+  --color-off-white: #FFFDF9;
+  --color-lime: #88FF00;
+  --color-warm-gray: #D0CBC4;
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-off-white);
+    color: var(--color-black);
+    font-family: var(--font-sans);
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+  }
+}
