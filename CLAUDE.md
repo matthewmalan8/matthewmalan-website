@@ -50,6 +50,9 @@ Typography:
 - `pnpm build` — build static export
 - `pnpm run deploy:aws` — deploy to production
 
+## External Services
+- Contact form: Formspree endpoint https://formspree.io/f/mbdwzagr
+
 ## Important
 - Do exactly what is asked. Don't add extra actions.
 - Always preview changes on the dev server before deploying.

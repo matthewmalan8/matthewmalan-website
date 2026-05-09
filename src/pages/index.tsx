@@ -18,119 +18,147 @@ export default function Home() {
 
   return (
     <Layout path="/" jsonLd={personJsonLd}>
-      <section className="bg-[var(--color-off-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-24 pb-32 lg:pt-32 lg:pb-40">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-            Speaker · Host · Storyteller
-          </p>
-          <h1 className="mt-6 text-5xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-tight max-w-5xl">
-            Conversations that
-            <span className="bg-[var(--color-yellow)] px-3 inline-block ml-2 -rotate-1">
-              move people
-            </span>{" "}
-            forward.
-          </h1>
-          <p className="mt-8 text-lg lg:text-xl max-w-2xl text-[var(--color-black)]/70 leading-relaxed">
-            I'm Matthew Malan — a public speaker and podcast host exploring
-            leadership, creativity, and the work that matters. On stage and
-            behind the mic, I help people think harder and speak truer.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/speaking/"
-              className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-lime)] hover:text-[var(--color-black)] transition-colors"
-            >
-              Book a talk
-            </Link>
-            <Link
-              href="/podcast/"
-              className="inline-flex items-center border-2 border-[var(--color-black)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
-            >
-              Listen to the podcast
-            </Link>
+      {/* HERO */}
+      <section className="bg-[var(--color-black)] text-[var(--color-off-white)] min-h-screen -mt-16 pt-16 flex items-center">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="lg:col-span-7">
+            <h1 className="text-6xl sm:text-7xl lg:text-8xl leading-[0.9] tracking-tight">
+              <span className="inline-block relative">
+                Matthew Malan
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 right-0 -bottom-2 lg:-bottom-3 h-3 lg:h-4 bg-[var(--color-yellow)]"
+                />
+              </span>
+            </h1>
+
+            <p className="mt-10 text-2xl sm:text-3xl text-[var(--color-off-white)] font-medium">
+              Public speaker. Podcast host.
+            </p>
+
+            <p className="mt-6 text-lg sm:text-xl max-w-xl text-[var(--color-warm-gray)]">
+              [Your one-line positioning statement goes here]
+            </p>
+
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                href="/podcast/"
+                className="inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-lime)] transition-colors"
+              >
+                Listen to the podcast
+              </Link>
+              <Link
+                href="/speaking/"
+                className="inline-flex items-center border-2 border-[var(--color-off-white)] text-[var(--color-off-white)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+              >
+                Book me to speak
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5">
+            <picture>
+              <source
+                media="(max-width: 480px)"
+                srcSet="/images/matt-hero-mobile.webp"
+                type="image/webp"
+              />
+              <img
+                src="/images/matt-hero.webp"
+                alt="Portrait of Matthew Malan, public speaker and podcast host."
+                className="w-full h-auto rounded-2xl object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
           </div>
         </div>
       </section>
 
-      <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div>
-              <p className="font-[family-name:var(--font-display)] text-6xl text-[var(--color-yellow)]">
-                100+
-              </p>
-              <p className="mt-3 text-[var(--color-warm-gray)]">
-                Keynotes delivered to leaders, builders, and teams across four
-                continents.
-              </p>
-            </div>
-            <div>
-              <p className="font-[family-name:var(--font-display)] text-6xl text-[var(--color-yellow)]">
-                3M
-              </p>
-              <p className="mt-3 text-[var(--color-warm-gray)]">
-                Podcast downloads from listeners who want sharper conversations,
-                not louder ones.
-              </p>
-            </div>
-            <div>
-              <p className="font-[family-name:var(--font-display)] text-6xl text-[var(--color-yellow)]">
-                12
-              </p>
-              <p className="mt-3 text-[var(--color-warm-gray)]">
-                Years on stage, on air, and in rooms where the hard questions
-                live.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-off-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24 lg:py-32">
-          <h2 className="text-4xl lg:text-6xl tracking-tight max-w-3xl">
-            Three ways to{" "}
-            <span className="bg-[var(--color-lime)] px-2">work together</span>.
+      {/* ABOUT TEASER */}
+      <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">
+        <div className="max-w-4xl mx-auto px-6 lg:px-10 py-28 lg:py-40">
+          <h2 className="text-5xl sm:text-7xl tracking-tight">
+            <span className="inline-block relative">
+              Hi, I&apos;m Matt.
+              <span
+                aria-hidden="true"
+                className="absolute left-0 right-0 -bottom-1 lg:-bottom-2 h-2 lg:h-3 bg-[var(--color-lime)]"
+              />
+            </span>
           </h2>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link
-              href="/speaking/"
-              className="group block p-8 border-2 border-[var(--color-black)] rounded-2xl hover:bg-[var(--color-yellow)] transition-colors"
-            >
-              <p className="font-[family-name:var(--font-display)] text-2xl">
-                Keynotes
+          <p className="mt-12 text-xl lg:text-2xl text-[var(--color-black)]/80 leading-relaxed max-w-3xl">
+            [2-3 sentences about what you do and who you help]
+          </p>
+
+          <Link
+            href="/about/"
+            className="mt-10 inline-flex items-center text-lg font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+          >
+            More about me →
+          </Link>
+        </div>
+      </section>
+
+      {/* WHAT I DO */}
+      <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-28 lg:py-40">
+          <h2 className="text-5xl sm:text-7xl tracking-tight">
+            <span className="inline-block relative">
+              What I do.
+              <span
+                aria-hidden="true"
+                className="absolute left-0 right-0 -bottom-1 lg:-bottom-2 h-2 lg:h-3 bg-[var(--color-yellow)]"
+              />
+            </span>
+          </h2>
+
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
+              <h3 className="text-3xl lg:text-4xl">Speaking</h3>
+              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
+                [One sentence about your talks and topics]
               </p>
-              <p className="mt-3 text-[var(--color-black)]/70">
-                Stage-ready talks for conferences, summits, and offsites.
+              <Link
+                href="/speaking/"
+                className="mt-10 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+              >
+                See speaking topics →
+              </Link>
+            </article>
+
+            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
+              <h3 className="text-3xl lg:text-4xl">Podcast</h3>
+              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
+                [One sentence about your podcast]
               </p>
-              <p className="mt-6 text-sm font-semibold">Explore speaking →</p>
-            </Link>
-            <Link
-              href="/podcast/"
-              className="group block p-8 border-2 border-[var(--color-black)] rounded-2xl hover:bg-[var(--color-yellow)] transition-colors"
-            >
-              <p className="font-[family-name:var(--font-display)] text-2xl">
-                The Podcast
-              </p>
-              <p className="mt-3 text-[var(--color-black)]/70">
-                Long-form interviews with operators, artists, and outliers.
-              </p>
-              <p className="mt-6 text-sm font-semibold">Listen now →</p>
-            </Link>
-            <Link
-              href="/contact/"
-              className="group block p-8 border-2 border-[var(--color-black)] rounded-2xl hover:bg-[var(--color-yellow)] transition-colors"
-            >
-              <p className="font-[family-name:var(--font-display)] text-2xl">
-                Collaborate
-              </p>
-              <p className="mt-3 text-[var(--color-black)]/70">
-                Workshops, advisory work, and custom engagements.
-              </p>
-              <p className="mt-6 text-sm font-semibold">Get in touch →</p>
-            </Link>
+              <Link
+                href="/podcast/"
+                className="mt-10 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+              >
+                Listen now →
+              </Link>
+            </article>
           </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="bg-[var(--color-yellow)] text-[var(--color-black)]">
+        <div className="max-w-5xl mx-auto px-6 lg:px-10 py-28 lg:py-40 text-center">
+          <h2 className="text-5xl sm:text-7xl lg:text-8xl tracking-tight">
+            Let&apos;s work together.
+          </h2>
+          <p className="mt-8 text-xl lg:text-2xl text-[var(--color-black)]/80 max-w-2xl mx-auto">
+            Book a keynote, come on the podcast, or just say hi.
+          </p>
+          <Link
+            href="/contact/"
+            className="mt-12 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-8 py-5 text-lg font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+          >
+            Get in touch
+          </Link>
         </div>
       </section>
     </Layout>

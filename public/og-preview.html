@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>OG preview — Matthew Malan</title>
+    <style>
+      @font-face {
+        font-family: "Space Grotesk";
+        font-style: normal;
+        font-weight: 300 700;
+        font-display: block;
+        src: url("/fonts/space-grotesk-variable.woff2") format("woff2-variations");
+      }
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 500;
+        font-display: block;
+        src: url("/fonts/inter-500.woff2") format("woff2");
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #555;
+      }
+
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        background: #1C1400;
+        color: #FFFDF9;
+        overflow: hidden;
+        box-sizing: border-box;
+        padding: 96px 96px 96px 152px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .accent {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 32px;
+        background: #FFD721;
+      }
+
+      .name {
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 168px;
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+
+      .role {
+        font-family: "Inter", system-ui, sans-serif;
+        font-weight: 500;
+        font-size: 40px;
+        color: #FFD721;
+        margin: 32px 0 0 0;
+        letter-spacing: -0.01em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="accent" aria-hidden="true"></div>
+      <h1 class="name">Matthew Malan</h1>
+      <p class="role">Public speaker · Podcast host</p>
+    </div>
+  </body>
+</html>

@@ -5,7 +5,7 @@ export const siteConfig = {
   description:
     "Matthew Malan is a public speaker and podcast host exploring leadership, creativity, and the conversations that shape how we work.",
   twitter: "@matthewmalan",
-  ogImage: "/images/og-default.png",
+  ogImage: "/images/og-image.webp",
 };
 
 export type PageSeo = {

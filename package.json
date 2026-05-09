@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 3400",
     "lint": "next lint",
-    "deploy:aws": "node scripts/deploy.mjs"
+    "deploy:aws": "pnpm build && aws s3 sync out/ s3://matthewmalan.com --delete && aws cloudfront create-invalidation --distribution-id E2RKBCXIJZTCSR --paths \"/*\""
   },
   "dependencies": {
     "next": "^15.1.0",
