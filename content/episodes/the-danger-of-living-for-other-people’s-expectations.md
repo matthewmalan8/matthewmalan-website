@@ -12,7 +12,7 @@ excerpt: What does it actually look like to grow up without knowing who you are
   From vegan pizza with no cheese to organizing a DIY prom, to working EDM
   events with a Polaroid camera, Joseph's story is equal parts hilarious and
   surprisingly profound. This one's for anyone who's ever felt pressure to have
-  life figured out before they're ready.
+  life figured out before they're ready!
 quote: Hot dogs are way better than pizza will ever be:)
 category: Public Speaking
 tags:
