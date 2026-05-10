@@ -1,10 +1,32 @@
 import Layout from "@/components/Layout";
+import {
+  InstagramIcon,
+  LinkedInIcon,
+  TikTokIcon,
+  XIcon,
+} from "@/components/Icons";
 
 const socials = [
-  { label: "Instagram", href: "https://www.instagram.com/matthewmalan8/" },
-  { label: "Twitter / X", href: "https://x.com/matthewmalan8" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/matthew-malan8/" },
-  { label: "TikTok", href: "https://www.tiktok.com/@matthewmalan7" },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/matthewmalan8/",
+    Icon: InstagramIcon,
+  },
+  {
+    label: "Twitter / X",
+    href: "https://x.com/matthewmalan8",
+    Icon: XIcon,
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/matthew-malan8/",
+    Icon: LinkedInIcon,
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@matthewmalan7",
+    Icon: TikTokIcon,
+  },
 ];
 
 export default function ContactPage() {
@@ -126,37 +148,38 @@ export default function ContactPage() {
       </section>
 
       <section className="bg-[var(--color-off-white)] border-t border-[var(--color-warm-gray)]">
-        <div className="max-w-3xl mx-auto px-6 lg:px-10 py-16 lg:py-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-                Email
-              </p>
-              <a
-                href="mailto:matthewsmalan@gmail.com"
-                className="mt-3 inline-block font-[family-name:var(--font-display)] text-2xl break-all hover:text-[var(--color-yellow)] transition-colors"
-              >
-                matthewsmalan@gmail.com
-              </a>
-            </div>
+        <div className="max-w-3xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-12">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+              Email
+            </p>
+            <a
+              href="mailto:matthewsmalan@gmail.com"
+              className="mt-3 inline-block font-[family-name:var(--font-display)] text-xl sm:text-2xl hover:text-[var(--color-yellow)] transition-colors whitespace-nowrap"
+            >
+              matthewsmalan@gmail.com
+            </a>
+          </div>
 
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-                Elsewhere
-              </p>
-              <ul className="mt-3 space-y-2 text-lg">
-                {socials.map((s) => (
-                  <li key={s.label}>
-                    <a
-                      href={s.href}
-                      className="hover:text-[var(--color-yellow)] transition-colors"
-                    >
-                      {s.label} →
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+              Elsewhere
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-3 items-center">
+              {socials.map(({ label, href, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

@@ -83,7 +83,7 @@ export default function PodcastPage({
   return (
     <Layout
       title="Stay Hungry Podcast"
-      description="Stay Hungry — conversations with entrepreneurs, doctors, community leaders, and everyday people who've done extraordinary things. Hosted by Matthew Malan."
+      description="Stay Hungry — business strategies from the entrepreneurs and executives who built something worth studying. Hosted by Matthew Malan."
       path="/podcast/"
     >
       {/* Hero */}
@@ -100,9 +100,8 @@ export default function PodcastPage({
           </h1>
 
           <p className="mt-12 text-xl lg:text-2xl max-w-2xl text-[var(--color-warm-gray)]">
-            Conversations with entrepreneurs, doctors, community leaders, and
-            everyday people who&apos;ve done extraordinary things. New episode
-            every Sunday.
+            Business strategies from the entrepreneurs and executives who
+            built something worth studying. New episode every Sunday.
           </p>
 
           <div className="mt-12">

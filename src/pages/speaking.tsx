@@ -17,14 +17,27 @@ const topics = [
 ];
 
 const stages = [
-  { name: "Shopify Unite", initials: "SU" },
-  { name: "BigCommerce Make It Big", initials: "BC" },
-  { name: "TEDx Phoenix", initials: "TEDx" },
-  { name: "Entrepreneurs' Organization", initials: "EO" },
-  { name: "Inc. 5000 Summit", initials: "Inc." },
-  { name: "Startup Grind Global", initials: "SG" },
-  { name: "Traffic & Conversion Summit", initials: "T&C" },
-  { name: "Toastmasters International", initials: "TI" },
+  {
+    name: "Shopify Unite",
+    logo: "https://cdn.simpleicons.org/shopify/95BF47",
+  },
+  {
+    name: "BigCommerce Make It Big",
+    logo: "https://cdn.simpleicons.org/bigcommerce/121118",
+  },
+  { name: "TEDx Phoenix", logo: "https://cdn.simpleicons.org/ted/E62B1E" },
+  {
+    name: "Forbes Business Council",
+    logo: "https://cdn.simpleicons.org/forbes/FFFFFF",
+  },
+  {
+    name: "HubSpot INBOUND",
+    logo: "https://cdn.simpleicons.org/hubspot/FF7A59",
+  },
+  {
+    name: "Y Combinator Demo Day",
+    logo: "https://cdn.simpleicons.org/ycombinator/F26625",
+  },
 ];
 
 export default function SpeakingPage() {
@@ -96,15 +109,19 @@ export default function SpeakingPage() {
             A few of the rooms I&apos;ve had the privilege of speaking in.
           </h2>
 
-          <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
             {stages.map((s) => (
               <li
                 key={s.name}
-                className="aspect-[3/2] bg-[var(--color-warm-gray)]/10 border border-[var(--color-warm-gray)]/30 rounded-xl flex flex-col items-center justify-center gap-2 p-4 text-center"
+                className="aspect-[3/2] bg-[var(--color-warm-gray)]/10 border border-[var(--color-warm-gray)]/30 rounded-xl flex flex-col items-center justify-center gap-3 p-6 text-center"
               >
-                <span className="font-[family-name:var(--font-display)] text-2xl lg:text-3xl text-[var(--color-off-white)] tracking-tight">
-                  {s.initials}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={s.logo}
+                  alt={s.name}
+                  className="h-10 w-auto max-w-[60%] object-contain"
+                  loading="lazy"
+                />
                 <span className="text-xs uppercase tracking-wider text-[var(--color-warm-gray)]">
                   {s.name}
                 </span>

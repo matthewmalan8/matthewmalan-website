@@ -41,8 +41,8 @@ export default function Footer() {
               Matthew Malan
             </p>
             <p className="mt-3 text-[var(--color-warm-gray)] max-w-sm">
-              Public speaker and host of the Stay Hungry Podcast. Based in
-              Mesa, Arizona.
+              E-commerce consultant helping founders scale to six figures.
+              Host of the Stay Hungry Podcast.
             </p>
           </div>
 

@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <Layout
       title="About"
-      description="Matthew Malan is a public speaker and host of the Stay Hungry Podcast, based in Mesa, Arizona."
+      description="Matthew Malan is an e-commerce consultant and host of the Stay Hungry Podcast, helping founders scale companies to six figures and beyond."
       path="/about/"
     >
       {/* TITLE + BIO + PHOTO */}
@@ -27,30 +27,34 @@ export default function AboutPage() {
             {/* LEFT: paragraphs */}
             <div className="lg:col-span-7 space-y-6 text-lg text-[var(--color-black)]/80 leading-relaxed">
               <p>
-                I&apos;m Matthew Malan — a public speaker and the host of the
-                Stay Hungry Podcast. I work with business leaders and
-                e-commerce operators to help them build resilient teams, find
-                their voice, and scale their companies past six figures.
+                I&apos;m Matthew Malan — an e-commerce consultant who helps
+                founders and operators scale their businesses to six figures
+                and beyond. My approach is analytical and execution-focused:
+                dig into the performance data, find what&apos;s actually
+                working, and turn the insights into campaigns that drive
+                measurable revenue.
               </p>
               <p>
-                On stage and behind the mic, I&apos;m drawn to the same kinds
-                of conversations: the ones that strip away the polish and get
-                to what actually works. Most of my talks and episodes pull from
-                the lessons of entrepreneurs, doctors, community leaders, and
-                everyday people who&apos;ve done extraordinary things.
+                I currently serve as Marketing Manager at Vemo Smart Energy,
+                where I lead an 8-person team responsible for digital
+                acquisition across paid social, email, and content. By
+                continuously testing creative, optimizing targeting, and
+                analyzing campaign performance, we increased lead generation
+                28% while reducing cost per acquisition by 13%.
               </p>
               <p>
-                I grew up with a debilitating stutter. Speaking in front of a
-                classroom — let alone an arena — felt physically impossible
-                for years. The story of how I got from there to here is the
-                spine of one of my most-requested keynotes, and it&apos;s also
-                the reason I care so much about helping other people find
-                their voice in business and in life.
+                Tools like Google Analytics, Meta Ads, Google Ads, and CRM
+                systems help guide decisions — but the real focus is building
+                systems that consistently generate and convert demand. Earlier
+                in my career, I built my foundation in SEO and marketing
+                analytics, running keyword research, implementing analytics
+                tooling, and improving search performance for content-driven
+                growth.
               </p>
               <p>
-                When I&apos;m not on a stage or recording an episode,
-                you&apos;ll find me in Mesa, Arizona — usually with a coffee,
-                a book, and an unreasonable number of tabs open.
+                Outside the day job, I host the Stay Hungry Podcast — business
+                strategies from the entrepreneurs and executives who built
+                something worth studying.
               </p>
             </div>
 
@@ -84,10 +88,19 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <dt className="text-sm font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
-                      Speaks about
+                      Currently
                     </dt>
                     <dd className="mt-1 text-lg">
-                      Leadership, resilience, communication, scaling e-commerce
+                      Marketing Manager, Vemo Smart Energy
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
+                      Helps with
+                    </dt>
+                    <dd className="mt-1 text-lg">
+                      E-commerce growth, paid acquisition, scaling to six
+                      figures
                     </dd>
                   </div>
                   <div>
@@ -108,8 +121,8 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
           <blockquote className="border-l-4 border-[var(--color-yellow)] pl-8 py-2">
             <p className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl leading-snug tracking-tight">
-              The voice you&apos;re afraid to use is the one your business is
-              waiting for.
+              Marketing isn&apos;t magic — it&apos;s a system. Build the
+              system, run the experiments, ship what works.
             </p>
           </blockquote>
         </div>
@@ -123,7 +136,7 @@ export default function AboutPage() {
               Want to work together?
             </p>
             <p className="mt-4 text-lg text-[var(--color-warm-gray)] max-w-xl">
-              Speaking, podcast guesting, or something else — drop me a note.
+              Consulting, speaking, podcast guesting — drop me a note.
             </p>
             <Link
               href="/contact/"

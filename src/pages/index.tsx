@@ -35,12 +35,13 @@ export default function Home() {
             </h1>
 
             <p className="mt-10 text-2xl sm:text-3xl text-[var(--color-off-white)] font-medium">
-              Public speaker. Podcast host.
+              E-commerce consultant. Podcast host.
             </p>
 
             <p className="mt-6 text-lg sm:text-xl max-w-xl text-[var(--color-warm-gray)]">
-              I help business leaders unlock their voice, build resilient
-              teams, and scale companies past six figures.
+              I help founders and operators scale their e-commerce businesses
+              to six figures and beyond — through better acquisition, smarter
+              testing, and systems that actually convert.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
@@ -92,9 +93,10 @@ export default function Home() {
           </h2>
 
           <p className="mt-12 text-xl lg:text-2xl text-[var(--color-black)]/80 leading-relaxed max-w-3xl">
-            I&apos;m a public speaker and host of the Stay Hungry Podcast.
-            I share stories of operators, founders, and everyday people doing
-            extraordinary things — and the lessons behind their success.
+            I&apos;m an e-commerce consultant who helps founders and operators
+            scale their businesses to six figures and beyond. I also host the
+            Stay Hungry Podcast — business strategies from the entrepreneurs
+            and executives who built something worth studying.
           </p>
 
           <Link
@@ -138,8 +140,8 @@ export default function Home() {
             <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
               <h3 className="text-3xl lg:text-4xl">Stay Hungry Podcast</h3>
               <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
-                Honest conversations with entrepreneurs, doctors, community
-                leaders, and outliers. New episode every Sunday.
+                Business strategies from the entrepreneurs and executives who
+                built something worth studying. New episode every Sunday.
               </p>
               <Link
                 href="/podcast/"
