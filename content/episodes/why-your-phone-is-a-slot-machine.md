@@ -3,7 +3,7 @@ title: Why Your Phone Is a Slot Machine
 date: 2026-03-07T18:48:00.000-07:00
 episodeNumber: 2
 featured: false
-image: /images/episodes/screenshot-2026-05-10-141403.png
+image: /images/episodes/screenshot-2026-05-10-143559.png
 imageAlt: London Lines
 excerpt: In this episode, Matthew sits down with his longtime friend London
   Lines, a culinary arts student, former childcare professional, aspiring
