@@ -14,6 +14,8 @@ excerpt: What does it actually look like to grow up without knowing who you are
   surprisingly profound. This one's for anyone who's ever felt pressure to have
   life figured out before they're ready.
 category: Storytelling
+tags:
+  - Purpose
 guest: Joseph Malan
 guestBio: Joseph Malan is Matthew's brother — a 24-year-old Phoenix-area native
   currently in the thick of figuring life out. He's worked EDM events, sold
