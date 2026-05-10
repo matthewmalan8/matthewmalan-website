@@ -50,13 +50,6 @@ collections:
           widget: "text",
           hint: "One-sentence summary shown on the archive listing and meta description.",
         }
-      - {
-          label: "Pull Quote",
-          name: "quote",
-          widget: "text",
-          required: false,
-          hint: "Highlighted at the top of the post.",
-        }
       - label: "Category"
         name: "category"
         widget: "select"
@@ -102,6 +95,12 @@ collections:
               required: false,
             }
           - {
+              label: "Instagram URL",
+              name: "instagram",
+              widget: "string",
+              required: false,
+            }
+          - {
               label: "LinkedIn URL",
               name: "linkedin",
               widget: "string",
@@ -132,13 +131,38 @@ collections:
           widget: "string",
           required: false,
         }
-      - {
-          label: "Key Takeaways",
-          name: "keyTakeaways",
-          widget: "list",
-          required: false,
-          hint: "Bullet-pointed below the show notes.",
-        }
+      - label: "Guest's Book (optional)"
+        name: "book"
+        widget: "object"
+        required: false
+        collapsed: true
+        hint: "Featured book by the guest — appears in a highlighted card on the episode page."
+        fields:
+          - {
+              label: "Book Title",
+              name: "title",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Book Cover Image",
+              name: "image",
+              widget: "image",
+              required: false,
+            }
+          - {
+              label: "Description",
+              name: "description",
+              widget: "text",
+              required: false,
+              hint: "A few sentences about the book.",
+            }
+          - {
+              label: "Link (Amazon, publisher, etc.)",
+              name: "link",
+              widget: "string",
+              required: false,
+            }
       - {
           label: "Show Notes",
           name: "body",

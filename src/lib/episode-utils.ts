@@ -1,7 +1,15 @@
 export type GuestSocials = {
   twitter?: string;
   linkedin?: string;
+  instagram?: string;
   website?: string;
+};
+
+export type GuestBook = {
+  title: string;
+  image: string;
+  description: string;
+  link: string;
 };
 
 export type EpisodeFrontmatter = {
@@ -11,7 +19,6 @@ export type EpisodeFrontmatter = {
   image: string;
   imageAlt: string;
   excerpt: string;
-  quote: string;
   category: string;
   tags: string[];
   guest: string;
@@ -21,7 +28,7 @@ export type EpisodeFrontmatter = {
   youtube: string;
   spotify: string;
   applePodcasts: string;
-  keyTakeaways: string[];
+  book: GuestBook | null;
   featured: boolean;
 };
 

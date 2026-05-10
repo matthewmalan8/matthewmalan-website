@@ -7,10 +7,11 @@ import type {
   Episode,
   EpisodeFrontmatter,
   EpisodeMeta,
+  GuestBook,
   GuestSocials,
 } from "./episode-utils";
 
-export type { Episode, EpisodeFrontmatter, EpisodeMeta, GuestSocials };
+export type { Episode, EpisodeFrontmatter, EpisodeMeta, GuestBook, GuestSocials };
 
 const episodesDir = path.join(process.cwd(), "content", "episodes");
 
@@ -33,8 +34,20 @@ function asSocials(value: unknown): GuestSocials {
   return {
     twitter: v.twitter ? String(v.twitter) : undefined,
     linkedin: v.linkedin ? String(v.linkedin) : undefined,
+    instagram: v.instagram ? String(v.instagram) : undefined,
     website: v.website ? String(v.website) : undefined,
   };
+}
+
+function asBook(value: unknown): GuestBook | null {
+  if (!value || typeof value !== "object") return null;
+  const v = value as Record<string, unknown>;
+  const title = asString(v.title);
+  const image = asString(v.image);
+  const description = asString(v.description);
+  const link = asString(v.link);
+  if (!title && !image && !description && !link) return null;
+  return { title, image, description, link };
 }
 
 function readEpisode(slug: string): {
@@ -53,7 +66,6 @@ function readEpisode(slug: string): {
       image: asString(fm.image),
       imageAlt: asString(fm.imageAlt),
       excerpt: asString(fm.excerpt),
-      quote: asString(fm.quote),
       category: asString(fm.category),
       tags: asStringArray(fm.tags),
       guest: asString(fm.guest),
@@ -63,7 +75,7 @@ function readEpisode(slug: string): {
       youtube: asString(fm.youtube),
       spotify: asString(fm.spotify),
       applePodcasts: asString(fm.applePodcasts),
-      keyTakeaways: asStringArray(fm.keyTakeaways),
+      book: asBook(fm.book),
       featured: fm.featured === true,
     },
     content,

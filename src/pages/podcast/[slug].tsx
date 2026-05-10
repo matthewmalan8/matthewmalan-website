@@ -112,22 +112,6 @@ export default function EpisodePage({ episode, related }: Props) {
           </section>
         )}
 
-        {/* Pull quote */}
-        {episode.quote && (
-          <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-12">
-            <blockquote className="border-l-4 border-[var(--color-yellow)] pl-6 py-2">
-              <p className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl leading-snug text-[var(--color-black)]">
-                &ldquo;{episode.quote}&rdquo;
-              </p>
-              {episode.guest && (
-                <footer className="mt-4 text-sm text-[var(--color-black)]/60">
-                  — {episode.guest}
-                </footer>
-              )}
-            </blockquote>
-          </section>
-        )}
-
         {/* Listen on */}
         {(episode.spotify || episode.applePodcasts || episode.youtube) && (
           <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-12">
@@ -176,25 +160,56 @@ export default function EpisodePage({ episode, related }: Props) {
           </section>
         )}
 
-        {/* Key takeaways */}
-        {episode.keyTakeaways.length > 0 && (
-          <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-16">
-            <h2 className="text-2xl sm:text-3xl tracking-tight">
-              Key takeaways
-            </h2>
-            <ul className="mt-6 space-y-3">
-              {episode.keyTakeaways.map((takeaway, i) => (
-                <li key={i} className="flex gap-4">
-                  <span
-                    aria-hidden
-                    className="mt-2 flex-shrink-0 w-2 h-2 rounded-full bg-[var(--color-yellow)]"
-                  />
-                  <span className="text-[var(--color-black)]/85 leading-relaxed">
-                    {takeaway}
-                  </span>
-                </li>
-              ))}
-            </ul>
+        {/* Guest's book */}
+        {episode.book && (
+          <section className="max-w-4xl mx-auto px-6 lg:px-10 mt-16">
+            <div className="bg-[var(--color-yellow)] rounded-3xl overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 p-8 md:p-12 items-center">
+                {episode.book.image && (
+                  <div className="md:col-span-2">
+                    <div
+                      className="aspect-[2/3] overflow-hidden rounded-lg bg-[var(--color-black)]/10"
+                      style={{
+                        boxShadow:
+                          "0 25px 50px -12px rgba(28, 20, 0, 0.45), 0 8px 16px -4px rgba(28, 20, 0, 0.25)",
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={episode.book.image}
+                        alt={episode.book.title || "Book cover"}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className={episode.book.image ? "md:col-span-3" : "md:col-span-5"}>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+                    Featured Book
+                  </p>
+                  {episode.book.title && (
+                    <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl md:text-4xl tracking-tight text-[var(--color-black)]">
+                      {episode.book.title}
+                    </h2>
+                  )}
+                  {episode.book.description && (
+                    <p className="mt-5 text-[var(--color-black)]/80 leading-relaxed">
+                      {episode.book.description}
+                    </p>
+                  )}
+                  {episode.book.link && (
+                    <a
+                      href={episode.book.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-7 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+                    >
+                      Get the book →
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
           </section>
         )}
 
@@ -227,6 +242,7 @@ export default function EpisodePage({ episode, related }: Props) {
                   )}
                   {(episode.guestSocials.twitter ||
                     episode.guestSocials.linkedin ||
+                    episode.guestSocials.instagram ||
                     episode.guestSocials.website) && (
                     <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
                       {episode.guestSocials.twitter && (
@@ -238,6 +254,18 @@ export default function EpisodePage({ episode, related }: Props) {
                             className="hover:text-[var(--color-black)]/60"
                           >
                             Twitter / X →
+                          </a>
+                        </li>
+                      )}
+                      {episode.guestSocials.instagram && (
+                        <li>
+                          <a
+                            href={episode.guestSocials.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[var(--color-black)]/60"
+                          >
+                            Instagram →
                           </a>
                         </li>
                       )}
