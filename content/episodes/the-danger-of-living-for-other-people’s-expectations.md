@@ -24,6 +24,8 @@ guestBio: Joseph Malan is Matthew's brother — a 24-year-old Phoenix-area nativ
   of person who's living the questions instead of pretending to have the
   answers.
 guestImage: /images/episodes/screenshot-2026-05-10-133739.png
+guestSocials:
+  instagram: https://www.instagram.com/nature_astronaut/
 youtube: https://www.youtube.com/watch?v=7B6ZJI9V8H4
 spotify: https://open.spotify.com/episode/6kjjjIpM5jTibQCoOLBua4?si=_-HZsPlNQQamTM0_41wr8w
 applePodcasts: https://podcasts.apple.com/us/podcast/the-danger-of-living-for-other-peoples/id1883421904?i=1000753829241
