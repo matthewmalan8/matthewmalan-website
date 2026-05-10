@@ -2,6 +2,15 @@ import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import {
+  ApplePodcastsIcon,
+  GlobeIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  SpotifyIcon,
+  XIcon,
+  YouTubeIcon,
+} from "@/components/Icons";
+import {
   getAllEpisodeSlugs,
   getAllEpisodes,
   getEpisodeBySlug,
@@ -36,10 +45,17 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 const PLATFORMS: Array<{
   key: keyof Pick<Episode, "spotify" | "applePodcasts" | "youtube">;
   label: string;
+  verb: string;
+  Icon: (props: { className?: string }) => React.ReactElement;
 }> = [
-  { key: "spotify", label: "Spotify" },
-  { key: "applePodcasts", label: "Apple Podcasts" },
-  { key: "youtube", label: "YouTube" },
+  { key: "spotify", label: "Spotify", verb: "Listen on", Icon: SpotifyIcon },
+  {
+    key: "applePodcasts",
+    label: "Apple Podcasts",
+    verb: "Listen on",
+    Icon: ApplePodcastsIcon,
+  },
+  { key: "youtube", label: "YouTube", verb: "Watch on", Icon: YouTubeIcon },
 ];
 
 export default function EpisodePage({ episode, related }: Props) {
@@ -118,17 +134,25 @@ export default function EpisodePage({ episode, related }: Props) {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
               Listen, watch, or subscribe
             </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {PLATFORMS.map(({ key, label }) =>
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {PLATFORMS.map(({ key, label, verb, Icon }) =>
                 episode[key] ? (
                   <a
                     key={key}
                     href={episode[key] as string}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-5 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors"
+                    className="flex items-center gap-4 bg-[var(--color-black)] text-[var(--color-off-white)] rounded-2xl px-5 py-4 hover:opacity-90 transition-opacity"
                   >
-                    {label}
+                    <Icon className="w-9 h-9 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-[var(--color-warm-gray)] leading-tight">
+                        {verb}
+                      </p>
+                      <p className="text-base sm:text-lg font-bold leading-tight truncate">
+                        {label}
+                      </p>
+                    </div>
                   </a>
                 ) : null
               )}
@@ -244,16 +268,17 @@ export default function EpisodePage({ episode, related }: Props) {
                     episode.guestSocials.linkedin ||
                     episode.guestSocials.instagram ||
                     episode.guestSocials.website) && (
-                    <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
+                    <ul className="mt-5 flex flex-wrap gap-3 items-center">
                       {episode.guestSocials.twitter && (
                         <li>
                           <a
                             href={episode.guestSocials.twitter}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-[var(--color-black)]/60"
+                            aria-label="Twitter / X"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
                           >
-                            Twitter / X →
+                            <XIcon className="w-4 h-4" />
                           </a>
                         </li>
                       )}
@@ -263,9 +288,10 @@ export default function EpisodePage({ episode, related }: Props) {
                             href={episode.guestSocials.instagram}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-[var(--color-black)]/60"
+                            aria-label="Instagram"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
                           >
-                            Instagram →
+                            <InstagramIcon className="w-5 h-5" />
                           </a>
                         </li>
                       )}
@@ -275,9 +301,10 @@ export default function EpisodePage({ episode, related }: Props) {
                             href={episode.guestSocials.linkedin}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-[var(--color-black)]/60"
+                            aria-label="LinkedIn"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
                           >
-                            LinkedIn →
+                            <LinkedInIcon className="w-5 h-5" />
                           </a>
                         </li>
                       )}
@@ -287,9 +314,10 @@ export default function EpisodePage({ episode, related }: Props) {
                             href={episode.guestSocials.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-[var(--color-black)]/60"
+                            aria-label="Website"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] text-[var(--color-black)]/70 hover:scale-110 hover:border-[var(--color-black)] hover:text-[var(--color-black)] transition-all"
                           >
-                            Website →
+                            <GlobeIcon className="w-5 h-5" />
                           </a>
                         </li>
                       )}
