@@ -5,7 +5,7 @@ import Layout from "@/components/Layout";
 import { getAllEpisodes } from "@/lib/episodes";
 import {
   getFeaturedEpisode,
-  getAllCategories,
+  getAllTopics,
   formatEpisodeDate,
   type EpisodeMeta,
 } from "@/lib/episode-utils";
@@ -14,7 +14,7 @@ type Props = {
   episodes: EpisodeMeta[];
   featured: EpisodeMeta | null;
   recent: EpisodeMeta[];
-  categories: string[];
+  topics: string[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -23,18 +23,18 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const recent = episodes
     .filter((e) => !featured || e.slug !== featured.slug)
     .slice(0, 6);
-  const categories = getAllCategories(episodes);
-  return { props: { episodes, featured, recent, categories } };
+  const topics = getAllTopics(episodes);
+  return { props: { episodes, featured, recent, topics } };
 };
 
 export default function PodcastPage({
   episodes,
   featured,
   recent,
-  categories,
+  topics,
 }: Props) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [topic, setTopic] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -44,11 +44,11 @@ export default function PodcastPage({
         e.title.toLowerCase().includes(q) ||
         e.excerpt.toLowerCase().includes(q) ||
         e.guest.toLowerCase().includes(q) ||
-        e.tags.some((t) => t.toLowerCase().includes(q));
-      const matchesCategory = !category || e.category === category;
-      return matchesSearch && matchesCategory;
+        e.topics.some((t) => t.toLowerCase().includes(q));
+      const matchesTopic = !topic || e.topics.includes(topic);
+      return matchesSearch && matchesTopic;
     });
-  }, [episodes, search, category]);
+  }, [episodes, search, topic]);
 
   return (
     <Layout
@@ -208,31 +208,31 @@ export default function PodcastPage({
               </div>
             </div>
 
-            {categories.length > 0 && (
+            {topics.length > 0 && (
               <div className="mt-10 flex flex-wrap justify-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setCategory(null)}
+                  onClick={() => setTopic(null)}
                   className={`px-5 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
-                    category === null
+                    topic === null
                       ? "bg-[var(--color-yellow)] border-[var(--color-black)] text-[var(--color-black)]"
                       : "border-[var(--color-warm-gray)] text-[var(--color-black)]/70 hover:border-[var(--color-black)]"
                   }`}
                 >
                   All
                 </button>
-                {categories.map((c) => (
+                {topics.map((t) => (
                   <button
                     type="button"
-                    key={c}
-                    onClick={() => setCategory(c)}
+                    key={t}
+                    onClick={() => setTopic(t)}
                     className={`px-5 py-2 text-sm font-semibold rounded-full border-2 transition-colors ${
-                      category === c
+                      topic === t
                         ? "bg-[var(--color-yellow)] border-[var(--color-black)] text-[var(--color-black)]"
                         : "border-[var(--color-warm-gray)] text-[var(--color-black)]/70 hover:border-[var(--color-black)]"
                     }`}
                   >
-                    {c}
+                    {t}
                   </button>
                 ))}
               </div>
@@ -269,10 +269,13 @@ export default function PodcastPage({
                           </div>
                         )}
                         <div className="sm:col-span-7">
-                          {e.episodeNumber !== null && (
+                          {(e.episodeNumber !== null || e.topics.length > 0) && (
                             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
-                              Ep. {String(e.episodeNumber).padStart(3, "0")}
-                              {e.category && <> · {e.category}</>}
+                              {e.episodeNumber !== null && (
+                                <>Ep. {String(e.episodeNumber).padStart(3, "0")}</>
+                              )}
+                              {e.episodeNumber !== null && e.topics[0] && <> · </>}
+                              {e.topics.slice(0, 2).join(" · ")}
                             </p>
                           )}
                           <h4 className="mt-2 text-xl tracking-tight group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">

@@ -14,7 +14,10 @@ excerpt: Most people hit rock bottom and stay there. In this episode, Matthew
   changed everything. This is a story about what radical accountability actually
   looks like when your back is against the wall and no one is coming to save
   you.
-category: Storytelling
+topics:
+  - Resilience
+  - Mindset
+  - Authenticity
 guest: Art Stewart
 guestBio: Art Stewart is a combat veteran, Purple Heart recipient, and formerly
   incarcerated man now pursuing a master's degree in counseling with a focus on

@@ -20,8 +20,7 @@ export type EpisodeFrontmatter = {
   image: string;
   imageAlt: string;
   excerpt: string;
-  category: string;
-  tags: string[];
+  topics: string[];
   guest: string;
   guestBio: string;
   guestImage: string;
@@ -32,6 +31,36 @@ export type EpisodeFrontmatter = {
   book: GuestBook | null;
   featured: boolean;
 };
+
+export const ALL_TOPICS = [
+  "Leadership",
+  "Mindset",
+  "Decision-Making",
+  "Strategy",
+  "Team Building",
+  "Culture",
+  "Hiring & Talent",
+  "Communication",
+  "Public Speaking",
+  "Storytelling",
+  "Negotiation",
+  "Entrepreneurship",
+  "Sales",
+  "Marketing",
+  "Money",
+  "Investing",
+  "Supply Chain",
+  "Productivity",
+  "Habits",
+  "Focus & Attention",
+  "Time Management",
+  "Resilience",
+  "Wellness",
+  "Career Growth",
+  "Creativity",
+  "Authenticity",
+  "Faith",
+] as const;
 
 export type EpisodeMeta = EpisodeFrontmatter & { slug: string };
 
@@ -50,20 +79,20 @@ export function getRelatedEpisodes(
   limit = 3
 ): EpisodeMeta[] {
   const others = all.filter((e) => e.slug !== current.slug);
-  const currentTags = new Set(current.tags);
+  const currentTopics = new Set(current.topics);
   const scored = others
     .map((e) => {
-      const tagOverlap = e.tags.filter((t) => currentTags.has(t)).length;
-      return { episode: e, score: tagOverlap };
+      const overlap = e.topics.filter((t) => currentTopics.has(t)).length;
+      return { episode: e, score: overlap };
     })
     .sort((a, b) => b.score - a.score);
   return scored.slice(0, limit).map((s) => s.episode);
 }
 
-export function getAllCategories(episodes: EpisodeMeta[]): string[] {
+export function getAllTopics(episodes: EpisodeMeta[]): string[] {
   const set = new Set<string>();
-  for (const e of episodes) if (e.category) set.add(e.category);
-  return Array.from(set).sort();
+  for (const e of episodes) for (const t of e.topics) set.add(t);
+  return ALL_TOPICS.filter((t) => set.has(t));
 }
 
 export function formatEpisodeDate(date: string): string {

@@ -6,7 +6,9 @@ featured: false
 image: /images/episodes/screenshot-2026-05-10-144122.png
 imageAlt: Micah Malan
 excerpt: This episode was just for fun:)
-category: Storytelling
+topics:
+  - Wellness
+  - Habits
 guest: Micah Malan
 guestBio: Micah is Matthew Malan's younger brother
 guestImage: /images/episodes/screenshot-2026-05-10-144122.png

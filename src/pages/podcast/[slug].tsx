@@ -102,13 +102,18 @@ export default function EpisodePage({ episode, related }: Props) {
                   </span>
                 </>
               )}
-              {episode.category && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span>{episode.category}</span>
-                </>
-              )}
             </div>
+            {episode.topics.length > 0 && (
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {episode.topics.map((t) => (
+                  <li key={t}>
+                    <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full border border-[var(--color-warm-gray)]/40 text-[var(--color-warm-gray)]">
+                      {t}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </header>
 

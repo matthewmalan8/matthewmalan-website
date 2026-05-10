@@ -10,9 +10,10 @@ excerpt: In this episode, Matthew sits down with his longtime friend London
   perfumer, and all-around curious human. They cover everything from smartphone
   addiction and flip phones to marriage red flags, parenting hot takes, and what
   it actually means to believe in God.
-category: Storytelling
-tags:
-  - God
+topics:
+  - Focus & Attention
+  - Habits
+  - Faith
 guest: London Lines
 guestBio: London Lines is a culinary arts student at Scottsdale Community
   College and a working private chef. She has a background in childcare and

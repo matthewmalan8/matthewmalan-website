@@ -50,25 +50,40 @@ collections:
           widget: "text",
           hint: "One-sentence summary shown on the archive listing and meta description.",
         }
-      - label: "Category"
-        name: "category"
+      - label: "Topics"
+        name: "topics"
         widget: "select"
-        hint: "Drives the filter chips on the archive page."
+        multiple: true
+        min: 1
+        hint: "Pick all that apply. Drives the filter chips on /podcast/ and the 'You may also like' suggestions."
         options:
           - "Leadership"
+          - "Mindset"
+          - "Decision-Making"
+          - "Strategy"
+          - "Team Building"
+          - "Culture"
+          - "Hiring & Talent"
           - "Communication"
-          - "Creativity"
-          - "Storytelling"
           - "Public Speaking"
-          - "Founders"
-          - "Career"
-      - {
-          label: "Tags",
-          name: "tags",
-          widget: "list",
-          required: false,
-          hint: "Used to suggest related episodes.",
-        }
+          - "Storytelling"
+          - "Negotiation"
+          - "Entrepreneurship"
+          - "Sales"
+          - "Marketing"
+          - "Money"
+          - "Investing"
+          - "Supply Chain"
+          - "Productivity"
+          - "Habits"
+          - "Focus & Attention"
+          - "Time Management"
+          - "Resilience"
+          - "Wellness"
+          - "Career Growth"
+          - "Creativity"
+          - "Authenticity"
+          - "Faith"
       - { label: "Guest Name", name: "guest", widget: "string", required: false }
       - {
           label: "Guest Bio",

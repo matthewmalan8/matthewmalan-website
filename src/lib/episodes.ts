@@ -28,6 +28,15 @@ function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.map(String).filter(Boolean) : [];
 }
 
+function asTopics(fm: Record<string, unknown>): string[] {
+  // Prefer the new `topics` field, fall back to legacy `category` + `tags`.
+  if (Array.isArray(fm.topics)) return asStringArray(fm.topics);
+  const legacy: string[] = [];
+  if (typeof fm.category === "string" && fm.category) legacy.push(fm.category);
+  if (Array.isArray(fm.tags)) legacy.push(...asStringArray(fm.tags));
+  return Array.from(new Set(legacy));
+}
+
 function asSocials(value: unknown): GuestSocials {
   if (!value || typeof value !== "object") return {};
   const v = value as Record<string, unknown>;
@@ -67,8 +76,7 @@ function readEpisode(slug: string): {
       image: asString(fm.image),
       imageAlt: asString(fm.imageAlt),
       excerpt: asString(fm.excerpt),
-      category: asString(fm.category),
-      tags: asStringArray(fm.tags),
+      topics: asTopics(fm),
       guest: asString(fm.guest),
       guestBio: asString(fm.guestBio),
       guestImage: asString(fm.guestImage),
