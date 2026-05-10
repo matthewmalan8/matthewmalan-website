@@ -33,7 +33,7 @@ export default function ContactPage() {
   return (
     <Layout
       title="Contact"
-      description="Get in touch with Matthew Malan for speaking engagements, podcast guesting, and collaborations."
+      description="Get in touch with Matthew Malan for consulting, speaking engagements, podcast guesting, and collaborations."
       path="/contact/"
     >
       <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">
@@ -48,8 +48,8 @@ export default function ContactPage() {
             </span>
           </h1>
           <p className="mt-10 text-xl lg:text-2xl text-[var(--color-black)]/75 leading-relaxed">
-            Speaking inquiry, podcast guest, or just want to say hi — I read
-            every message.
+            Consulting, speaking inquiry, podcast guest, or just want to say
+            hi — I read every message.
           </p>
         </div>
       </section>

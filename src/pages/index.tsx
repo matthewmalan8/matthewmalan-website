@@ -121,31 +121,46 @@ export default function Home() {
             </span>
           </h2>
 
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-8 lg:p-10 flex flex-col">
+              <h3 className="text-3xl lg:text-4xl">Consulting</h3>
+              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed flex-1">
+                Strategy and execution for e-commerce founders and operators.
+                Paid acquisition, conversion, and the systems that scale you
+                past six figures.
+              </p>
+              <Link
+                href="/contact/"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+              >
+                Work with me →
+              </Link>
+            </article>
+
+            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-8 lg:p-10 flex flex-col">
               <h3 className="text-3xl lg:text-4xl">Speaking</h3>
-              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
+              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed flex-1">
                 Keynotes on resilience, communication, and scaling
                 e-commerce businesses — delivered to teams, conferences, and
                 executive offsites worldwide.
               </p>
               <Link
                 href="/speaking/"
-                className="mt-10 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
               >
                 See speaking topics →
               </Link>
             </article>
 
-            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
+            <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-8 lg:p-10 flex flex-col">
               <h3 className="text-3xl lg:text-4xl">Stay Hungry Podcast</h3>
-              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
+              <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed flex-1">
                 Business strategies from the entrepreneurs and executives who
                 built something worth studying. New episode every Sunday.
               </p>
               <Link
                 href="/podcast/"
-                className="mt-10 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
               >
                 Listen now →
               </Link>
@@ -161,7 +176,8 @@ export default function Home() {
             Let&apos;s work together.
           </h2>
           <p className="mt-8 text-xl lg:text-2xl text-[var(--color-black)]/80 max-w-2xl mx-auto">
-            Book a keynote, come on the podcast, or just say hi.
+            Hire me as a consultant, book a keynote, come on the podcast, or
+            just say hi.
           </p>
           <Link
             href="/contact/"
