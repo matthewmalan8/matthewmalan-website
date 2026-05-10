@@ -5,12 +5,14 @@ import {
   getAllEpisodeSlugs,
   getAllEpisodes,
   getEpisodeBySlug,
+} from "@/lib/episodes";
+import {
   getRelatedEpisodes,
   getYouTubeEmbedUrl,
   formatEpisodeDate,
   type Episode,
   type EpisodeMeta,
-} from "@/lib/episodes";
+} from "@/lib/episode-utils";
 
 type Props = {
   episode: Episode;

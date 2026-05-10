@@ -2,13 +2,13 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import { getAllEpisodes } from "@/lib/episodes";
 import {
-  getAllEpisodes,
   getFeaturedEpisode,
   getAllCategories,
   formatEpisodeDate,
   type EpisodeMeta,
-} from "@/lib/episodes";
+} from "@/lib/episode-utils";
 
 type Props = {
   episodes: EpisodeMeta[];
