@@ -3,7 +3,7 @@ title: How He Rewired His Brain to Escape Depression
 date: 2026-04-16T13:23:00.000-07:00
 episodeNumber: 5
 featured: false
-image: /images/episodes/screenshot-2026-05-10-151248.png
+image: /images/episodes/screenshot-2026-05-10-152152.png
 imageAlt: Taylor Bowden
 excerpt: Most people let their past define their limits. In this episode,
   Matthew sits down with Taylor Bowden — author, online fitness coach, and
