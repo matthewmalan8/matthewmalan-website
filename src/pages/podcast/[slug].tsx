@@ -169,12 +169,12 @@ export default function EpisodePage({ episode, related }: Props) {
         {/* Featured image */}
         {episode.image && (
           <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-12">
-            <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--color-warm-gray)]">
+            <div className="overflow-hidden rounded-2xl bg-[var(--color-warm-gray)] flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={episode.image}
                 alt={episode.imageAlt}
-                className="w-full h-full object-cover"
+                className="w-auto max-w-full h-auto max-h-[80vh] object-contain"
               />
             </div>
           </section>
