@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import { getAllEpisodes } from "@/lib/episodes";
@@ -33,8 +34,32 @@ export default function PodcastPage({
   recent,
   topics,
 }: Props) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const [topic, setTopic] = useState<string | null>(null);
+
+  const topic: string | null = (() => {
+    const q = router.query.topic;
+    return typeof q === "string" && q ? q : null;
+  })();
+
+  const setTopic = (newTopic: string | null) => {
+    const query: Record<string, string> = {};
+    if (newTopic) query.topic = newTopic;
+    router.replace({ pathname: "/podcast/", query }, undefined, {
+      shallow: true,
+      scroll: false,
+    });
+  };
+
+  // Scroll to episode list when arriving with a topic in the URL.
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (router.query.topic && typeof window !== "undefined") {
+      const el = document.getElementById("episodes");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -184,7 +209,10 @@ export default function PodcastPage({
 
       {/* Search + filter + full list */}
       {episodes.length > 0 ? (
-        <section className="bg-[var(--color-off-white)] border-t border-[var(--color-warm-gray)]">
+        <section
+          id="episodes"
+          className="bg-[var(--color-off-white)] border-t border-[var(--color-warm-gray)] scroll-mt-20"
+        >
           <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20">
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-5xl tracking-tight">

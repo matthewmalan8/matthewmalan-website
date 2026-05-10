@@ -107,9 +107,12 @@ export default function EpisodePage({ episode, related }: Props) {
               <ul className="mt-5 flex flex-wrap gap-2">
                 {episode.topics.map((t) => (
                   <li key={t}>
-                    <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full border border-[var(--color-warm-gray)]/40 text-[var(--color-warm-gray)]">
+                    <Link
+                      href={`/podcast/?topic=${encodeURIComponent(t)}#episodes`}
+                      className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full border border-[var(--color-warm-gray)]/40 text-[var(--color-warm-gray)] hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] hover:border-[var(--color-yellow)] transition-colors"
+                    >
                       {t}
-                    </span>
+                    </Link>
                   </li>
                 ))}
               </ul>
