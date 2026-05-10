@@ -3,7 +3,7 @@ title: 12 year old kid doing keto
 date: 2026-03-21T12:58:00.000-07:00
 episodeNumber: 3
 featured: false
-image: /images/episodes/screenshot-2026-05-10-142047.png
+image: /images/episodes/screenshot-2026-03-13-111358.png
 imageAlt: Micah Malan
 excerpt: This episode was just for fun:)
 category: Storytelling
