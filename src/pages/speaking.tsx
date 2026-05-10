@@ -27,8 +27,8 @@ const stages = [
   },
   { name: "TEDx Phoenix", logo: "https://cdn.simpleicons.org/ted/E62B1E" },
   {
-    name: "Forbes Business Council",
-    logo: "https://cdn.simpleicons.org/forbes/FFFFFF",
+    name: "Stripe Sessions",
+    logo: "https://cdn.simpleicons.org/stripe/635BFF",
   },
   {
     name: "HubSpot INBOUND",

@@ -112,6 +112,7 @@ export default function ContactPage() {
                 <option value="" disabled>
                   Select one
                 </option>
+                <option value="Consulting">Consulting</option>
                 <option value="Speaking">Speaking</option>
                 <option value="Podcast Guest">Podcast Guest</option>
                 <option value="Collaboration">Collaboration</option>
@@ -173,7 +174,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
                   >
                     <Icon className="w-5 h-5" />
                   </a>

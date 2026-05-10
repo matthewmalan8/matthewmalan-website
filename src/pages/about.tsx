@@ -59,7 +59,7 @@ export default function AboutPage() {
             </div>
 
             {/* RIGHT: photo + quick facts */}
-            <aside className="lg:col-span-5 space-y-8">
+            <aside className="lg:col-span-5 space-y-12">
               <picture>
                 <source
                   media="(max-width: 480px)"
