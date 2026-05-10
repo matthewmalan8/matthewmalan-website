@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3400",
+    "prebuild": "node scripts/update-cms-default.mjs",
     "build": "next build",
     "start": "next start -p 3400",
     "lint": "next lint",

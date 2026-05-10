@@ -34,6 +34,7 @@ collections:
           widget: "number",
           value_type: "int",
           required: false,
+          default: 1, # AUTO-EPISODE-NUMBER
         }
       - {
           label: "Featured (pin to top of archive)",
