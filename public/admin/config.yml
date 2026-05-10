@@ -1,0 +1,148 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/episodes"
+public_folder: "/images/episodes"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  - name: "episodes"
+    label: "Episodes"
+    label_singular: "Episode"
+    folder: "content/episodes"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}"
+    sortable_fields: ["date", "title", "episodeNumber"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - {
+          label: "Episode Number",
+          name: "episodeNumber",
+          widget: "number",
+          value_type: "int",
+          required: false,
+        }
+      - {
+          label: "Featured (pin to top of archive)",
+          name: "featured",
+          widget: "boolean",
+          default: false,
+          required: false,
+        }
+      - { label: "Featured Image", name: "image", widget: "image" }
+      - { label: "Image Alt Text", name: "imageAlt", widget: "string" }
+      - {
+          label: "Excerpt",
+          name: "excerpt",
+          widget: "text",
+          hint: "One-sentence summary shown on the archive listing and meta description.",
+        }
+      - {
+          label: "Pull Quote",
+          name: "quote",
+          widget: "text",
+          required: false,
+          hint: "Highlighted at the top of the post.",
+        }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        hint: "Drives the filter chips on the archive page."
+        options:
+          - "Leadership"
+          - "Communication"
+          - "Creativity"
+          - "Storytelling"
+          - "Public Speaking"
+          - "Founders"
+          - "Career"
+      - {
+          label: "Tags",
+          name: "tags",
+          widget: "list",
+          required: false,
+          hint: "Used to suggest related episodes.",
+        }
+      - { label: "Guest Name", name: "guest", widget: "string", required: false }
+      - {
+          label: "Guest Bio",
+          name: "guestBio",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Guest Image",
+          name: "guestImage",
+          widget: "image",
+          required: false,
+        }
+      - label: "Guest Socials"
+        name: "guestSocials"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - {
+              label: "Twitter / X URL",
+              name: "twitter",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "LinkedIn URL",
+              name: "linkedin",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Website URL",
+              name: "website",
+              widget: "string",
+              required: false,
+            }
+      - {
+          label: "YouTube URL",
+          name: "youtube",
+          widget: "string",
+          required: false,
+          hint: "Full YouTube URL — embed renders automatically.",
+        }
+      - {
+          label: "Spotify URL",
+          name: "spotify",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Apple Podcasts URL",
+          name: "applePodcasts",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Key Takeaways",
+          name: "keyTakeaways",
+          widget: "list",
+          required: false,
+          hint: "Bullet-pointed below the show notes.",
+        }
+      - {
+          label: "Show Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Timestamps, links, summary — markdown supported.",
+        }

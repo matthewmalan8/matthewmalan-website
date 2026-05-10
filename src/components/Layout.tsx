@@ -10,8 +10,16 @@ type LayoutProps = PageSeo & {
   jsonLd?: object;
 };
 
-export default function Layout({ children, title, description, path, jsonLd }: LayoutProps) {
-  const seo = buildSeo({ title, description, path });
+export default function Layout({
+  children,
+  title,
+  description,
+  path,
+  ogImage,
+  ogType,
+  jsonLd,
+}: LayoutProps) {
+  const seo = buildSeo({ title, description, path, ogImage, ogType });
 
   return (
     <>

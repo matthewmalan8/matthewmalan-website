@@ -9,8 +9,10 @@ const links = [
 
 export default function Navigation() {
   const { pathname } = useRouter();
-  const isActive = (href: string) =>
-    pathname === href.replace(/\/$/, "") || pathname === href;
+  const isActive = (href: string) => {
+    const normalized = href.replace(/\/$/, "");
+    return pathname === normalized || pathname.startsWith(`${normalized}/`);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-off-white)] border-b border-[var(--color-warm-gray)]">
