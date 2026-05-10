@@ -253,9 +253,9 @@ export default function EpisodePage({ episode, related }: Props) {
               <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
                 About the guest
               </h2>
-              <div className="mt-6 flex gap-6 items-start">
+              <div className="mt-6 flex flex-col sm:flex-row gap-5 sm:gap-6 items-center sm:items-start">
                 {episode.guestImage && (
-                  <div className="flex-shrink-0 w-24 h-24 rounded-full overflow-hidden bg-[var(--color-warm-gray)]">
+                  <div className="flex-shrink-0 w-32 h-32 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-[var(--color-warm-gray)]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={episode.guestImage}
@@ -264,7 +264,7 @@ export default function EpisodePage({ episode, related }: Props) {
                     />
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 w-full">
                   <p className="font-[family-name:var(--font-display)] text-2xl">
                     {episode.guest}
                   </p>
