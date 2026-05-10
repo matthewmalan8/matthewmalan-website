@@ -31,12 +31,12 @@ function asStringArray(value: unknown): string[] {
 function asSocials(value: unknown): GuestSocials {
   if (!value || typeof value !== "object") return {};
   const v = value as Record<string, unknown>;
-  return {
-    twitter: v.twitter ? String(v.twitter) : undefined,
-    linkedin: v.linkedin ? String(v.linkedin) : undefined,
-    instagram: v.instagram ? String(v.instagram) : undefined,
-    website: v.website ? String(v.website) : undefined,
-  };
+  const result: GuestSocials = {};
+  if (v.twitter) result.twitter = String(v.twitter);
+  if (v.linkedin) result.linkedin = String(v.linkedin);
+  if (v.instagram) result.instagram = String(v.instagram);
+  if (v.website) result.website = String(v.website);
+  return result;
 }
 
 function asBook(value: unknown): GuestBook | null {
