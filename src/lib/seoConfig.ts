@@ -4,7 +4,7 @@ export const siteConfig = {
   title: "Matthew Malan — Public Speaker & Podcast Host",
   description:
     "Matthew Malan is a public speaker and podcast host exploring leadership, creativity, and the conversations that shape how we work.",
-  twitter: "@matthewmalan",
+  twitter: "@matthewmalan8",
   ogImage: "/images/og-image.webp",
 };
 

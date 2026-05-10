@@ -1,4 +1,33 @@
 import Link from "next/link";
+import {
+  InstagramIcon,
+  LinkedInIcon,
+  TikTokIcon,
+  XIcon,
+} from "./Icons";
+
+const socials = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/matthewmalan8/",
+    Icon: InstagramIcon,
+  },
+  {
+    label: "Twitter / X",
+    href: "https://x.com/matthewmalan8",
+    Icon: XIcon,
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/matthew-malan8/",
+    Icon: LinkedInIcon,
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@matthewmalan7",
+    Icon: TikTokIcon,
+  },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -12,8 +41,8 @@ export default function Footer() {
               Matthew Malan
             </p>
             <p className="mt-3 text-[var(--color-warm-gray)] max-w-sm">
-              Public speaker and podcast host. Conversations about leadership,
-              creativity, and the work that matters.
+              Public speaker and host of the Stay Hungry Podcast. Based in
+              Mesa, Arizona.
             </p>
           </div>
 
@@ -33,10 +62,26 @@ export default function Footer() {
             <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-yellow)]">
               Connect
             </p>
-            <ul className="mt-4 space-y-2 text-sm">
-              <li><a href="mailto:hello@matthewmalan.com" className="hover:text-[var(--color-yellow)] transition-colors">hello@matthewmalan.com</a></li>
-              <li><a href="https://twitter.com/matthewmalan" className="hover:text-[var(--color-yellow)] transition-colors">Twitter</a></li>
-              <li><a href="https://linkedin.com/in/matthewmalan" className="hover:text-[var(--color-yellow)] transition-colors">LinkedIn</a></li>
+            <a
+              href="mailto:matthewsmalan@gmail.com"
+              className="mt-4 inline-block text-sm hover:text-[var(--color-yellow)] transition-colors"
+            >
+              matthewsmalan@gmail.com
+            </a>
+            <ul className="mt-4 flex flex-wrap gap-3 items-center">
+              {socials.map(({ label, href, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--color-off-white)] border border-[var(--color-warm-gray)]/40 hover:scale-110 transition-transform"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

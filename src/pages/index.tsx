@@ -11,8 +11,10 @@ export default function Home() {
     jobTitle: "Public Speaker & Podcast Host",
     description: siteConfig.description,
     sameAs: [
-      "https://twitter.com/matthewmalan",
-      "https://linkedin.com/in/matthewmalan",
+      "https://x.com/matthewmalan8",
+      "https://www.linkedin.com/in/matthew-malan8/",
+      "https://www.instagram.com/matthewmalan8/",
+      "https://www.tiktok.com/@matthewmalan7",
     ],
   };
 
@@ -37,13 +39,14 @@ export default function Home() {
             </p>
 
             <p className="mt-6 text-lg sm:text-xl max-w-xl text-[var(--color-warm-gray)]">
-              [Your one-line positioning statement goes here]
+              I help business leaders unlock their voice, build resilient
+              teams, and scale companies past six figures.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href="/podcast/"
-                className="inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-lime)] transition-colors"
+                className="inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[#FFF04D] transition-colors"
               >
                 Listen to the podcast
               </Link>
@@ -80,16 +83,18 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6 lg:px-10 py-28 lg:py-40">
           <h2 className="text-5xl sm:text-7xl tracking-tight">
             <span className="inline-block relative">
-              Hi, I&apos;m Matt.
+              Hi, I&apos;m Matthew.
               <span
                 aria-hidden="true"
-                className="absolute left-0 right-0 -bottom-1 lg:-bottom-2 h-2 lg:h-3 bg-[var(--color-lime)]"
+                className="absolute left-0 right-0 -bottom-1 lg:-bottom-2 h-2 lg:h-3 bg-[var(--color-black)]"
               />
             </span>
           </h2>
 
           <p className="mt-12 text-xl lg:text-2xl text-[var(--color-black)]/80 leading-relaxed max-w-3xl">
-            [2-3 sentences about what you do and who you help]
+            I&apos;m a public speaker and host of the Stay Hungry Podcast.
+            I share stories of operators, founders, and everyday people doing
+            extraordinary things — and the lessons behind their success.
           </p>
 
           <Link
@@ -118,7 +123,9 @@ export default function Home() {
             <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
               <h3 className="text-3xl lg:text-4xl">Speaking</h3>
               <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
-                [One sentence about your talks and topics]
+                Keynotes on resilience, communication, and scaling
+                e-commerce businesses — delivered to teams, conferences, and
+                executive offsites worldwide.
               </p>
               <Link
                 href="/speaking/"
@@ -129,9 +136,10 @@ export default function Home() {
             </article>
 
             <article className="bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)] rounded-2xl p-10 lg:p-12">
-              <h3 className="text-3xl lg:text-4xl">Podcast</h3>
+              <h3 className="text-3xl lg:text-4xl">Stay Hungry Podcast</h3>
               <p className="mt-6 text-lg text-[var(--color-black)]/70 leading-relaxed">
-                [One sentence about your podcast]
+                Honest conversations with entrepreneurs, doctors, community
+                leaders, and outliers. New episode every Sunday.
               </p>
               <Link
                 href="/podcast/"

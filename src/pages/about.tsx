@@ -5,30 +5,12 @@ export default function AboutPage() {
   return (
     <Layout
       title="About"
-      description="[Placeholder — write 1-2 sentences about Matthew once content is final]"
+      description="Matthew Malan is a public speaker and host of the Stay Hungry Podcast, based in Mesa, Arizona."
       path="/about/"
     >
-      {/* FULL-WIDTH PHOTO */}
+      {/* TITLE + BIO + PHOTO */}
       <section className="bg-[var(--color-off-white)]">
-        <picture>
-          <source
-            media="(max-width: 480px)"
-            srcSet="/images/matt-about-mobile.webp"
-            type="image/webp"
-          />
-          <img
-            src="/images/matt-about.webp"
-            alt="Matthew Malan, photographed in a relaxed studio portrait."
-            className="w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] object-cover"
-            loading="eager"
-            decoding="async"
-          />
-        </picture>
-      </section>
-
-      {/* TITLE + TWO COLUMN */}
-      <section className="bg-[var(--color-off-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-24 pb-12 lg:pt-32">
           <h1 className="font-[family-name:var(--font-display)] text-5xl sm:text-7xl tracking-tight">
             <span className="inline-block relative">
               About Matthew
@@ -41,31 +23,55 @@ export default function AboutPage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             {/* LEFT: paragraphs */}
             <div className="lg:col-span-7 space-y-6 text-lg text-[var(--color-black)]/80 leading-relaxed">
               <p>
-                [First paragraph placeholder — open with the headline version of
-                who you are and what you do. Two or three sentences max.]
+                I&apos;m Matthew Malan — a public speaker and the host of the
+                Stay Hungry Podcast. I work with business leaders and
+                e-commerce operators to help them build resilient teams, find
+                their voice, and scale their companies past six figures.
               </p>
               <p>
-                [Second paragraph placeholder — go a layer deeper. Talk about
-                the kinds of audiences you work with and what you tend to cover.]
+                On stage and behind the mic, I&apos;m drawn to the same kinds
+                of conversations: the ones that strip away the polish and get
+                to what actually works. Most of my talks and episodes pull from
+                the lessons of entrepreneurs, doctors, community leaders, and
+                everyday people who&apos;ve done extraordinary things.
               </p>
               <p>
-                [Third paragraph placeholder — your background and how you got
-                here. The bits that explain the angle you bring.]
+                I grew up with a debilitating stutter. Speaking in front of a
+                classroom — let alone an arena — felt physically impossible
+                for years. The story of how I got from there to here is the
+                spine of one of my most-requested keynotes, and it&apos;s also
+                the reason I care so much about helping other people find
+                their voice in business and in life.
               </p>
               <p>
-                [Fourth paragraph placeholder — optional. A bit of personality:
-                what you're into outside of work, or what you're currently
-                obsessed with.]
+                When I&apos;m not on a stage or recording an episode,
+                you&apos;ll find me in Mesa, Arizona — usually with a coffee,
+                a book, and an unreasonable number of tabs open.
               </p>
             </div>
 
-            {/* RIGHT: quick facts card */}
-            <aside className="lg:col-span-5">
-              <div className="border-2 border-[var(--color-warm-gray)] rounded-2xl p-8 lg:sticky lg:top-24">
+            {/* RIGHT: photo + quick facts */}
+            <aside className="lg:col-span-5 space-y-8">
+              <picture>
+                <source
+                  media="(max-width: 480px)"
+                  srcSet="/images/matt-about-mobile.webp"
+                  type="image/webp"
+                />
+                <img
+                  src="/images/matt-about.webp"
+                  alt="Matthew Malan, photographed in a relaxed studio portrait."
+                  className="w-full h-auto rounded-2xl object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </picture>
+
+              <div className="border-2 border-[var(--color-warm-gray)] rounded-2xl p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
                   Quick facts
                 </p>
@@ -74,21 +80,21 @@ export default function AboutPage() {
                     <dt className="text-sm font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
                       Based in
                     </dt>
-                    <dd className="mt-1 text-lg">[City, Country]</dd>
+                    <dd className="mt-1 text-lg">Mesa, Arizona</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
                       Speaks about
                     </dt>
                     <dd className="mt-1 text-lg">
-                      [Your 2-3 core topics, comma separated]
+                      Leadership, resilience, communication, scaling e-commerce
                     </dd>
                   </div>
                   <div>
                     <dt className="text-sm font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
                       Podcast
                     </dt>
-                    <dd className="mt-1 text-lg">[Podcast name]</dd>
+                    <dd className="mt-1 text-lg">Stay Hungry Podcast</dd>
                   </div>
                 </dl>
               </div>
@@ -102,8 +108,8 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
           <blockquote className="border-l-4 border-[var(--color-yellow)] pl-8 py-2">
             <p className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl leading-snug tracking-tight">
-              [A short, sharp pull quote that captures your point of view.
-              One or two sentences.]
+              The voice you&apos;re afraid to use is the one your business is
+              waiting for.
             </p>
           </blockquote>
         </div>
@@ -121,7 +127,7 @@ export default function AboutPage() {
             </p>
             <Link
               href="/contact/"
-              className="mt-8 inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-lime)] transition-colors"
+              className="mt-8 inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-7 py-4 text-base font-semibold rounded-full hover:bg-[#FFF04D] transition-colors"
             >
               Get in touch
             </Link>

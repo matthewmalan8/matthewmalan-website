@@ -1,9 +1,10 @@
 import Layout from "@/components/Layout";
 
 const socials = [
-  { label: "LinkedIn", href: "https://linkedin.com/in/matthewmalan" },
-  { label: "Twitter / X", href: "https://x.com/matthewmalan" },
-  { label: "Instagram", href: "https://instagram.com/matthewmalan" },
+  { label: "Instagram", href: "https://www.instagram.com/matthewmalan8/" },
+  { label: "Twitter / X", href: "https://x.com/matthewmalan8" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/matthew-malan8/" },
+  { label: "TikTok", href: "https://www.tiktok.com/@matthewmalan7" },
 ];
 
 export default function ContactPage() {
@@ -132,10 +133,10 @@ export default function ContactPage() {
                 Email
               </p>
               <a
-                href="mailto:hello@matthewmalan.com"
+                href="mailto:matthewsmalan@gmail.com"
                 className="mt-3 inline-block font-[family-name:var(--font-display)] text-2xl break-all hover:text-[var(--color-yellow)] transition-colors"
               >
-                hello@matthewmalan.com
+                matthewsmalan@gmail.com
               </a>
             </div>
 

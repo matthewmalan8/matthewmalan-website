@@ -3,6 +3,11 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import {
+  ApplePodcastsIcon,
+  SpotifyIcon,
+  YouTubeIcon,
+} from "@/components/Icons";
 import { getAllEpisodes } from "@/lib/episodes";
 import {
   getFeaturedEpisode,
@@ -77,16 +82,16 @@ export default function PodcastPage({
 
   return (
     <Layout
-      title="The Podcast"
-      description="Long-form interviews with operators, artists, and outliers — hosted by Matthew Malan."
+      title="Stay Hungry Podcast"
+      description="Stay Hungry — conversations with entrepreneurs, doctors, community leaders, and everyday people who've done extraordinary things. Hosted by Matthew Malan."
       path="/podcast/"
     >
       {/* Hero */}
       <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-24 pb-20 lg:pt-32 lg:pb-28">
-          <h1 className="text-6xl sm:text-8xl lg:text-[10rem] leading-[0.9] tracking-tight">
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl leading-[0.9] tracking-tight">
             <span className="inline-block relative">
-              The Podcast
+              Stay Hungry Podcast
               <span
                 aria-hidden="true"
                 className="absolute left-0 right-0 -bottom-2 lg:-bottom-3 h-3 lg:h-4 bg-[var(--color-yellow)]"
@@ -95,30 +100,55 @@ export default function PodcastPage({
           </h1>
 
           <p className="mt-12 text-xl lg:text-2xl max-w-2xl text-[var(--color-warm-gray)]">
-            A weekly show where operators, artists, and outliers slow down
-            enough to actually say what they mean. New episodes every Tuesday.
+            Conversations with entrepreneurs, doctors, community leaders, and
+            everyday people who&apos;ve done extraordinary things. New episode
+            every Sunday.
           </p>
 
           <div className="mt-12">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
               Listen on
             </p>
-            <ul className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl">
               {[
-                { label: "Apple Podcasts", href: "https://podcasts.apple.com/" },
-                { label: "Spotify", href: "https://open.spotify.com/" },
-                { label: "YouTube", href: "https://youtube.com/" },
-              ].map((p) => (
-                <li key={p.label}>
-                  <a
-                    href={p.href}
-                    className="inline-flex items-center border-2 border-[var(--color-off-white)] text-[var(--color-off-white)] px-5 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] hover:border-[var(--color-yellow)] transition-colors"
-                  >
-                    {p.label}
-                  </a>
-                </li>
+                {
+                  href: "https://podcasts.apple.com/",
+                  label: "Apple Podcasts",
+                  verb: "Listen on",
+                  Icon: ApplePodcastsIcon,
+                },
+                {
+                  href: "https://open.spotify.com/show/3Faa51yJpZlSpKqPcTk2cU",
+                  label: "Spotify",
+                  verb: "Listen on",
+                  Icon: SpotifyIcon,
+                },
+                {
+                  href: "https://youtube.com/",
+                  label: "YouTube",
+                  verb: "Watch on",
+                  Icon: YouTubeIcon,
+                },
+              ].map(({ href, label, verb, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 bg-[var(--color-black)] border-2 border-[var(--color-off-white)] text-[var(--color-off-white)] rounded-2xl px-5 py-4 hover:opacity-90 transition-opacity"
+                >
+                  <Icon className="w-9 h-9 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-[var(--color-warm-gray)] leading-tight">
+                      {verb}
+                    </p>
+                    <p className="text-base sm:text-lg font-bold leading-tight truncate">
+                      {label}
+                    </p>
+                  </div>
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       </section>

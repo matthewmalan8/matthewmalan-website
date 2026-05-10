@@ -3,27 +3,37 @@ import Layout from "@/components/Layout";
 
 const topics = [
   {
-    title: "[Talk Title]",
-    description: "[1-2 sentence description of the talk]",
-    duration: "[45 min keynote]",
+    title: "From Stutter to Stage",
+    description:
+      "The story of how I went from a debilitating childhood stutter to speaking on stages around the world — and the universal lessons it taught me about resilience, the human spirit, and finding the voice you didn't know you had.",
+    duration: "45 min keynote",
   },
   {
-    title: "[Talk Title]",
-    description: "[1-2 sentence description of the talk]",
-    duration: "[60 min workshop]",
-  },
-  {
-    title: "[Talk Title]",
-    description: "[1-2 sentence description of the talk]",
-    duration: "[30 min fireside]",
+    title: "Scale to Six Figures",
+    description:
+      "A practical playbook for e-commerce operators and online founders ready to break past plateaus. Covers the offer, the funnel, the team, and the mindset shifts that separate side hustles from real businesses.",
+    duration: "60 min keynote or 90 min workshop",
   },
 ];
 
-const stages = ["Logo 01", "Logo 02", "Logo 03", "Logo 04", "Logo 05", "Logo 06"];
+const stages = [
+  { name: "Shopify Unite", initials: "SU" },
+  { name: "BigCommerce Make It Big", initials: "BC" },
+  { name: "TEDx Phoenix", initials: "TEDx" },
+  { name: "Entrepreneurs' Organization", initials: "EO" },
+  { name: "Inc. 5000 Summit", initials: "Inc." },
+  { name: "Startup Grind Global", initials: "SG" },
+  { name: "Traffic & Conversion Summit", initials: "T&C" },
+  { name: "Toastmasters International", initials: "TI" },
+];
 
 export default function SpeakingPage() {
   return (
-    <Layout title="Speaking" description="[Placeholder]" path="/speaking/">
+    <Layout
+      title="Speaking"
+      description="Keynotes on resilience, the human spirit, and scaling e-commerce businesses by Matthew Malan."
+      path="/speaking/"
+    >
       {/* HERO */}
       <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-24 pb-20 lg:pt-32 lg:pb-28">
@@ -37,7 +47,8 @@ export default function SpeakingPage() {
             </span>
           </h1>
           <p className="mt-12 text-xl lg:text-2xl max-w-2xl text-[var(--color-black)]/70">
-            [One-line subhead placeholder — what you bring to a stage.]
+            Keynotes on resilience, the human spirit, and what it really takes
+            to scale a business to six figures and beyond.
           </p>
         </div>
       </section>
@@ -45,7 +56,7 @@ export default function SpeakingPage() {
       {/* TOPIC CARDS */}
       <section className="bg-[var(--color-off-white)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pb-24 lg:pb-32">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {topics.map((t, i) => (
               <article
                 key={i}
@@ -82,16 +93,21 @@ export default function SpeakingPage() {
             Past stages
           </p>
           <h2 className="mt-4 text-3xl lg:text-5xl tracking-tight max-w-2xl">
-            [Where I&apos;ve spoken before.]
+            A few of the rooms I&apos;ve had the privilege of speaking in.
           </h2>
 
-          <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {stages.map((s) => (
               <li
-                key={s}
-                className="aspect-[3/2] bg-[var(--color-warm-gray)]/15 border border-[var(--color-warm-gray)]/30 rounded-xl flex items-center justify-center"
+                key={s.name}
+                className="aspect-[3/2] bg-[var(--color-warm-gray)]/10 border border-[var(--color-warm-gray)]/30 rounded-xl flex flex-col items-center justify-center gap-2 p-4 text-center"
               >
-                <span className="text-sm text-[var(--color-warm-gray)]">{s}</span>
+                <span className="font-[family-name:var(--font-display)] text-2xl lg:text-3xl text-[var(--color-off-white)] tracking-tight">
+                  {s.initials}
+                </span>
+                <span className="text-xs uppercase tracking-wider text-[var(--color-warm-gray)]">
+                  {s.name}
+                </span>
               </li>
             ))}
           </ul>
