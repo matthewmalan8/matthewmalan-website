@@ -2,6 +2,7 @@ export type GuestSocials = {
   twitter?: string;
   linkedin?: string;
   instagram?: string;
+  facebook?: string;
   website?: string;
 };
 

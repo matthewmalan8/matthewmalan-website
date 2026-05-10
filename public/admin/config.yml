@@ -107,6 +107,12 @@ collections:
               required: false,
             }
           - {
+              label: "Facebook URL",
+              name: "facebook",
+              widget: "string",
+              required: false,
+            }
+          - {
               label: "Website URL",
               name: "website",
               widget: "string",

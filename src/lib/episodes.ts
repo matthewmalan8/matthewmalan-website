@@ -35,6 +35,7 @@ function asSocials(value: unknown): GuestSocials {
   if (v.twitter) result.twitter = String(v.twitter);
   if (v.linkedin) result.linkedin = String(v.linkedin);
   if (v.instagram) result.instagram = String(v.instagram);
+  if (v.facebook) result.facebook = String(v.facebook);
   if (v.website) result.website = String(v.website);
   return result;
 }

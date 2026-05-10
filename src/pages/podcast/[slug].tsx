@@ -3,6 +3,7 @@ import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import {
   ApplePodcastsIcon,
+  FacebookIcon,
   GlobeIcon,
   InstagramIcon,
   LinkedInIcon,
@@ -267,6 +268,7 @@ export default function EpisodePage({ episode, related }: Props) {
                   {(episode.guestSocials.twitter ||
                     episode.guestSocials.linkedin ||
                     episode.guestSocials.instagram ||
+                    episode.guestSocials.facebook ||
                     episode.guestSocials.website) && (
                     <ul className="mt-5 flex flex-wrap gap-3 items-center">
                       {episode.guestSocials.twitter && (
@@ -305,6 +307,19 @@ export default function EpisodePage({ episode, related }: Props) {
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
                           >
                             <LinkedInIcon className="w-5 h-5" />
+                          </a>
+                        </li>
+                      )}
+                      {episode.guestSocials.facebook && (
+                        <li>
+                          <a
+                            href={episode.guestSocials.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Facebook"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-[var(--color-warm-gray)] hover:scale-110 hover:border-[var(--color-black)] transition-all"
+                          >
+                            <FacebookIcon className="w-5 h-5" />
                           </a>
                         </li>
                       )}
