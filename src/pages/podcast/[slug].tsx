@@ -3,14 +3,17 @@ import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import {
   ApplePodcastsIcon,
+  EmailIcon,
   FacebookIcon,
   GlobeIcon,
   InstagramIcon,
   LinkedInIcon,
+  SmsIcon,
   SpotifyIcon,
   XIcon,
   YouTubeIcon,
 } from "@/components/Icons";
+import { siteConfig } from "@/lib/seoConfig";
 import {
   getAllEpisodeSlugs,
   getAllEpisodes,
@@ -58,6 +61,74 @@ const PLATFORMS: Array<{
   },
   { key: "youtube", label: "YouTube", verb: "Watch on", Icon: YouTubeIcon },
 ];
+
+function ShareSection({ title, slug }: { title: string; slug: string }) {
+  const url = `${siteConfig.domain}/podcast/${slug}/`;
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  const subject = encodeURIComponent(`Stay Hungry: ${title}`);
+  const body = encodeURIComponent(`${title}\n\n${url}`);
+  const smsBody = encodeURIComponent(`${title} — ${url}`);
+
+  const targets = [
+    {
+      label: "LinkedIn",
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      Icon: LinkedInIcon,
+      external: true,
+      mobileOnly: false,
+    },
+    {
+      label: "X",
+      href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+      Icon: XIcon,
+      external: true,
+      mobileOnly: false,
+    },
+    {
+      label: "Facebook",
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      Icon: FacebookIcon,
+      external: true,
+      mobileOnly: false,
+    },
+    {
+      label: "Email",
+      href: `mailto:?subject=${subject}&body=${body}`,
+      Icon: EmailIcon,
+      external: false,
+      mobileOnly: false,
+    },
+    {
+      label: "Text",
+      href: `sms:?body=${smsBody}`,
+      Icon: SmsIcon,
+      external: false,
+      mobileOnly: true,
+    },
+  ];
+
+  return (
+    <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-16 pt-10 border-t border-[var(--color-warm-gray)]">
+      <h2 className="text-lg font-semibold">Share this episode</h2>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {targets.map(({ label, href, Icon, external, mobileOnly }) => (
+          <li key={label} className={mobileOnly ? "sm:hidden" : undefined}>
+            <a
+              href={href}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] text-sm font-medium hover:bg-[var(--color-warm-gray)]/20 transition-colors"
+            >
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export default function EpisodePage({ episode, related }: Props) {
   const youtubeEmbed = getYouTubeEmbedUrl(episode.youtube);
@@ -351,6 +422,9 @@ export default function EpisodePage({ episode, related }: Props) {
             </div>
           </section>
         )}
+
+        {/* Share */}
+        <ShareSection title={episode.title} slug={episode.slug} />
 
         {/* Related episodes */}
         {related.length > 0 && (

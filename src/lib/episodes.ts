@@ -24,6 +24,14 @@ function asString(value: unknown): string {
   return value == null ? "" : String(value);
 }
 
+function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^(https?:)?\/\//i.test(trimmed)) return trimmed;
+  if (/^(mailto:|tel:|sms:)/i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.map(String).filter(Boolean) : [];
 }
@@ -41,11 +49,11 @@ function asSocials(value: unknown): GuestSocials {
   if (!value || typeof value !== "object") return {};
   const v = value as Record<string, unknown>;
   const result: GuestSocials = {};
-  if (v.twitter) result.twitter = String(v.twitter);
-  if (v.linkedin) result.linkedin = String(v.linkedin);
-  if (v.instagram) result.instagram = String(v.instagram);
-  if (v.facebook) result.facebook = String(v.facebook);
-  if (v.website) result.website = String(v.website);
+  if (v.twitter) result.twitter = normalizeUrl(String(v.twitter));
+  if (v.linkedin) result.linkedin = normalizeUrl(String(v.linkedin));
+  if (v.instagram) result.instagram = normalizeUrl(String(v.instagram));
+  if (v.facebook) result.facebook = normalizeUrl(String(v.facebook));
+  if (v.website) result.website = normalizeUrl(String(v.website));
   return result;
 }
 
@@ -55,7 +63,7 @@ function asBook(value: unknown): GuestBook | null {
   const title = asString(v.title);
   const image = asString(v.image);
   const description = asString(v.description);
-  const link = asString(v.link);
+  const link = v.link ? normalizeUrl(String(v.link)) : "";
   if (!title && !image && !description && !link) return null;
   return { title, image, description, link };
 }
@@ -81,9 +89,9 @@ function readEpisode(slug: string): {
       guestBio: asString(fm.guestBio),
       guestImage: asString(fm.guestImage),
       guestSocials: asSocials(fm.guestSocials),
-      youtube: asString(fm.youtube),
-      spotify: asString(fm.spotify),
-      applePodcasts: asString(fm.applePodcasts),
+      youtube: normalizeUrl(asString(fm.youtube)),
+      spotify: normalizeUrl(asString(fm.spotify)),
+      applePodcasts: normalizeUrl(asString(fm.applePodcasts)),
       book: asBook(fm.book),
       featured: fm.featured === true,
     },
