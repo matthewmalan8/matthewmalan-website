@@ -111,7 +111,7 @@ export default function PodcastPage({
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-3xl">
               {[
                 {
-                  href: "https://podcasts.apple.com/",
+                  href: "https://podcasts.apple.com/us/podcast/stay-hungry/id1883421904",
                   label: "Apple Podcasts",
                   verb: "Listen on",
                   Icon: ApplePodcastsIcon,
@@ -123,7 +123,7 @@ export default function PodcastPage({
                   Icon: SpotifyIcon,
                 },
                 {
-                  href: "https://youtube.com/",
+                  href: "https://www.youtube.com/@matthewmalan",
                   label: "YouTube",
                   verb: "Watch on",
                   Icon: YouTubeIcon,
