@@ -211,6 +211,7 @@ export default function EpisodePage({ episode, related }: Props) {
       description={episode.excerpt}
       path={`/podcast/${episode.slug}/`}
       ogImage={episode.image}
+      ogImageAlt={episode.imageAlt || episode.title}
       ogType="article"
     >
       <article className="pb-24">

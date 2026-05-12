@@ -13,6 +13,7 @@ export type PageSeo = {
   description?: string;
   path?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogType?: string;
 };
 
@@ -21,11 +22,20 @@ function absoluteUrl(maybePath: string): string {
   return `${siteConfig.domain}${maybePath.startsWith("/") ? "" : "/"}${maybePath}`;
 }
 
+function imageMimeType(url: string): string {
+  if (/\.png(\?|$)/i.test(url)) return "image/png";
+  if (/\.jpe?g(\?|$)/i.test(url)) return "image/jpeg";
+  if (/\.webp(\?|$)/i.test(url)) return "image/webp";
+  if (/\.gif(\?|$)/i.test(url)) return "image/gif";
+  return "image/png";
+}
+
 export function buildSeo({
   title,
   description,
   path = "/",
   ogImage,
+  ogImageAlt,
   ogType = "website",
 }: PageSeo = {}) {
   const url = `${siteConfig.domain}${path}`;
@@ -43,7 +53,14 @@ export function buildSeo({
       title: fullTitle,
       description: desc,
       site_name: siteConfig.name,
-      images: [{ url: image }],
+      images: [
+        {
+          url: image,
+          secureUrl: image,
+          alt: ogImageAlt ?? fullTitle,
+          type: imageMimeType(image),
+        },
+      ],
     },
     twitter: {
       handle: siteConfig.twitter,

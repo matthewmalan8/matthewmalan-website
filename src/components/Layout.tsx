@@ -16,10 +16,18 @@ export default function Layout({
   description,
   path,
   ogImage,
+  ogImageAlt,
   ogType,
   jsonLd,
 }: LayoutProps) {
-  const seo = buildSeo({ title, description, path, ogImage, ogType });
+  const seo = buildSeo({
+    title,
+    description,
+    path,
+    ogImage,
+    ogImageAlt,
+    ogType,
+  });
 
   return (
     <>
