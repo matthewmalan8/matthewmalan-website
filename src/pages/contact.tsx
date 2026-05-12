@@ -139,7 +139,7 @@ export default function ContactPage() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-8 py-4 text-base font-semibold rounded-full hover:bg-[var(--color-lime)] transition-colors"
+                className="inline-flex items-center bg-[var(--color-yellow)] text-[var(--color-black)] px-8 py-4 text-base font-semibold rounded-full cursor-pointer hover:bg-[#FFF04D] transition-colors"
               >
                 Send message
               </button>

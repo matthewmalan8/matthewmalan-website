@@ -101,7 +101,7 @@ export default function Home() {
 
           <Link
             href="/about/"
-            className="mt-10 inline-flex items-center text-lg font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+            className="mt-10 inline-flex items-center text-lg font-semibold text-[var(--color-black)] hover:text-[#4A4A4A] transition-colors"
           >
             More about me →
           </Link>
@@ -131,7 +131,7 @@ export default function Home() {
               </p>
               <Link
                 href="/contact/"
-                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[#4A4A4A] transition-colors"
               >
                 Work with me →
               </Link>
@@ -146,7 +146,7 @@ export default function Home() {
               </p>
               <Link
                 href="/speaking/"
-                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[#4A4A4A] transition-colors"
               >
                 See speaking topics →
               </Link>
@@ -160,7 +160,7 @@ export default function Home() {
               </p>
               <Link
                 href="/podcast/"
-                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[var(--color-yellow)] transition-colors"
+                className="mt-8 inline-flex items-center text-base font-semibold text-[var(--color-black)] hover:text-[#4A4A4A] transition-colors"
               >
                 Listen now →
               </Link>
