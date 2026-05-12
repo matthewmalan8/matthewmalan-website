@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { useState, type MouseEvent } from "react";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import {
   ApplePodcastsIcon,
+  CheckIcon,
   EmailIcon,
   FacebookIcon,
   GlobeIcon,
   InstagramIcon,
   LinkedInIcon,
+  LinkIcon,
   SmsIcon,
   SpotifyIcon,
   XIcon,
@@ -70,41 +73,65 @@ function ShareSection({ title, slug }: { title: string; slug: string }) {
   const body = encodeURIComponent(`${title}\n\n${url}`);
   const smsBody = encodeURIComponent(`${title} — ${url}`);
 
-  const targets = [
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for browsers without Clipboard API or denied permission
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // Last resort — let the user manually copy
+        window.prompt("Copy this link:", url);
+      }
+      document.body.removeChild(textarea);
+    }
+  };
+
+  const openPopup =
+    (popupUrl: string) =>
+    (e: MouseEvent<HTMLAnchorElement>) => {
+      const left = Math.round(window.screenX + (window.outerWidth - 600) / 2);
+      const top = Math.round(window.screenY + (window.outerHeight - 600) / 2);
+      const popup = window.open(
+        popupUrl,
+        "share-popup",
+        `width=600,height=600,left=${left},top=${top},scrollbars=yes,resizable=yes,noopener=no`
+      );
+      // If the popup was blocked, let the default link behavior take over.
+      if (popup) {
+        e.preventDefault();
+        popup.focus();
+      }
+    };
+
+  const popupTargets = [
     {
       label: "LinkedIn",
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       Icon: LinkedInIcon,
-      external: true,
-      mobileOnly: false,
     },
     {
       label: "X",
-      href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+      href: `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
       Icon: XIcon,
-      external: true,
-      mobileOnly: false,
     },
     {
       label: "Facebook",
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
       Icon: FacebookIcon,
-      external: true,
-      mobileOnly: false,
-    },
-    {
-      label: "Email",
-      href: `mailto:?subject=${subject}&body=${body}`,
-      Icon: EmailIcon,
-      external: false,
-      mobileOnly: false,
-    },
-    {
-      label: "Text",
-      href: `sms:?body=${smsBody}`,
-      Icon: SmsIcon,
-      external: false,
-      mobileOnly: true,
     },
   ];
 
@@ -112,12 +139,35 @@ function ShareSection({ title, slug }: { title: string; slug: string }) {
     <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-16 pt-10 border-t border-[var(--color-warm-gray)]">
       <h2 className="text-lg font-semibold">Share this episode</h2>
       <ul className="mt-4 flex flex-wrap gap-2">
-        {targets.map(({ label, href, Icon, external, mobileOnly }) => (
-          <li key={label} className={mobileOnly ? "sm:hidden" : undefined}>
+        {/* Copy Link — universal, always works */}
+        <li>
+          <button
+            type="button"
+            onClick={copyLink}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+              copied
+                ? "border-[var(--color-black)] bg-[var(--color-yellow)] text-[var(--color-black)]"
+                : "border-[var(--color-warm-gray)] text-[var(--color-black)] hover:bg-[var(--color-warm-gray)]/20"
+            }`}
+            aria-live="polite"
+          >
+            {copied ? (
+              <CheckIcon className="w-4 h-4" />
+            ) : (
+              <LinkIcon className="w-4 h-4" />
+            )}
+            <span>{copied ? "Copied!" : "Copy link"}</span>
+          </button>
+        </li>
+
+        {/* Social share popups */}
+        {popupTargets.map(({ label, href, Icon }) => (
+          <li key={label}>
             <a
               href={href}
-              target={external ? "_blank" : undefined}
-              rel={external ? "noopener noreferrer" : undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={openPopup(href)}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] text-sm font-medium hover:bg-[var(--color-warm-gray)]/20 transition-colors"
             >
               <Icon className="w-4 h-4" />
@@ -125,6 +175,28 @@ function ShareSection({ title, slug }: { title: string; slug: string }) {
             </a>
           </li>
         ))}
+
+        {/* Email */}
+        <li>
+          <a
+            href={`mailto:?subject=${subject}&body=${body}`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] text-sm font-medium hover:bg-[var(--color-warm-gray)]/20 transition-colors"
+          >
+            <EmailIcon className="w-4 h-4" />
+            <span>Email</span>
+          </a>
+        </li>
+
+        {/* SMS — mobile only */}
+        <li className="sm:hidden">
+          <a
+            href={`sms:?body=${smsBody}`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] text-sm font-medium hover:bg-[var(--color-warm-gray)]/20 transition-colors"
+          >
+            <SmsIcon className="w-4 h-4" />
+            <span>Text</span>
+          </a>
+        </li>
       </ul>
     </section>
   );
