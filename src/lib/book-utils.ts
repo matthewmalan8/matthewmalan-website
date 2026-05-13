@@ -6,6 +6,7 @@ export type BookFrontmatter = {
   rating: number;
   readOn: string;
   amazonLink: string;
+  tags: string[];
 };
 
 export type BookMeta = BookFrontmatter & { slug: string };
@@ -64,4 +65,23 @@ export function formatReadOn(date: string): string {
 export function ratingStars(rating: number): string {
   const r = Math.max(0, Math.min(5, Math.round(rating)));
   return "★".repeat(r) + "☆".repeat(5 - r);
+}
+
+export function getRelatedBooks(
+  current: BookMeta,
+  all: BookMeta[],
+  limit = 3
+): BookMeta[] {
+  const others = all.filter((b) => b.slug !== current.slug);
+  const currentTags = new Set(current.tags);
+  const scored = others
+    .map((b) => ({
+      book: b,
+      score: b.tags.filter((t) => currentTags.has(t)).length,
+    }))
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return new Date(b.book.readOn).getTime() - new Date(a.book.readOn).getTime();
+    });
+  return scored.slice(0, limit).map((s) => s.book);
 }

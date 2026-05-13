@@ -1,10 +1,16 @@
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
-import { getAllBookSlugs, getBookBySlug } from "@/lib/books";
-import { formatReadOn, ratingStars, type Book } from "@/lib/book-utils";
+import { getAllBooks, getAllBookSlugs, getBookBySlug } from "@/lib/books";
+import {
+  formatReadOn,
+  getRelatedBooks,
+  ratingStars,
+  type Book,
+  type BookMeta,
+} from "@/lib/book-utils";
 
-type Props = { book: Book };
+type Props = { book: Book; related: BookMeta[] };
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
@@ -16,10 +22,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const slug = params?.slug as string;
   const book = await getBookBySlug(slug);
-  return { props: { book } };
+  const related = getRelatedBooks(book, getAllBooks(), 3);
+  return { props: { book, related } };
 };
 
-export default function BookReviewPage({ book }: Props) {
+export default function BookReviewPage({ book, related }: Props) {
   return (
     <Layout
       title={book.title}
@@ -114,18 +121,64 @@ export default function BookReviewPage({ book }: Props) {
                 </div>
               )}
 
-              {/* Back link */}
-              <div className="mt-12">
-                <Link
-                  href="/books/"
-                  className="inline-flex items-center text-sm font-semibold hover:text-[#4A4A4A] transition-colors"
-                >
-                  ← Back to all book reviews
-                </Link>
               </div>
-            </div>
           </div>
         </section>
+
+        {/* Related books */}
+        {related.length > 0 && (
+          <section className="max-w-6xl mx-auto px-6 lg:px-10 mt-20 pt-12 border-t border-[var(--color-warm-gray)]">
+            <h2 className="text-2xl sm:text-3xl tracking-tight">
+              You may also like
+            </h2>
+            <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
+              {related.map((b) => (
+                <li key={b.slug}>
+                  <Link href={`/books/${b.slug}/`} className="group block">
+                    {b.coverImage && (
+                      <div className="aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-warm-gray)] shadow-md">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={b.coverImage}
+                          alt={b.coverImageAlt || b.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <h3 className="mt-4 text-base sm:text-lg tracking-tight group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-2">
+                      {b.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-[var(--color-black)]/70">
+                      by {b.author}
+                    </p>
+                    <p
+                      aria-label={`Rated ${b.rating} out of 5`}
+                      className="mt-1 text-sm"
+                    >
+                      <span className="text-[var(--color-yellow)]">
+                        {ratingStars(b.rating).slice(0, b.rating)}
+                      </span>
+                      <span className="text-[var(--color-warm-gray)]">
+                        {ratingStars(b.rating).slice(b.rating)}
+                      </span>
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Back link */}
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 mt-16">
+          <Link
+            href="/books/"
+            className="inline-flex items-center text-sm font-semibold hover:text-[#4A4A4A] transition-colors"
+          >
+            ← Back to all book reviews
+          </Link>
+        </div>
       </article>
     </Layout>
   );

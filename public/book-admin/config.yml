@@ -61,6 +61,45 @@ collections:
           required: false,
           hint: "Full Amazon URL — the 'Get the book' button at the bottom of the review.",
         }
+      - label: "Tags"
+        name: "tags"
+        widget: "select"
+        multiple: true
+        required: false
+        hint: "Used to recommend similar books. Same vocabulary as podcast topics."
+        options:
+          - "Leadership"
+          - "Mindset"
+          - "Decision-Making"
+          - "Strategy"
+          - "Team Building"
+          - "Culture"
+          - "Hiring & Talent"
+          - "Communication"
+          - "Public Speaking"
+          - "Storytelling"
+          - "Negotiation"
+          - "Entrepreneurship"
+          - "Sales"
+          - "Marketing"
+          - "Money"
+          - "Investing"
+          - "Supply Chain"
+          - "Productivity"
+          - "Habits"
+          - "Focus & Attention"
+          - "Time Management"
+          - "Resilience"
+          - "Wellness"
+          - "Career Growth"
+          - "Creativity"
+          - "Authenticity"
+          - "Faith"
+          - "Biography"
+          - "Memoir"
+          - "Fiction"
+          - "History"
+          - "Philosophy"
       - {
           label: "Review",
           name: "body",

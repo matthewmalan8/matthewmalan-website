@@ -18,6 +18,10 @@ function asString(value: unknown): string {
   return value == null ? "" : String(value);
 }
 
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.map(String).filter(Boolean) : [];
+}
+
 function normalizeUrl(url: string): string {
   const trimmed = url.trim();
   if (!trimmed) return "";
@@ -43,6 +47,7 @@ function readBook(slug: string): {
       rating: Number.isFinite(ratingRaw) ? Math.max(0, Math.min(5, ratingRaw)) : 0,
       readOn: normalizeDate(fm.readOn),
       amazonLink: normalizeUrl(asString(fm.amazonLink)),
+      tags: asStringArray(fm.tags),
     },
     content,
   };
