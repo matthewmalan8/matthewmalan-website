@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
-import { GridIcon, ListIcon } from "@/components/Icons";
+import { ChevronDownIcon, GridIcon, ListIcon } from "@/components/Icons";
 import { getAllBooks } from "@/lib/books";
 import {
   BOOK_SORTS,
@@ -83,10 +83,6 @@ export default function BooksPage({ books }: Props) {
           Matthew&apos;s{" "}
           <span className="bg-[var(--color-yellow)] px-2">Book Reviews</span>
         </h1>
-        <p className="mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-[var(--color-black)]/70 leading-relaxed">
-          What I&apos;m reading, what I&apos;m learning, and what&apos;s worth
-          your time.
-        </p>
       </section>
 
       {/* Active-tag indicator */}
@@ -126,18 +122,21 @@ export default function BooksPage({ books }: Props) {
           <label htmlFor="book-sort" className="sr-only">
             Sort books
           </label>
-          <select
-            id="book-sort"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as BookSort)}
-            className="px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none cursor-pointer"
-          >
-            {BOOK_SORTS.map((s) => (
-              <option key={s.value} value={s.value}>
-                Sort: {s.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="book-sort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as BookSort)}
+              className="appearance-none w-full pl-5 pr-11 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none cursor-pointer"
+            >
+              {BOOK_SORTS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  Sort: {s.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-black)] pointer-events-none" />
+          </div>
 
           <div
             role="group"
