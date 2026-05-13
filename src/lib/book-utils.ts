@@ -1,5 +1,9 @@
-export type ReadingMeta = { date: string };
-export type Reading = { date: string; notesHtml: string };
+export type ReadingMeta = { date: string; videoUrl: string };
+export type Reading = {
+  date: string;
+  notesHtml: string;
+  videoUrl: string;
+};
 
 export type BookFrontmatter = {
   title: string;

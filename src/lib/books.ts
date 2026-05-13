@@ -36,7 +36,7 @@ function normalizeUrl(url: string): string {
   return `https://${trimmed}`;
 }
 
-type RawReading = { date: string; notes: string };
+type RawReading = { date: string; notes: string; videoUrl: string };
 
 function readBookRaw(slug: string): {
   data: BookFrontmatter;
@@ -54,6 +54,7 @@ function readBookRaw(slug: string): {
       .map((r) => ({
         date: normalizeDate(r.date),
         notes: asString(r.notes),
+        videoUrl: normalizeUrl(asString(r.videoUrl)),
       }));
   } else if (fm.readOn || content.trim()) {
     // Legacy: single reading derived from readOn frontmatter + body markdown
@@ -61,6 +62,7 @@ function readBookRaw(slug: string): {
       {
         date: normalizeDate(fm.readOn),
         notes: content,
+        videoUrl: "",
       },
     ];
   } else {
@@ -108,6 +110,7 @@ export function getAllBooks(): BookMeta[] {
       const { data, readings } = readBookRaw(slug);
       const readingDates: ReadingMeta[] = readings.map((r) => ({
         date: r.date,
+        videoUrl: r.videoUrl,
       }));
       return {
         slug,
@@ -127,7 +130,11 @@ export async function getBookBySlug(slug: string): Promise<Book> {
   const rendered: Reading[] = await Promise.all(
     readings.map(async (r) => {
       const processed = await remark().use(html).process(r.notes || "");
-      return { date: r.date, notesHtml: processed.toString() };
+      return {
+        date: r.date,
+        notesHtml: processed.toString(),
+        videoUrl: r.videoUrl,
+      };
     })
   );
   return {

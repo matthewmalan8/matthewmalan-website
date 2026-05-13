@@ -10,6 +10,7 @@ import {
   type Book,
   type BookMeta,
 } from "@/lib/book-utils";
+import { getYouTubeEmbedUrl } from "@/lib/episode-utils";
 
 type Props = { book: Book; related: BookMeta[] };
 
@@ -142,30 +143,45 @@ export default function BookReviewPage({ book, related }: Props) {
               )}
 
               {/* Active reading */}
-              {activeReading && (
-                <div className={multipleReadings ? "mt-8" : "mt-10"}>
-                  {multipleReadings && activeReading.date && (
-                    <p className="text-sm uppercase tracking-wider text-[var(--color-black)]/60 mb-6">
-                      Reading {activeReadingIndex + 1} ·{" "}
-                      <time dateTime={activeReading.date}>
-                        {formatReadOn(activeReading.date)}
-                      </time>
-                    </p>
-                  )}
-                  {activeReading.notesHtml.trim() ? (
-                    <div
-                      className="blog-content"
-                      dangerouslySetInnerHTML={{
-                        __html: activeReading.notesHtml,
-                      }}
-                    />
-                  ) : (
-                    <p className="text-[var(--color-black)]/60 italic">
-                      No notes yet for this reading.
-                    </p>
-                  )}
-                </div>
-              )}
+              {activeReading && (() => {
+                const embedUrl = getYouTubeEmbedUrl(activeReading.videoUrl);
+                const hasNotes = activeReading.notesHtml.trim();
+                return (
+                  <div className={multipleReadings ? "mt-8" : "mt-10"}>
+                    {multipleReadings && activeReading.date && (
+                      <p className="text-sm uppercase tracking-wider text-[var(--color-black)]/60 mb-6">
+                        Reading {activeReadingIndex + 1} ·{" "}
+                        <time dateTime={activeReading.date}>
+                          {formatReadOn(activeReading.date)}
+                        </time>
+                      </p>
+                    )}
+                    {embedUrl && (
+                      <div className="mb-8 aspect-video overflow-hidden rounded-xl bg-black">
+                        <iframe
+                          src={embedUrl}
+                          title={`Video review of ${book.title}`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      </div>
+                    )}
+                    {hasNotes ? (
+                      <div
+                        className="blog-content"
+                        dangerouslySetInnerHTML={{
+                          __html: activeReading.notesHtml,
+                        }}
+                      />
+                    ) : embedUrl ? null : (
+                      <p className="text-[var(--color-black)]/60 italic">
+                        No notes yet for this reading.
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Amazon CTA */}
               {book.amazonLink && (

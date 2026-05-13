@@ -111,6 +111,13 @@ collections:
               hint: "When you finished this reading.",
             }
           - {
+              label: "YouTube Video URL",
+              name: "videoUrl",
+              widget: "string",
+              required: false,
+              hint: "Optional — if you reviewed this reading on video, paste the YouTube URL. The video appears above your notes on the book page.",
+            }
+          - {
               label: "Notes",
               name: "notes",
               widget: "markdown",
