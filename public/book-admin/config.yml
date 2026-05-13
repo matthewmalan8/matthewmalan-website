@@ -46,15 +46,6 @@ collections:
           hint: "How many stars out of 5.",
         }
       - {
-          label: "Date Read",
-          name: "readOn",
-          widget: "datetime",
-          date_format: "YYYY-MM-DD",
-          time_format: false,
-          picker_utc: false,
-          hint: "When you finished reading.",
-        }
-      - {
           label: "Amazon Link",
           name: "amazonLink",
           widget: "string",
@@ -100,10 +91,29 @@ collections:
           - "Fiction"
           - "History"
           - "Philosophy"
-      - {
-          label: "Review",
-          name: "body",
-          widget: "markdown",
-          required: false,
-          hint: "Your thoughts on the book — markdown supported.",
-        }
+      - label: "Readings"
+        name: "readings"
+        widget: "list"
+        required: false
+        collapsed: false
+        min: 1
+        hint: "Add an entry each time you read the book — date plus your notes for that reading. Multiple readings appear as tabs on the book's page."
+        label_singular: "Reading"
+        summary: "{{fields.date | date('YYYY-MM-DD')}}"
+        fields:
+          - {
+              label: "Date Read",
+              name: "date",
+              widget: "datetime",
+              date_format: "YYYY-MM-DD",
+              time_format: false,
+              picker_utc: false,
+              hint: "When you finished this reading.",
+            }
+          - {
+              label: "Notes",
+              name: "notes",
+              widget: "markdown",
+              required: false,
+              hint: "Your thoughts on this reading — markdown supported.",
+            }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
@@ -19,20 +20,37 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 export default function BooksPage({ books }: Props) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<BookSort>("recent");
 
+  const activeTag: string | null = (() => {
+    const t = router.query.tag;
+    return typeof t === "string" && t ? t : null;
+  })();
+
+  const clearTag = () => {
+    const { tag, ...rest } = router.query;
+    void tag;
+    router.replace(
+      { pathname: "/books/", query: rest },
+      undefined,
+      { shallow: true, scroll: false }
+    );
+  };
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const matched = q
-      ? books.filter(
-          (b) =>
-            b.title.toLowerCase().includes(q) ||
-            b.author.toLowerCase().includes(q)
-        )
-      : books;
+    const matched = books.filter((b) => {
+      const matchesSearch =
+        !q ||
+        b.title.toLowerCase().includes(q) ||
+        b.author.toLowerCase().includes(q);
+      const matchesTag = !activeTag || b.tags.includes(activeTag);
+      return matchesSearch && matchesTag;
+    });
     return sortBooks(matched, sort);
-  }, [books, search, sort]);
+  }, [books, search, sort, activeTag]);
 
   return (
     <Layout
@@ -54,6 +72,25 @@ export default function BooksPage({ books }: Props) {
           your time.
         </p>
       </section>
+
+      {/* Active-tag indicator */}
+      {activeTag && (
+        <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-2">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] text-sm font-semibold">
+            <span>
+              Filtering by tag: <span className="font-bold">{activeTag}</span>
+            </span>
+            <button
+              type="button"
+              onClick={clearTag}
+              aria-label="Clear tag filter"
+              className="text-[var(--color-black)]/70 hover:text-[var(--color-black)] cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Search + Sort */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-8">
@@ -99,7 +136,7 @@ export default function BooksPage({ books }: Props) {
           </p>
         ) : filtered.length === 0 ? (
           <p className="text-[var(--color-black)]/60">
-            No books match that search.
+            No books match that filter.
           </p>
         ) : (
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -134,10 +171,17 @@ export default function BooksPage({ books }: Props) {
                       {ratingStars(b.rating).slice(b.rating)}
                     </span>
                   </p>
-                  {b.readOn && (
+                  {b.lastReadOn && (
                     <p className="mt-2 text-xs uppercase tracking-wider text-[var(--color-black)]/50">
-                      Read on:{" "}
-                      <time dateTime={b.readOn}>{formatReadOn(b.readOn)}</time>
+                      {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
+                      <time dateTime={b.lastReadOn}>
+                        {formatReadOn(b.lastReadOn)}
+                      </time>
+                      {b.readings.length > 1 && (
+                        <span className="ml-2 text-[var(--color-black)]/40">
+                          ({b.readings.length}x)
+                        </span>
+                      )}
                     </p>
                   )}
                 </Link>

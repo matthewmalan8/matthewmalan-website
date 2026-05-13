@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useState } from "react";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import { getAllBooks, getAllBookSlugs, getBookBySlug } from "@/lib/books";
@@ -27,6 +28,13 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 };
 
 export default function BookReviewPage({ book, related }: Props) {
+  const multipleReadings = book.readings.length > 1;
+  // Default to the most recent reading (last in the chronologically sorted array).
+  const [activeReadingIndex, setActiveReadingIndex] = useState(
+    Math.max(0, book.readings.length - 1)
+  );
+  const activeReading = book.readings[activeReadingIndex];
+
   return (
     <Layout
       title={book.title}
@@ -64,7 +72,7 @@ export default function BookReviewPage({ book, related }: Props) {
               </div>
             )}
 
-            {/* All content — metadata + review + CTA + back link */}
+            {/* Right column: metadata + tags + readings + CTA */}
             <div
               className={book.coverImage ? "md:col-span-7" : "md:col-span-12"}
             >
@@ -88,19 +96,75 @@ export default function BookReviewPage({ book, related }: Props) {
                   {ratingStars(book.rating).slice(book.rating)}
                 </span>
               </p>
-              {book.readOn && (
+              {book.lastReadOn && (
                 <p className="mt-4 text-sm uppercase tracking-wider text-[var(--color-black)]/60">
-                  Read on:{" "}
-                  <time dateTime={book.readOn}>{formatReadOn(book.readOn)}</time>
+                  {multipleReadings ? "Last read:" : "Read on:"}{" "}
+                  <time dateTime={book.lastReadOn}>
+                    {formatReadOn(book.lastReadOn)}
+                  </time>
                 </p>
               )}
 
-              {/* Review */}
-              {book.reviewHtml.trim() && (
-                <div
-                  className="blog-content mt-10"
-                  dangerouslySetInnerHTML={{ __html: book.reviewHtml }}
-                />
+              {/* Tags */}
+              {book.tags.length > 0 && (
+                <ul className="mt-5 flex flex-wrap gap-2">
+                  {book.tags.map((t) => (
+                    <li key={t}>
+                      <Link
+                        href={`/books/?tag=${encodeURIComponent(t)}`}
+                        className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)]/70 hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] hover:border-[var(--color-yellow)] transition-colors"
+                      >
+                        {t}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Readings tabs (only if more than one) */}
+              {multipleReadings && (
+                <div className="mt-10 flex flex-wrap gap-2 border-b border-[var(--color-warm-gray)] -mb-px">
+                  {book.readings.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveReadingIndex(i)}
+                      className={`cursor-pointer px-4 py-2 text-sm font-semibold rounded-t-lg border-b-2 transition-colors ${
+                        activeReadingIndex === i
+                          ? "border-[var(--color-black)] text-[var(--color-black)]"
+                          : "border-transparent text-[var(--color-black)]/50 hover:text-[var(--color-black)]"
+                      }`}
+                    >
+                      Reading {i + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Active reading */}
+              {activeReading && (
+                <div className={multipleReadings ? "mt-8" : "mt-10"}>
+                  {multipleReadings && activeReading.date && (
+                    <p className="text-sm uppercase tracking-wider text-[var(--color-black)]/60 mb-6">
+                      Reading {activeReadingIndex + 1} ·{" "}
+                      <time dateTime={activeReading.date}>
+                        {formatReadOn(activeReading.date)}
+                      </time>
+                    </p>
+                  )}
+                  {activeReading.notesHtml.trim() ? (
+                    <div
+                      className="blog-content"
+                      dangerouslySetInnerHTML={{
+                        __html: activeReading.notesHtml,
+                      }}
+                    />
+                  ) : (
+                    <p className="text-[var(--color-black)]/60 italic">
+                      No notes yet for this reading.
+                    </p>
+                  )}
+                </div>
               )}
 
               {/* Amazon CTA */}
@@ -120,8 +184,7 @@ export default function BookReviewPage({ book, related }: Props) {
                   </p>
                 </div>
               )}
-
-              </div>
+            </div>
           </div>
         </section>
 

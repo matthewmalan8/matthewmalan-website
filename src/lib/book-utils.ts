@@ -1,17 +1,27 @@
+export type ReadingMeta = { date: string };
+export type Reading = { date: string; notesHtml: string };
+
 export type BookFrontmatter = {
   title: string;
   author: string;
   coverImage: string;
   coverImageAlt: string;
   rating: number;
-  readOn: string;
   amazonLink: string;
   tags: string[];
 };
 
-export type BookMeta = BookFrontmatter & { slug: string };
+export type BookMeta = BookFrontmatter & {
+  slug: string;
+  readings: ReadingMeta[];
+  lastReadOn: string;
+};
 
-export type Book = BookMeta & { reviewHtml: string };
+export type Book = BookFrontmatter & {
+  slug: string;
+  readings: Reading[];
+  lastReadOn: string;
+};
 
 export type BookSort =
   | "recent"
@@ -33,12 +43,14 @@ export function sortBooks(books: BookMeta[], by: BookSort): BookMeta[] {
   switch (by) {
     case "recent":
       out.sort(
-        (a, b) => new Date(b.readOn).getTime() - new Date(a.readOn).getTime()
+        (a, b) =>
+          new Date(b.lastReadOn).getTime() - new Date(a.lastReadOn).getTime()
       );
       break;
     case "oldest":
       out.sort(
-        (a, b) => new Date(a.readOn).getTime() - new Date(b.readOn).getTime()
+        (a, b) =>
+          new Date(a.lastReadOn).getTime() - new Date(b.lastReadOn).getTime()
       );
       break;
     case "highest":
@@ -55,6 +67,7 @@ export function sortBooks(books: BookMeta[], by: BookSort): BookMeta[] {
 }
 
 export function formatReadOn(date: string): string {
+  if (!date) return "";
   return new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -81,7 +94,16 @@ export function getRelatedBooks(
     }))
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return new Date(b.book.readOn).getTime() - new Date(a.book.readOn).getTime();
+      return (
+        new Date(b.book.lastReadOn).getTime() -
+        new Date(a.book.lastReadOn).getTime()
+      );
     });
   return scored.slice(0, limit).map((s) => s.book);
+}
+
+export function getAllBookTags(books: BookMeta[]): string[] {
+  const set = new Set<string>();
+  for (const b of books) for (const t of b.tags) set.add(t);
+  return Array.from(set).sort();
 }
