@@ -30,35 +30,37 @@ export default function BookReviewPage({ book }: Props) {
       ogType="article"
     >
       <article className="pb-24">
-        {/* Header */}
-        <header className="bg-[var(--color-off-white)]">
-          <div className="max-w-5xl mx-auto px-6 lg:px-10 pt-12 pb-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-              <Link href="/books/" className="hover:underline">
-                Book Reviews
-              </Link>
-            </p>
-          </div>
-        </header>
+        {/* Breadcrumb */}
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 pt-12 pb-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+            <Link href="/books/" className="hover:underline">
+              Book Reviews
+            </Link>
+          </p>
+        </div>
 
-        <section className="max-w-5xl mx-auto px-6 lg:px-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-            {/* Cover */}
+        <section className="max-w-6xl mx-auto px-6 lg:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-start">
+            {/* Cover (sticky on desktop) */}
             {book.coverImage && (
               <div className="md:col-span-5">
-                <div className="aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-warm-gray)] shadow-2xl max-w-sm mx-auto md:mx-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={book.coverImage}
-                    alt={book.coverImageAlt || book.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="md:sticky md:top-24">
+                  <div className="aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-warm-gray)] shadow-2xl max-w-sm mx-auto md:mx-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={book.coverImage}
+                      alt={book.coverImageAlt || book.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Details */}
-            <div className={book.coverImage ? "md:col-span-7" : "md:col-span-12"}>
+            {/* All content — metadata + review + CTA + back link */}
+            <div
+              className={book.coverImage ? "md:col-span-7" : "md:col-span-12"}
+            >
               <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl tracking-tight">
                 {book.title}
               </h1>
@@ -85,47 +87,45 @@ export default function BookReviewPage({ book }: Props) {
                   <time dateTime={book.readOn}>{formatReadOn(book.readOn)}</time>
                 </p>
               )}
+
+              {/* Review */}
+              {book.reviewHtml.trim() && (
+                <div
+                  className="blog-content mt-10"
+                  dangerouslySetInnerHTML={{ __html: book.reviewHtml }}
+                />
+              )}
+
+              {/* Amazon CTA */}
+              {book.amazonLink && (
+                <div className="mt-12 pt-8 border-t border-[var(--color-warm-gray)]">
+                  <a
+                    href={book.amazonLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+                  >
+                    Get the book →
+                  </a>
+                  <p className="mt-4 text-xs text-[var(--color-black)]/60 italic">
+                    As an Amazon Associate, I earn from qualifying purchases at
+                    no extra cost to you.
+                  </p>
+                </div>
+              )}
+
+              {/* Back link */}
+              <div className="mt-12">
+                <Link
+                  href="/books/"
+                  className="inline-flex items-center text-sm font-semibold hover:text-[#4A4A4A] transition-colors"
+                >
+                  ← Back to all book reviews
+                </Link>
+              </div>
             </div>
           </div>
         </section>
-
-        {/* Review */}
-        {book.reviewHtml.trim() && (
-          <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-12">
-            <div
-              className="blog-content"
-              dangerouslySetInnerHTML={{ __html: book.reviewHtml }}
-            />
-          </section>
-        )}
-
-        {/* Amazon CTA */}
-        {book.amazonLink && (
-          <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-16 pt-10 border-t border-[var(--color-warm-gray)]">
-            <a
-              href={book.amazonLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
-            >
-              Get the book on Amazon →
-            </a>
-            <p className="mt-4 text-xs text-[var(--color-black)]/60 italic">
-              As an Amazon Associate, I earn from qualifying purchases at no
-              extra cost to you.
-            </p>
-          </section>
-        )}
-
-        {/* Back link */}
-        <div className="max-w-3xl mx-auto px-6 lg:px-10 mt-16">
-          <Link
-            href="/books/"
-            className="inline-flex items-center text-sm font-semibold hover:text-[#4A4A4A] transition-colors"
-          >
-            ← Back to all book reviews
-          </Link>
-        </div>
       </article>
     </Layout>
   );
