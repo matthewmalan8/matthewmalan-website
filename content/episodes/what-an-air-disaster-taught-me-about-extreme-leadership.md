@@ -39,7 +39,7 @@ spotify: https://open.spotify.com/episode/5PSi7FKbgHIc40iyCywcS6?si=mzd1X4MiQKOG
 applePodcasts: https://podcasts.apple.com/us/podcast/what-an-air-disaster-taught-me-about-extreme/id1883421904?i=1000767287185
 book:
   title: Lead by Legendary Example
-  link: https://www.amazon.com/Lead-Legendary-Example-Jay-Jacobson-ebook/dp/B0FZS2WRXX
+  link: https://amzn.to/4uGCc60
   image: https://m.media-amazon.com/images/I/71vrhlsZB-L._UF1000,1000_QL80_.jpg
   description: >-
     What makes leadership legendary? It is not charisma, credentials, or
