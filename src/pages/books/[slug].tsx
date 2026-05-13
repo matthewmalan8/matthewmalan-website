@@ -174,7 +174,7 @@ export default function BookReviewPage({ book, related }: Props) {
                     href={book.amazonLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+                    className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors"
                   >
                     Get the book →
                   </a>

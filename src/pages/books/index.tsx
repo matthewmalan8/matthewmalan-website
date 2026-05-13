@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import { GridIcon, ListIcon } from "@/components/Icons";
 import { getAllBooks } from "@/lib/books";
 import {
   BOOK_SORTS,
@@ -14,15 +15,30 @@ import {
 } from "@/lib/book-utils";
 
 type Props = { books: BookMeta[] };
+type ViewMode = "grid" | "list";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   return { props: { books: getAllBooks() } };
 };
 
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <p aria-label={`Rated ${rating} out of 5`}>
+      <span className="text-[var(--color-yellow)]">
+        {ratingStars(rating).slice(0, rating)}
+      </span>
+      <span className="text-[var(--color-warm-gray)]">
+        {ratingStars(rating).slice(rating)}
+      </span>
+    </p>
+  );
+}
+
 export default function BooksPage({ books }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<BookSort>("recent");
+  const [view, setView] = useState<ViewMode>("grid");
 
   const activeTag: string | null = (() => {
     const t = router.query.tag;
@@ -59,15 +75,15 @@ export default function BooksPage({ books }: Props) {
       path="/books/"
     >
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-12">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 sm:pt-20 pb-10 sm:pb-12">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
           Books
         </p>
-        <h1 className="mt-6 text-5xl sm:text-7xl tracking-tight max-w-4xl">
+        <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl tracking-tight max-w-4xl leading-[1.05]">
           Matthew&apos;s{" "}
           <span className="bg-[var(--color-yellow)] px-2">Book Reviews</span>
         </h1>
-        <p className="mt-8 max-w-2xl text-lg text-[var(--color-black)]/70 leading-relaxed">
+        <p className="mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-[var(--color-black)]/70 leading-relaxed">
           What I&apos;m reading, what I&apos;m learning, and what&apos;s worth
           your time.
         </p>
@@ -75,7 +91,7 @@ export default function BooksPage({ books }: Props) {
 
       {/* Active-tag indicator */}
       {activeTag && (
-        <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-2">
+        <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-3">
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] text-sm font-semibold">
             <span>
               Filtering by tag: <span className="font-bold">{activeTag}</span>
@@ -92,38 +108,68 @@ export default function BooksPage({ books }: Props) {
         </section>
       )}
 
-      {/* Search + Sort */}
+      {/* Search + Sort + View toggle */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="sm:col-span-2">
-            <label htmlFor="book-search" className="sr-only">
-              Search books
-            </label>
-            <input
-              id="book-search"
-              type="search"
-              placeholder="Search by title or author"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none focus:bg-white"
-            />
-          </div>
-          <div>
-            <label htmlFor="book-sort" className="sr-only">
-              Sort books
-            </label>
-            <select
-              id="book-sort"
-              value={sort}
-              onChange={(e) => setSort(e.target.value as BookSort)}
-              className="w-full px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none cursor-pointer"
+        <div className="flex flex-col sm:flex-row gap-3">
+          <label htmlFor="book-search" className="sr-only">
+            Search books
+          </label>
+          <input
+            id="book-search"
+            type="search"
+            placeholder="Search by title or author"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 min-w-0 px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none focus:bg-white"
+          />
+
+          <label htmlFor="book-sort" className="sr-only">
+            Sort books
+          </label>
+          <select
+            id="book-sort"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as BookSort)}
+            className="px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none cursor-pointer"
+          >
+            {BOOK_SORTS.map((s) => (
+              <option key={s.value} value={s.value}>
+                Sort: {s.label}
+              </option>
+            ))}
+          </select>
+
+          <div
+            role="group"
+            aria-label="View mode"
+            className="flex items-center rounded-full border-2 border-[var(--color-black)] overflow-hidden bg-[var(--color-off-white)]"
+          >
+            <button
+              type="button"
+              onClick={() => setView("grid")}
+              aria-label="Grid view"
+              aria-pressed={view === "grid"}
+              className={`px-4 py-3 cursor-pointer transition-colors ${
+                view === "grid"
+                  ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+                  : "text-[var(--color-black)]/60 hover:text-[var(--color-black)]"
+              }`}
             >
-              {BOOK_SORTS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  Sort: {s.label}
-                </option>
-              ))}
-            </select>
+              <GridIcon className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              aria-label="List view"
+              aria-pressed={view === "list"}
+              className={`px-4 py-3 cursor-pointer transition-colors ${
+                view === "list"
+                  ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+                  : "text-[var(--color-black)]/60 hover:text-[var(--color-black)]"
+              }`}
+            >
+              <ListIcon className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </section>
@@ -138,13 +184,13 @@ export default function BooksPage({ books }: Props) {
           <p className="text-[var(--color-black)]/60">
             No books match that filter.
           </p>
-        ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        ) : view === "grid" ? (
+          <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {filtered.map((b) => (
               <li key={b.slug}>
                 <Link href={`/books/${b.slug}/`} className="group block">
                   {b.coverImage && (
-                    <div className="aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-warm-gray)] shadow-md">
+                    <div className="aspect-[2/3] overflow-hidden rounded-lg bg-[var(--color-warm-gray)] shadow-md">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={b.coverImage}
@@ -154,36 +200,75 @@ export default function BooksPage({ books }: Props) {
                       />
                     </div>
                   )}
-                  <h2 className="mt-5 text-xl tracking-tight group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
+                  <h2 className="mt-3 text-base sm:text-lg tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-2">
                     {b.title}
                   </h2>
-                  <p className="mt-1 text-sm text-[var(--color-black)]/70">
+                  <p className="mt-1 text-sm text-[var(--color-black)]/70 line-clamp-1">
                     by {b.author}
                   </p>
-                  <p
-                    aria-label={`Rated ${b.rating} out of 5`}
-                    className="mt-2 text-base text-[var(--color-black)]"
-                  >
-                    <span className="text-[var(--color-yellow)]">
-                      {ratingStars(b.rating).slice(0, b.rating)}
-                    </span>
-                    <span className="text-[var(--color-warm-gray)]">
-                      {ratingStars(b.rating).slice(b.rating)}
-                    </span>
-                  </p>
+                  <div className="mt-1 text-sm">
+                    <StarRow rating={b.rating} />
+                  </div>
                   {b.lastReadOn && (
-                    <p className="mt-2 text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                    <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wider text-[var(--color-black)]/50">
                       {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
                       <time dateTime={b.lastReadOn}>
                         {formatReadOn(b.lastReadOn)}
                       </time>
                       {b.readings.length > 1 && (
-                        <span className="ml-2 text-[var(--color-black)]/40">
+                        <span className="ml-1 text-[var(--color-black)]/40">
                           ({b.readings.length}x)
                         </span>
                       )}
                     </p>
                   )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+            {filtered.map((b) => (
+              <li key={b.slug}>
+                <Link
+                  href={`/books/${b.slug}/`}
+                  className="group flex gap-4 sm:gap-6 py-4 sm:py-5"
+                >
+                  {b.coverImage && (
+                    <div className="flex-shrink-0 w-14 h-20 sm:w-16 sm:h-24 overflow-hidden rounded-md bg-[var(--color-warm-gray)] shadow">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={b.coverImage}
+                        alt={b.coverImageAlt || b.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base sm:text-lg font-semibold tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-1">
+                      {b.title}
+                    </h2>
+                    <p className="text-sm text-[var(--color-black)]/70 line-clamp-1">
+                      by {b.author}
+                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                      <StarRow rating={b.rating} />
+                      {b.lastReadOn && (
+                        <span className="text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                          {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
+                          <time dateTime={b.lastReadOn}>
+                            {formatReadOn(b.lastReadOn)}
+                          </time>
+                          {b.readings.length > 1 && (
+                            <span className="ml-1 text-[var(--color-black)]/40">
+                              ({b.readings.length}x)
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </Link>
               </li>
             ))}
