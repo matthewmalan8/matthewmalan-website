@@ -142,17 +142,18 @@ export default function BooksPage({ books }: Props) {
           <div
             role="group"
             aria-label="View mode"
-            className="flex items-center rounded-full border-2 border-[var(--color-black)] overflow-hidden bg-[var(--color-off-white)]"
+            className="flex items-center gap-1 p-1 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)]"
           >
             <button
               type="button"
               onClick={() => setView("grid")}
               aria-label="Grid view"
               aria-pressed={view === "grid"}
-              className={`px-4 py-3 cursor-pointer transition-colors ${
+              title="Grid view"
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
                 view === "grid"
                   ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
-                  : "text-[var(--color-black)]/60 hover:text-[var(--color-black)]"
+                  : "text-[var(--color-black)]/50 hover:text-[var(--color-black)]"
               }`}
             >
               <GridIcon className="w-5 h-5" />
@@ -162,10 +163,11 @@ export default function BooksPage({ books }: Props) {
               onClick={() => setView("list")}
               aria-label="List view"
               aria-pressed={view === "list"}
-              className={`px-4 py-3 cursor-pointer transition-colors ${
+              title="List view"
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
                 view === "list"
                   ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
-                  : "text-[var(--color-black)]/60 hover:text-[var(--color-black)]"
+                  : "text-[var(--color-black)]/50 hover:text-[var(--color-black)]"
               }`}
             >
               <ListIcon className="w-5 h-5" />
