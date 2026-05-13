@@ -38,7 +38,7 @@ spotify: https://open.spotify.com/episode/6pWU1y1ojZb13l9Rs2D40G?si=T7JR7aU2QAOj
 applePodcasts: https://podcasts.apple.com/us/podcast/he-practiced-one-speech-1-000-times-heres-why-derek-lott/id1883421904?i=1000763253596
 book:
   title: "Say It Well: Creating and Tailoring Value-Driven Communication"
-  link: https://www.amazon.com/Say-Well-Tailoring-Value-Driven-Communication/dp/1732712107
+  link: https://amzn.to/4tunlKP
   image: https://m.media-amazon.com/images/I/51yeVo+0ISL._SY522_.jpg
   description: "Say It Well is a resource for speakers, coaches, marketing
     professionals, educators, and anyone else who desires to empower their
