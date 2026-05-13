@@ -375,14 +375,20 @@ export default function EpisodePage({ episode, related }: Props) {
                     </p>
                   )}
                   {episode.book.link && (
-                    <a
-                      href={episode.book.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-7 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
-                    >
-                      Get the book →
-                    </a>
+                    <>
+                      <a
+                        href={episode.book.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-7 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-off-white)] hover:text-[var(--color-black)] transition-colors"
+                      >
+                        Get the book →
+                      </a>
+                      <p className="mt-4 text-xs text-[var(--color-black)]/60 italic">
+                        As an Amazon Associate, I earn from qualifying
+                        purchases at no extra cost to you.
+                      </p>
+                    </>
                   )}
                 </div>
               </div>

@@ -86,9 +86,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-[var(--color-warm-gray)]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-[var(--color-warm-gray)]">
-          <p>&copy; {year} Matthew Malan. All rights reserved.</p>
-          <p>Built with care.</p>
+        <div className="mt-14 pt-8 border-t border-[var(--color-warm-gray)]/20 text-sm text-[var(--color-warm-gray)] space-y-3">
+          <p className="text-xs italic">
+            As an Amazon Associate, I earn from qualifying purchases.
+          </p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p>&copy; {year} Matthew Malan. All rights reserved.</p>
+            <p>Built with care.</p>
+          </div>
         </div>
       </div>
     </footer>
