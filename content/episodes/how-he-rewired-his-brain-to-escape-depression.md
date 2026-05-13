@@ -57,7 +57,7 @@ book:
     We use the deep awareness and subconscious patterns for success and understand the psychology of decision making and mental perception. This book is not just about building momentum towards success it is also about overcoming any autopilot behavior by self awareness and intentional living strategies 2026
 
     A Spiritual book created in 2026 that is focused on self devollpment.
-  link: https://www.amazon.com/Words-May-Not-Explain-Understanding-ebook/dp/B0GS4BVFH4/ref=sr_1_1?crid=2OE1AHKJO4KVK&dib=eyJ2IjoiMSJ9.zrdAA6LOqpQIkIMZoKcFYUYuqKNqUPizXF4qj36jT0wlhgkdUx7xLWzwYLnRjd7ZF-Q7iAeEqCeYLyxpv69Ahw.yrPi6i_Ml_Um9PkYPrxCWsHVOjmlsG23jmMw3OQ4xSo&dib_tag=se&keywords=words+may+not+explain+the+spiritual+art+of+understanding&nsdOptOutParam=true&qid=1778451424&sprefix=words+may+not+explai%2Caps%2C245&sr=8-1
+  link: https://amzn.to/4wzv6SL
 ---
 # **Key Takeaways**
 
