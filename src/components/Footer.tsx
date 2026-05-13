@@ -90,10 +90,7 @@ export default function Footer() {
           <p className="text-xs italic">
             As an Amazon Associate, I earn from qualifying purchases.
           </p>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <p>&copy; {year} Matthew Malan. All rights reserved.</p>
-            <p>Built with care.</p>
-          </div>
+          <p>&copy; {year} Matthew Malan. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -6,6 +6,7 @@ import { CloseIcon, MenuIcon } from "./Icons";
 const links = [
   { href: "/speaking/", label: "Speaking" },
   { href: "/podcast/", label: "Podcast" },
+  { href: "/books/", label: "Books" },
   { href: "/about/", label: "About" },
 ];
 

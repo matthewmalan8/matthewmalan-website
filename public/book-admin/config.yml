@@ -1,0 +1,70 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/books"
+public_folder: "/images/books"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/books/
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  - name: "books"
+    label: "Book Reviews"
+    label_singular: "Book Review"
+    folder: "content/books"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — by {{author}}"
+    sortable_fields: ["readOn", "rating", "title", "author"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Cover Image", name: "coverImage", widget: "image" }
+      - {
+          label: "Cover Image Alt Text",
+          name: "coverImageAlt",
+          widget: "string",
+          required: false,
+          hint: "Description of the cover for screen readers.",
+        }
+      - {
+          label: "Rating (1–5)",
+          name: "rating",
+          widget: "number",
+          value_type: "int",
+          min: 1,
+          max: 5,
+          hint: "How many stars out of 5.",
+        }
+      - {
+          label: "Date Read",
+          name: "readOn",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+          hint: "When you finished reading.",
+        }
+      - {
+          label: "Amazon Link",
+          name: "amazonLink",
+          widget: "string",
+          required: false,
+          hint: "Full Amazon URL — the 'Get the book' button at the bottom of the review.",
+        }
+      - {
+          label: "Review",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Your thoughts on the book — markdown supported.",
+        }
