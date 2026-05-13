@@ -6,6 +6,7 @@ rating: 1
 readings:
   - date: 2026-05-11
     notes: Testing now
+    videoUrl: https://www.youtube.com/watch?v=HJJaMENwZ1I
   - date: 2026-05-12
     notes: Hello there!
 readOn: 2026-05-01
