@@ -2,8 +2,9 @@ export type DailyLog = {
   slug: string;
   date: string;
   hoursWorked: number;
+  minutesWorked: number;
   videoUrl: string;
-  notes: string;
+  notesHtml: string;
 };
 
 export type Pledge = {
@@ -84,42 +85,72 @@ export function daysUntil(date: string): number {
   return Math.max(0, Math.ceil((target - now) / (1000 * 60 * 60 * 24)));
 }
 
-// Returns the most recent consecutive run of days (ending today or yesterday)
-// where each day has a non-empty videoUrl.
-export function getCurrentVideoStreak(logs: DailyLog[]): number {
-  const byDate = new Map<string, DailyLog>();
-  for (const l of logs) if (l.videoUrl) byDate.set(l.date, l);
+export function logMinutes(log: DailyLog | undefined): number {
+  if (!log) return 0;
+  return (log.hoursWorked || 0) * 60 + (log.minutesWorked || 0);
+}
 
-  // Start from today and walk backwards. Allow one missed day if today's
-  // log hasn't been posted yet (so the streak doesn't reset every morning).
-  let streak = 0;
+export function formatHoursMinutes(totalMinutes: number): string {
+  if (!totalMinutes || totalMinutes <= 0) return "0m";
+  const h = Math.floor(totalMinutes / 60);
+  const m = Math.round(totalMinutes % 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
+export function formatHoursMinutesShort(totalMinutes: number): string {
+  if (!totalMinutes || totalMinutes <= 0) return "";
+  const h = Math.floor(totalMinutes / 60);
+  const m = Math.round(totalMinutes % 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${m}m`;
+}
+
+function isoDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function indexByDate(logs: DailyLog[]): Map<string, DailyLog> {
+  const map = new Map<string, DailyLog>();
+  for (const l of logs) if (l.date) map.set(l.date, l);
+  return map;
+}
+
+export function getCurrentStreak(
+  logs: DailyLog[],
+  predicate: (log: DailyLog | undefined) => boolean
+): number {
+  const byDate = indexByDate(logs);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  let cursor = new Date(today);
 
-  // If today has no entry, allow a single-day grace (start from yesterday).
-  const todayIso = cursor.toISOString().slice(0, 10);
-  if (!byDate.has(todayIso)) {
+  let cursor = new Date(today);
+  // Grace day: if today doesn't meet the predicate, start counting from yesterday.
+  if (!predicate(byDate.get(isoDate(cursor)))) {
     cursor.setDate(cursor.getDate() - 1);
   }
 
+  let streak = 0;
   while (true) {
-    const iso = cursor.toISOString().slice(0, 10);
-    if (byDate.has(iso)) {
+    const log = byDate.get(isoDate(cursor));
+    if (predicate(log)) {
       streak += 1;
       cursor.setDate(cursor.getDate() - 1);
     } else {
       break;
     }
   }
-
   return streak;
 }
 
-// Returns longest consecutive run where hoursWorked >= threshold.
-export function getLongestHourStreak(
+export function getLongestStreak(
   logs: DailyLog[],
-  threshold: number
+  predicate: (log: DailyLog) => boolean
 ): Streak {
   const sorted = [...logs]
     .filter((l) => l.date)
@@ -133,7 +164,7 @@ export function getLongestHourStreak(
 
   for (const log of sorted) {
     const d = new Date(log.date);
-    const meets = log.hoursWorked >= threshold;
+    const meets = predicate(log);
     const isContiguous =
       prevDate !== null &&
       Math.round((d.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)) ===
@@ -156,10 +187,16 @@ export function getLongestHourStreak(
   return { length: longest, lastAchieved: longestEnd };
 }
 
+export const hasVideoPredicate = (log: DailyLog | undefined): boolean =>
+  !!log?.videoUrl;
+
+export const hoursAtLeast = (h: number) => (log: DailyLog | undefined) =>
+  !!log && logMinutes(log) >= h * 60;
+
 export function getTotalVideos(logs: DailyLog[]): number {
   return logs.filter((l) => l.videoUrl).length;
 }
 
-export function getTotalHours(logs: DailyLog[]): number {
-  return logs.reduce((sum, l) => sum + (l.hoursWorked || 0), 0);
+export function getTotalMinutes(logs: DailyLog[]): number {
+  return logs.reduce((sum, l) => sum + logMinutes(l), 0);
 }

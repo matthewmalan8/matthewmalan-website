@@ -79,10 +79,19 @@ collections:
           label: "Hours Worked",
           name: "hoursWorked",
           widget: "number",
-          value_type: "float",
+          value_type: "int",
           min: 0,
-          step: 0.5,
           default: 0,
+        }
+      - {
+          label: "Minutes Worked",
+          name: "minutesWorked",
+          widget: "number",
+          value_type: "int",
+          min: 0,
+          max: 59,
+          default: 0,
+          hint: "Additional minutes on top of the hours (0–59).",
         }
       - {
           label: "Video URL",

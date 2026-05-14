@@ -63,14 +63,29 @@ function readMarkdownDir<T>(
   return items;
 }
 
-export function getDailyLogs(): DailyLog[] {
-  return readMarkdownDir(path.join(baseDir, "daily"), (slug, fm, body) => ({
+export async function getDailyLogs(): Promise<DailyLog[]> {
+  const raw = readMarkdownDir(path.join(baseDir, "daily"), (slug, fm, body) => ({
     slug,
     date: normalizeDate(fm.date),
     hoursWorked: asNumber(fm.hoursWorked),
+    minutesWorked: asNumber(fm.minutesWorked),
     videoUrl: normalizeUrl(asString(fm.videoUrl)),
     notes: body,
-  })).sort(
+  }));
+  const rendered: DailyLog[] = await Promise.all(
+    raw.map(async (r) => {
+      const processed = await remark().use(html).process(r.notes || "");
+      return {
+        slug: r.slug,
+        date: r.date,
+        hoursWorked: r.hoursWorked,
+        minutesWorked: r.minutesWorked,
+        videoUrl: r.videoUrl,
+        notesHtml: processed.toString(),
+      };
+    })
+  );
+  return rendered.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 }

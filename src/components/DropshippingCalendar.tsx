@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
-import type { DailyLog } from "@/lib/dropshipping-utils";
+import {
+  formatDate,
+  formatHoursMinutes,
+  formatHoursMinutesShort,
+  logMinutes,
+  type DailyLog,
+} from "@/lib/dropshipping-utils";
 
 type Props = { logs: DailyLog[] };
 
@@ -18,9 +24,8 @@ function startOfMonth(year: number, month: number): Date {
 
 function buildMonthCells(year: number, month: number): Date[] {
   const first = startOfMonth(year, month);
-  const startWeekday = first.getDay(); // 0=Sun
+  const startWeekday = first.getDay();
   const cells: Date[] = [];
-  // 42 cells = 6 rows × 7 cols
   for (let i = 0; i < 42; i++) {
     const d = new Date(year, month, 1 - startWeekday + i);
     cells.push(d);
@@ -34,6 +39,7 @@ export default function DropshippingCalendar({ logs }: Props) {
     year: today.getFullYear(),
     month: today.getMonth(),
   });
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const logByDate = useMemo(() => {
     const map = new Map<string, DailyLog>();
@@ -52,6 +58,7 @@ export default function DropshippingCalendar({ logs }: Props) {
   );
 
   const todayIso = isoDate(today);
+  const selectedLog = selectedDate ? logByDate.get(selectedDate) : null;
 
   const prevMonth = () => {
     setView((v) => {
@@ -107,21 +114,26 @@ export default function DropshippingCalendar({ logs }: Props) {
           const inMonth = d.getMonth() === view.month;
           const log = logByDate.get(iso);
           const isToday = iso === todayIso;
+          const isSelected = iso === selectedDate;
           const hasVideo = !!log?.videoUrl;
-          const hours = log?.hoursWorked ?? 0;
+          const minutes = logMinutes(log);
 
           const baseClasses =
-            "aspect-square rounded-lg p-1.5 sm:p-2 flex flex-col items-start justify-between text-left transition-colors";
+            "aspect-square rounded-lg p-1.5 sm:p-2 flex flex-col items-start justify-between text-left transition-colors w-full";
           const stateClasses = !inMonth
-            ? "opacity-30"
+            ? "opacity-30 cursor-default"
             : hasVideo
               ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
-              : hours > 0
-                ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]"
-                : "bg-transparent text-[var(--color-black)]/70";
-          const ringClasses = isToday
-            ? "ring-2 ring-[var(--color-black)] ring-offset-1 ring-offset-[var(--color-off-white)]"
-            : "";
+              : minutes > 0
+                ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)] hover:bg-[var(--color-warm-gray)]/50 cursor-pointer"
+                : "bg-transparent text-[var(--color-black)]/70 cursor-default";
+          const ringClasses = isSelected
+            ? "ring-2 ring-[var(--color-black)]"
+            : isToday
+              ? "ring-2 ring-[var(--color-black)]/40"
+              : "";
+
+          const isClickable = inMonth && !!log;
 
           const content = (
             <>
@@ -129,36 +141,29 @@ export default function DropshippingCalendar({ logs }: Props) {
                 {d.getDate()}
               </span>
               <span className="text-[10px] sm:text-xs font-bold self-end">
-                {hours > 0 ? `${hours}h` : ""}
+                {minutes > 0 ? formatHoursMinutesShort(minutes) : ""}
               </span>
             </>
           );
 
-          if (hasVideo && inMonth) {
+          if (isClickable) {
             return (
-              <a
+              <button
                 key={iso}
-                href={log!.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={`${iso} — ${hours}h worked. Watch video →`}
+                type="button"
+                onClick={() => setSelectedDate(iso)}
+                title={`${iso} — ${formatHoursMinutes(minutes)}${hasVideo ? " · click for details" : ""}`}
                 className={`${baseClasses} ${stateClasses} ${ringClasses}`}
               >
                 {content}
-              </a>
+              </button>
             );
           }
 
           return (
             <div
               key={iso}
-              title={
-                hours > 0
-                  ? `${iso} — ${hours}h worked`
-                  : inMonth
-                    ? iso
-                    : ""
-              }
+              title={inMonth ? iso : ""}
               className={`${baseClasses} ${stateClasses} ${ringClasses}`}
             >
               {content}
@@ -177,10 +182,60 @@ export default function DropshippingCalendar({ logs }: Props) {
           Hours logged
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)]" />
+          <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)]/40" />
           Today
         </span>
       </div>
+
+      {/* Selected-day details */}
+      {selectedLog && (
+        <div className="mt-8 pt-6 border-t border-[var(--color-warm-gray)]">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+                Selected day
+              </p>
+              <p className="mt-1 font-[family-name:var(--font-display)] text-2xl tracking-tight">
+                {formatDate(selectedLog.date)}
+              </p>
+              <p className="mt-1 text-sm text-[var(--color-black)]/70">
+                {formatHoursMinutes(logMinutes(selectedLog))} worked
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              aria-label="Close details"
+              className="text-[var(--color-black)]/50 hover:text-[var(--color-black)] text-xl cursor-pointer leading-none"
+            >
+              ✕
+            </button>
+          </div>
+
+          {selectedLog.videoUrl && (
+            <a
+              href={selectedLog.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-5 py-2.5 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors"
+            >
+              Watch the video →
+            </a>
+          )}
+
+          {selectedLog.notesHtml.trim() && (
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-2">
+                Notes
+              </p>
+              <div
+                className="text-[var(--color-black)]/85 leading-relaxed [&_p]:mt-2 [&_p:first-child]:mt-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mt-2 [&_li+li]:mt-1 [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: selectedLog.notesHtml }}
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

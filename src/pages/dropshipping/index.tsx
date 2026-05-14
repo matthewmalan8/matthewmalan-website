@@ -12,17 +12,21 @@ import {
 import {
   daysUntil,
   formatDate,
+  formatHoursMinutes,
   formatMoney,
   formatShortDate,
-  getCurrentVideoStreak,
-  getLongestHourStreak,
-  getTotalHours,
+  getCurrentStreak,
+  getLongestStreak,
+  getTotalMinutes,
   getTotalVideos,
+  hasVideoPredicate,
+  hoursAtLeast,
   type DailyLog,
   type DropshippingGoal,
   type Failure,
   type Pledge,
   type Screenshot,
+  type Streak,
 } from "@/lib/dropshipping-utils";
 
 type Props = {
@@ -36,7 +40,7 @@ type Props = {
 export const getStaticProps: GetStaticProps<Props> = async () => {
   return {
     props: {
-      logs: getDailyLogs(),
+      logs: await getDailyLogs(),
       pledges: getPledges(),
       screenshots: getScreenshots(),
       failures: await getFailures(),
@@ -60,13 +64,13 @@ function ScoreCard({ label, value }: { label: string; value: string }) {
 
 function StreakCard({
   label,
-  count,
-  date,
+  current,
+  longest,
   unit = "days",
 }: {
   label: string;
-  count: number;
-  date?: string;
+  current: number;
+  longest: Streak;
   unit?: string;
 }) {
   return (
@@ -74,17 +78,35 @@ function StreakCard({
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
         {label}
       </p>
-      <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
-        {count}{" "}
-        <span className="text-lg font-normal text-[var(--color-black)]/60">
-          {unit}
-        </span>
-      </p>
-      {date && (
-        <p className="mt-2 text-xs text-[var(--color-black)]/60">
-          Last achieved: {formatShortDate(date)}
-        </p>
-      )}
+      <div className="mt-4 grid grid-cols-2 divide-x divide-[var(--color-warm-gray)]">
+        <div className="pr-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
+            Current
+          </p>
+          <p className="mt-1 font-[family-name:var(--font-display)] text-3xl tracking-tight">
+            {current}{" "}
+            <span className="text-sm font-normal text-[var(--color-black)]/60">
+              {unit}
+            </span>
+          </p>
+        </div>
+        <div className="pl-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
+            Longest
+          </p>
+          <p className="mt-1 font-[family-name:var(--font-display)] text-3xl tracking-tight">
+            {longest.length}{" "}
+            <span className="text-sm font-normal text-[var(--color-black)]/60">
+              {unit}
+            </span>
+          </p>
+          {longest.lastAchieved && (
+            <p className="mt-1 text-[10px] text-[var(--color-black)]/50">
+              Last: {formatShortDate(longest.lastAchieved)}
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -97,10 +119,21 @@ export default function DropshippingPage({
   goal,
 }: Props) {
   const totalVideos = getTotalVideos(logs);
-  const totalHours = getTotalHours(logs);
-  const currentVideoStreak = getCurrentVideoStreak(logs);
-  const threeHourStreak = getLongestHourStreak(logs, 3);
-  const eightHourStreak = getLongestHourStreak(logs, 8);
+  const totalMinutes = getTotalMinutes(logs);
+
+  const currentVideoStreak = getCurrentStreak(logs, hasVideoPredicate);
+  const longestVideoStreak = getLongestStreak(logs, (l) => !!l.videoUrl);
+
+  const currentThreeHour = getCurrentStreak(logs, hoursAtLeast(3));
+  const longestThreeHour = getLongestStreak(logs, (l) =>
+    hoursAtLeast(3)(l)
+  );
+
+  const currentEightHour = getCurrentStreak(logs, hoursAtLeast(8));
+  const longestEightHour = getLongestStreak(logs, (l) =>
+    hoursAtLeast(8)(l)
+  );
+
   const progressPct = Math.min(
     100,
     Math.round((goal.currentSales / goal.goalAmount) * 100)
@@ -192,12 +225,8 @@ export default function DropshippingPage({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ScoreCard label="Total videos posted" value={String(totalVideos)} />
           <ScoreCard
-            label="Total hours worked"
-            value={
-              totalHours % 1 === 0
-                ? String(totalHours)
-                : totalHours.toFixed(1)
-            }
+            label="Total time worked"
+            value={formatHoursMinutes(totalMinutes)}
           />
           <ScoreCard
             label="Total failed products"
@@ -210,18 +239,19 @@ export default function DropshippingPage({
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StreakCard
-            label="Current video streak"
-            count={currentVideoStreak}
+            label="Daily video streak"
+            current={currentVideoStreak}
+            longest={longestVideoStreak}
           />
           <StreakCard
-            label="Longest 3+ hr workday streak"
-            count={threeHourStreak.length}
-            date={threeHourStreak.lastAchieved}
+            label="3+ hr workday streak"
+            current={currentThreeHour}
+            longest={longestThreeHour}
           />
           <StreakCard
-            label="Longest 8+ hr workday streak"
-            count={eightHourStreak.length}
-            date={eightHourStreak.lastAchieved}
+            label="8+ hr workday streak"
+            current={currentEightHour}
+            longest={longestEightHour}
           />
         </div>
       </section>
