@@ -1,0 +1,253 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/dropshipping"
+public_folder: "/images/dropshipping"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/dropshipping/
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  - name: "goal"
+    label: "Goal"
+    files:
+      - file: "content/dropshipping/goal.md"
+        name: "goal"
+        label: "Sales Goal"
+        fields:
+          - {
+              label: "Goal Amount (USD)",
+              name: "goalAmount",
+              widget: "number",
+              value_type: "int",
+              default: 100000,
+              hint: "Target sales — drives the headline and progress bar.",
+            }
+          - {
+              label: "Goal Deadline",
+              name: "goalDeadline",
+              widget: "datetime",
+              date_format: "YYYY-MM-DD",
+              time_format: false,
+              default: "2027-01-01",
+            }
+          - {
+              label: "Current Sales (USD)",
+              name: "currentSales",
+              widget: "number",
+              value_type: "float",
+              default: 0,
+              hint: "Update this regularly — drives the progress bar fill.",
+            }
+          - {
+              label: "Last Updated",
+              name: "lastUpdated",
+              widget: "datetime",
+              date_format: "YYYY-MM-DD",
+              time_format: false,
+              required: false,
+              hint: "When you last refreshed the sales total.",
+            }
+
+  - name: "daily"
+    label: "Daily Logs"
+    label_singular: "Daily Log"
+    folder: "content/dropshipping/daily"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} · {{hoursWorked}}h"
+    sortable_fields: ["date", "hoursWorked"]
+    fields:
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - {
+          label: "Hours Worked",
+          name: "hoursWorked",
+          widget: "number",
+          value_type: "float",
+          min: 0,
+          step: 0.5,
+          default: 0,
+        }
+      - {
+          label: "Video URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+          hint: "TikTok / YouTube / Instagram link to that day's video. Leave blank if no video was posted.",
+        }
+      - {
+          label: "Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Optional — what happened today.",
+        }
+
+  - name: "pledges"
+    label: "Pledges"
+    label_singular: "Pledge"
+    folder: "content/dropshipping/pledges"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{deadline}}"
+    sortable_fields: ["deadline", "amount", "title"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Amount on the Line (USD)",
+          name: "amount",
+          widget: "number",
+          value_type: "int",
+          default: 0,
+        }
+      - {
+          label: "Recipient",
+          name: "recipient",
+          widget: "string",
+          required: false,
+          hint: "Who gets paid if you fail (charity, friend, etc.).",
+        }
+      - {
+          label: "Deadline",
+          name: "deadline",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "active"
+        options:
+          - { label: "Active", value: "active" }
+          - { label: "Completed", value: "completed" }
+          - { label: "Failed (paid up)", value: "failed" }
+      - {
+          label: "Challenge Video URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+          hint: "TikTok video where you make the pledge public.",
+        }
+
+  - name: "screenshots"
+    label: "Screenshots"
+    label_singular: "Screenshot"
+    folder: "content/dropshipping/screenshots"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} · {{caption}}"
+    sortable_fields: ["date"]
+    fields:
+      - { label: "Image", name: "image", widget: "image" }
+      - {
+          label: "Image Alt Text",
+          name: "imageAlt",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - {
+          label: "Caption",
+          name: "caption",
+          widget: "text",
+          required: false,
+          hint: "Short note about what the screenshot shows.",
+        }
+
+  - name: "failures"
+    label: "Failure Graveyard"
+    label_singular: "Failure"
+    folder: "content/dropshipping/failures"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{product}} — {{failedOn}}"
+    sortable_fields: ["failedOn", "adSpend"]
+    fields:
+      - { label: "Product Name", name: "product", widget: "string" }
+      - {
+          label: "Product Image",
+          name: "productImage",
+          widget: "image",
+          required: false,
+        }
+      - {
+          label: "Hide product (blur image + name)",
+          name: "blur",
+          widget: "boolean",
+          default: false,
+          hint: "If on, the product name and image are blurred on the page so people can't see your strategy.",
+        }
+      - {
+          label: "Failed On (date)",
+          name: "failedOn",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - {
+          label: "Ad Spend (USD)",
+          name: "adSpend",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+        }
+      - {
+          label: "Why I thought it would work",
+          name: "hypothesis",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Why it failed",
+          name: "reasonFailed",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Video recap URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Lessons Learned",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Markdown supported — bullet points work well here.",
+        }
