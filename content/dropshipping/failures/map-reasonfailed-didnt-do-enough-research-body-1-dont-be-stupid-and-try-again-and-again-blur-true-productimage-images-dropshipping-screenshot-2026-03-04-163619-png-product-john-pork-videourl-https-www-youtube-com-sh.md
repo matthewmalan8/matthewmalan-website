@@ -1,7 +1,7 @@
 ---
 product: John Pork
 productImage: /images/dropshipping/screenshot-2026-03-04-163619.png
-blur: true
+blur: false
 failedOn: 2026-05-14
 adSpend: 200
 hypothesis: "The market was ready for this kind of product. "
