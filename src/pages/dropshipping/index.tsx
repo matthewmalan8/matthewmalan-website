@@ -295,8 +295,8 @@ export default function DropshippingPage({
         </div>
       </section>
 
-      {/* Streaks */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-6">
+      {/* Streaks — hidden on mobile to keep the top of the page lean */}
+      <section className="hidden sm:block max-w-7xl mx-auto px-6 lg:px-10 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StreakCard
             label="Daily video streak"

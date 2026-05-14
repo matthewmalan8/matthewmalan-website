@@ -140,7 +140,7 @@ export default function DropshippingCalendar({ logs }: Props) {
           const timeColor = isVideoZero ? "text-white/80" : "text-[#6B7280]";
 
           const header = (
-            <div className="flex items-start justify-between gap-1">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 sm:gap-1">
               <span className="text-xs sm:text-sm font-semibold">
                 {d.getDate()}
               </span>
@@ -158,7 +158,7 @@ export default function DropshippingCalendar({ logs }: Props) {
             inMonth && log?.notesText ? log.notesText : "";
 
           const body = noteText && (
-            <p className="mt-1 text-[10px] sm:text-xs leading-snug line-clamp-3 sm:line-clamp-4">
+            <p className="hidden sm:block mt-1 text-xs leading-snug line-clamp-4">
               {noteText}
             </p>
           );
