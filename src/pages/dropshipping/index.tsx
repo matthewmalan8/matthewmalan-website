@@ -66,13 +66,16 @@ function StreakCard({
   label,
   current,
   longest,
-  unit = "days",
+  unitSingular = "day",
+  unitPlural = "days",
 }: {
   label: string;
   current: number;
   longest: Streak;
-  unit?: string;
+  unitSingular?: string;
+  unitPlural?: string;
 }) {
+  const unit = (n: number) => (n === 1 ? unitSingular : unitPlural);
   return (
     <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-6">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
@@ -86,7 +89,7 @@ function StreakCard({
           <p className="mt-1 font-[family-name:var(--font-display)] text-3xl tracking-tight">
             {current}{" "}
             <span className="text-sm font-normal text-[var(--color-black)]/60">
-              {unit}
+              {unit(current)}
             </span>
           </p>
         </div>
@@ -97,7 +100,7 @@ function StreakCard({
           <p className="mt-1 font-[family-name:var(--font-display)] text-3xl tracking-tight">
             {longest.length}{" "}
             <span className="text-sm font-normal text-[var(--color-black)]/60">
-              {unit}
+              {unit(longest.length)}
             </span>
           </p>
           {longest.lastAchieved && (

@@ -63,6 +63,19 @@ function readMarkdownDir<T>(
   return items;
 }
 
+function stripHtmlToText(htmlStr: string): string {
+  return htmlStr
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export async function getDailyLogs(): Promise<DailyLog[]> {
   const raw = readMarkdownDir(path.join(baseDir, "daily"), (slug, fm, body) => ({
     slug,
@@ -75,13 +88,15 @@ export async function getDailyLogs(): Promise<DailyLog[]> {
   const rendered: DailyLog[] = await Promise.all(
     raw.map(async (r) => {
       const processed = await remark().use(html).process(r.notes || "");
+      const notesHtml = processed.toString();
       return {
         slug: r.slug,
         date: r.date,
         hoursWorked: r.hoursWorked,
         minutesWorked: r.minutesWorked,
         videoUrl: r.videoUrl,
-        notesHtml: processed.toString(),
+        notesHtml,
+        notesText: stripHtmlToText(notesHtml),
       };
     })
   );

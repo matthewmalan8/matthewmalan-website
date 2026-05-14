@@ -5,6 +5,7 @@ export type DailyLog = {
   minutesWorked: number;
   videoUrl: string;
   notesHtml: string;
+  notesText: string;
 };
 
 export type Pledge = {
