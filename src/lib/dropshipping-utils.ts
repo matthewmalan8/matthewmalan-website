@@ -101,12 +101,12 @@ export function formatHoursMinutes(totalMinutes: number): string {
 }
 
 export function formatHoursMinutesShort(totalMinutes: number): string {
-  if (!totalMinutes || totalMinutes <= 0) return "";
+  if (totalMinutes <= 0) return "";
   const h = Math.floor(totalMinutes / 60);
   const m = Math.round(totalMinutes % 60);
   if (h === 0) return `${m}m`;
   if (m === 0) return `${h}h`;
-  return `${h}h${m}m`;
+  return `${h}h ${m}m`;
 }
 
 function isoDate(d: Date): string {

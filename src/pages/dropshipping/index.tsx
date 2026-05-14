@@ -1,7 +1,14 @@
+import { useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import DropshippingCalendar from "@/components/DropshippingCalendar";
-import { LockIcon, TikTokIcon, YouTubeIcon } from "@/components/Icons";
+import {
+  GridIcon,
+  ListIcon,
+  LockIcon,
+  TikTokIcon,
+  YouTubeIcon,
+} from "@/components/Icons";
 import {
   getDailyLogs,
   getFailures,
@@ -114,6 +121,53 @@ function StreakCard({
   );
 }
 
+type ViewMode = "grid" | "compact";
+
+function ViewToggle({
+  value,
+  onChange,
+  label,
+}: {
+  value: ViewMode;
+  onChange: (v: ViewMode) => void;
+  label: string;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={`${label} view mode`}
+      className="flex items-center gap-1 p-1 rounded-full border border-[var(--color-warm-gray)] bg-[var(--color-off-white)]"
+    >
+      <button
+        type="button"
+        onClick={() => onChange("grid")}
+        aria-pressed={value === "grid"}
+        title="Grid view"
+        className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors ${
+          value === "grid"
+            ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+            : "text-[var(--color-black)]/50 hover:text-[var(--color-black)]"
+        }`}
+      >
+        <GridIcon className="w-4 h-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("compact")}
+        aria-pressed={value === "compact"}
+        title="Compact view"
+        className={`w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors ${
+          value === "compact"
+            ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+            : "text-[var(--color-black)]/50 hover:text-[var(--color-black)]"
+        }`}
+      >
+        <ListIcon className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function DropshippingPage({
   logs,
   pledges,
@@ -121,6 +175,9 @@ export default function DropshippingPage({
   failures,
   goal,
 }: Props) {
+  const [pledgesView, setPledgesView] = useState<ViewMode>("grid");
+  const [screenshotsView, setScreenshotsView] = useState<ViewMode>("grid");
+  const [failuresView, setFailuresView] = useState<ViewMode>("grid");
   const totalVideos = getTotalVideos(logs);
   const totalMinutes = getTotalMinutes(logs);
 
@@ -269,16 +326,27 @@ export default function DropshippingPage({
 
       {/* Pledges */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-        <h2 className="text-3xl sm:text-4xl tracking-tight">Pledges</h2>
-        <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-          Putting real money on the line. If I don&apos;t hit these by their
-          deadline, I pay up.
-        </p>
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-3xl sm:text-4xl tracking-tight">Pledges</h2>
+            <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
+              Putting real money on the line. If I don&apos;t hit these by their
+              deadline, I pay up.
+            </p>
+          </div>
+          {pledges.length > 0 && (
+            <ViewToggle
+              value={pledgesView}
+              onChange={setPledgesView}
+              label="Pledges"
+            />
+          )}
+        </div>
         {pledges.length === 0 ? (
           <p className="mt-8 text-[var(--color-black)]/60">
             No pledges yet.
           </p>
-        ) : (
+        ) : pledgesView === "grid" ? (
           <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
             {pledges.map((p) => {
               const statusStyles =
@@ -348,22 +416,82 @@ export default function DropshippingPage({
               );
             })}
           </ul>
+        ) : (
+          <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+            {pledges.map((p) => {
+              const dotColor =
+                p.status === "completed"
+                  ? "bg-[var(--color-lime)]"
+                  : p.status === "failed"
+                    ? "bg-[var(--color-black)]"
+                    : "bg-[var(--color-yellow)]";
+              const statusLabel =
+                p.status === "completed"
+                  ? "Completed"
+                  : p.status === "failed"
+                    ? "Paid up"
+                    : "Active";
+              return (
+                <li
+                  key={p.slug}
+                  className="py-4 flex items-center justify-between gap-4 flex-wrap"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <span
+                      className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${dotColor}`}
+                      title={statusLabel}
+                    />
+                    <div className="min-w-0">
+                      <p className="font-semibold tracking-tight truncate">
+                        {p.title}
+                      </p>
+                      <p className="text-xs text-[var(--color-black)]/60 mt-0.5">
+                        {p.amount > 0
+                          ? `${formatMoney(p.amount)}${p.recipient ? ` to ${p.recipient}` : ""}`
+                          : statusLabel}
+                        {p.deadline ? ` · ${formatShortDate(p.deadline)}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  {p.videoUrl && (
+                    <a
+                      href={p.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold hover:text-[#4A4A4A] transition-colors flex-shrink-0"
+                    >
+                      Watch →
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </section>
 
       {/* Screenshots */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-        <h2 className="text-3xl sm:text-4xl tracking-tight">
-          Screenshots
-        </h2>
-        <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-          Snapshots from the journey.
-        </p>
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-3xl sm:text-4xl tracking-tight">Screenshots</h2>
+            <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
+              Snapshots from the journey.
+            </p>
+          </div>
+          {screenshots.length > 0 && (
+            <ViewToggle
+              value={screenshotsView}
+              onChange={setScreenshotsView}
+              label="Screenshots"
+            />
+          )}
+        </div>
         {screenshots.length === 0 ? (
           <p className="mt-8 text-[var(--color-black)]/60">
             No screenshots yet.
           </p>
-        ) : (
+        ) : screenshotsView === "grid" ? (
           <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {screenshots.map((s) => (
               <li
@@ -396,23 +524,67 @@ export default function DropshippingPage({
               </li>
             ))}
           </ul>
+        ) : (
+          <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+            {screenshots.map((s) => (
+              <li
+                key={s.slug}
+                className="py-4 flex items-start gap-4"
+              >
+                {s.image && (
+                  <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-md bg-[var(--color-warm-gray)]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.image}
+                      alt={s.imageAlt || s.caption}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  {s.date && (
+                    <p className="text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                      {formatShortDate(s.date)}
+                    </p>
+                  )}
+                  {s.caption && (
+                    <p className="mt-1 text-[var(--color-black)]/80 leading-snug">
+                      {s.caption}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
       {/* Failure graveyard */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16 mb-24">
-        <h2 className="text-3xl sm:text-4xl tracking-tight">
-          The failure graveyard
-        </h2>
-        <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-          Every product that didn&apos;t work, what I spent, and what it
-          taught me.
-        </p>
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-3xl sm:text-4xl tracking-tight">
+              The failure graveyard
+            </h2>
+            <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
+              Every product that didn&apos;t work, what I spent, and what it
+              taught me.
+            </p>
+          </div>
+          {failures.length > 0 && (
+            <ViewToggle
+              value={failuresView}
+              onChange={setFailuresView}
+              label="Failures"
+            />
+          )}
+        </div>
         {failures.length === 0 ? (
           <p className="mt-8 text-[var(--color-black)]/60">
             No graves dug yet. Give it time.
           </p>
-        ) : (
+        ) : failuresView === "grid" ? (
           <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             {failures.map((f) => (
               <li
@@ -508,6 +680,57 @@ export default function DropshippingPage({
                     </a>
                   )}
                 </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+            {failures.map((f) => (
+              <li
+                key={f.slug}
+                className="py-4 flex items-center justify-between gap-4 flex-wrap"
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  {f.productImage && (
+                    <div className="flex-shrink-0 w-12 h-12 overflow-hidden rounded-md bg-[var(--color-warm-gray)] relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={f.productImage}
+                        alt={f.blur ? "Hidden product" : f.product}
+                        className={`w-full h-full object-cover ${
+                          f.blur ? "blur-md scale-110" : ""
+                        }`}
+                        loading="lazy"
+                      />
+                      {f.blur && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-black)]/30">
+                          <LockIcon className="w-4 h-4 text-[var(--color-yellow)]" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold tracking-tight truncate">
+                      {f.blur ? "Hidden product" : f.product}
+                    </p>
+                    <p className="text-xs text-[var(--color-black)]/60 mt-0.5">
+                      {f.failedOn ? formatShortDate(f.failedOn) : ""}
+                      {f.adSpend > 0
+                        ? ` · ${formatMoney(f.adSpend)} ad spend`
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+                {f.videoUrl && (
+                  <a
+                    href={f.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold hover:text-[#4A4A4A] transition-colors flex-shrink-0"
+                  >
+                    Recap →
+                  </a>
+                )}
               </li>
             ))}
           </ul>

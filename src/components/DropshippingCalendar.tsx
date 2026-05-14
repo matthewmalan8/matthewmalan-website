@@ -113,28 +113,42 @@ export default function DropshippingCalendar({ logs }: Props) {
           const isToday = iso === todayIso;
           const hasVideo = !!log?.videoUrl;
           const minutes = logMinutes(log);
+          const isVideoZero = hasVideo && minutes === 0;
 
           const baseClasses =
             "min-h-20 sm:min-h-28 rounded-lg p-1.5 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
-            : hasVideo
-              ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
-              : minutes > 0 || log
-                ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]"
-                : "bg-transparent text-[var(--color-black)]/70 cursor-default";
+            : isVideoZero
+              ? "bg-[#D64545] text-[var(--color-off-white)] hover:opacity-90 cursor-pointer"
+              : hasVideo
+                ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
+                : minutes > 0 || log
+                  ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]"
+                  : "bg-transparent text-[var(--color-black)]/70 cursor-default";
           const ringClasses = isToday
             ? "ring-2 ring-[var(--color-black)] ring-inset"
             : "";
+
+          const showTime = minutes > 0 || isVideoZero;
+          const timeText = isVideoZero
+            ? "0m"
+            : formatHoursMinutesShort(minutes);
+
+          // Hours/minutes always render in a muted dark-silver-gray; on red
+          // cells we use a lighter neutral so it stays legible.
+          const timeColor = isVideoZero ? "text-white/80" : "text-[#6B7280]";
 
           const header = (
             <div className="flex items-start justify-between gap-1">
               <span className="text-xs sm:text-sm font-semibold">
                 {d.getDate()}
               </span>
-              {minutes > 0 && (
-                <span className="text-[10px] sm:text-xs font-bold">
-                  {formatHoursMinutesShort(minutes)}
+              {showTime && (
+                <span
+                  className={`text-[10px] sm:text-xs font-bold ${timeColor}`}
+                >
+                  {timeText}
                 </span>
               )}
             </div>
@@ -156,7 +170,7 @@ export default function DropshippingCalendar({ logs }: Props) {
                 href={log!.videoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                title={`${iso} — ${formatHoursMinutes(minutes)} · click to watch the video`}
+                title={`${iso} — ${isVideoZero ? "0m" : formatHoursMinutes(minutes)} · click to watch the video`}
                 className={`${baseClasses} ${stateClasses} ${ringClasses}`}
               >
                 {header}
@@ -186,6 +200,10 @@ export default function DropshippingCalendar({ logs }: Props) {
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded bg-[var(--color-yellow)]" />
           Video posted — click to watch
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded bg-[#D64545]" />
+          Video posted, 0m logged
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded bg-[var(--color-warm-gray)]/30" />
