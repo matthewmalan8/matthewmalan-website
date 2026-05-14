@@ -76,8 +76,10 @@ export function getDailyLogs(): DailyLog[] {
 }
 
 export function getPledges(): Pledge[] {
-  return readMarkdownDir(path.join(baseDir, "pledges"), (slug, fm) => {
-    const status = asString(fm.status) as Pledge["status"];
+  return readMarkdownDir<Pledge>(path.join(baseDir, "pledges"), (slug, fm) => {
+    const raw = asString(fm.status);
+    const status: Pledge["status"] =
+      raw === "completed" || raw === "failed" ? raw : "active";
     return {
       slug,
       title: asString(fm.title),
@@ -85,8 +87,7 @@ export function getPledges(): Pledge[] {
       amount: asNumber(fm.amount),
       recipient: asString(fm.recipient),
       deadline: normalizeDate(fm.deadline),
-      status:
-        status === "completed" || status === "failed" ? status : "active",
+      status,
       videoUrl: normalizeUrl(asString(fm.videoUrl)),
     };
   }).sort(
