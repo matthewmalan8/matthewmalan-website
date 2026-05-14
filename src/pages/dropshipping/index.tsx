@@ -354,10 +354,10 @@ export default function DropshippingPage({
       {/* Screenshots */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
         <h2 className="text-3xl sm:text-4xl tracking-tight">
-          Sales screenshots
+          Screenshots
         </h2>
         <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-          Receipts. The good days and the bad ones.
+          Snapshots from the journey.
         </p>
         {screenshots.length === 0 ? (
           <p className="mt-8 text-[var(--color-black)]/60">

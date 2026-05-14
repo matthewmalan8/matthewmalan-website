@@ -90,8 +90,8 @@ collections:
           value_type: "int",
           min: 0,
           max: 59,
-          default: 0,
-          hint: "Additional minutes on top of the hours (0–59).",
+          required: false,
+          hint: "Optional — additional minutes on top of the hours (0–59).",
         }
       - {
           label: "Video URL",
