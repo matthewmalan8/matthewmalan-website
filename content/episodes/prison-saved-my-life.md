@@ -31,6 +31,15 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=KKpNLpzDI9I&t=2s
 spotify: https://open.spotify.com/episode/1v27sqfbH0BlmR4yruchXV?si=p1hdOg4oScqyLkHcf7QfjA
 applePodcasts: https://podcasts.apple.com/us/podcast/prison-saved-my-life-art-stewart/id1883421904?i=1000758945317
+clips:
+  - title: Self love is keeping your word
+    videoUrl: https://www.youtube.com/shorts/eR938Pn4mYU
+  - title: Focus on what you can control
+    videoUrl: https://www.youtube.com/shorts/wiOzcH2_ums
+  - title: Life is a river
+    videoUrl: https://www.youtube.com/shorts/-_K5Ej4kczw
+  - title: Find your why
+    videoUrl: https://www.youtube.com/shorts/n4FZ6Dy8PhY
 ---
 # Key Takeaways
 
