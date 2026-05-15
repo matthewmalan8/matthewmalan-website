@@ -37,6 +37,26 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=-NQ2AJm5qkg
 spotify: https://open.spotify.com/episode/5PSi7FKbgHIc40iyCywcS6?si=mzd1X4MiQKOGeK7aWtR5Pw
 applePodcasts: https://podcasts.apple.com/us/podcast/what-an-air-disaster-taught-me-about-extreme/id1883421904?i=1000767287185
+clips:
+  - title: The Art of Invisible Leadership
+    videoUrl: https://youtube.com/shorts/m1Uo7YZar0U?feature=share
+  - title: True Leaders Vs CEO's
+    videoUrl: https://youtube.com/shorts/8FamRTzPtRs?feature=share
+  - title: Leadership In Crisis
+    videoUrl: https://youtube.com/shorts/oTS8EOXdFxc?feature=share
+    scheduledFor: 2026-05-17
+  - title: Find Balance, Be Present
+    videoUrl: https://youtube.com/shorts/KD3bm2nKY2s?feature=share
+    scheduledFor: 2026-05-20
+  - title: Don't Wait, Live Now
+    videoUrl: https://youtube.com/shorts/ca7CmtJrKNc?feature=share
+    scheduledFor: 2026-05-23
+  - title: Cultivating Honesty in Children
+    videoUrl: https://youtube.com/shorts/Nlyhc0MmTTg?feature=share
+    scheduledFor: 2026-05-26
+  - title: Build a Lasting Legacy
+    videoUrl: https://youtube.com/shorts/FHqBdVOu-3o?feature=share
+    scheduledFor: 2026-05-29
 book:
   title: Lead by Legendary Example
   link: https://amzn.to/4uGCc60
