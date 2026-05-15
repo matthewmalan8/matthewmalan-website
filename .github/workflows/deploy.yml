@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Daily at 7 AM UTC = midnight Mesa, Arizona (UTC-7, no DST).
+    # Rebuilds the site so scheduled episode clips auto-flip to playable
+    # the morning of their release date even without a code/content push.
+    - cron: "0 7 * * *"
 
 concurrency:
   group: deploy-${{ github.ref }}
