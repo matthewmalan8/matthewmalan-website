@@ -22,6 +22,7 @@ topics:
   - Marketing
   - Strategy
   - Entrepreneurship
+  - AI
 guest: Wes Towers
 guestBio: Wes Towers is the founder of Uplift360, a marketing agency
   specializing in trades, builders, and construction brands. With over 20 years
