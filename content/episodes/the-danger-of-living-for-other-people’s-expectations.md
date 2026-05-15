@@ -30,6 +30,37 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=7B6ZJI9V8H4
 spotify: https://open.spotify.com/episode/6kjjjIpM5jTibQCoOLBua4?si=_-HZsPlNQQamTM0_41wr8w
 applePodcasts: https://podcasts.apple.com/us/podcast/the-danger-of-living-for-other-peoples/id1883421904?i=1000753829241
+clips:
+  - videoUrl: https://www.youtube.com/shorts/o40VSv4i0Lk
+    title: Admitting you don't know
+  - videoUrl: https://www.youtube.com/shorts/RB1x-APZ8OE
+    title: Best dating advice (that actually works)
+  - videoUrl: https://www.youtube.com/shorts/DSPgHQ9FTQ4
+    title: The pressure to have a plan
+  - title: The rush that burns us out
+    videoUrl: https://www.youtube.com/shorts/TZogZXbVvio
+  - videoUrl: https://www.youtube.com/shorts/3rS_gvxLemE
+    title: Healing before loving again
+  - title: Tired of the same heartbreak
+    videoUrl: https://www.youtube.com/shorts/TxULXhoxUws
+  - videoUrl: https://www.youtube.com/shorts/3w04z6iqtlg
+    title: Trust doesn't reset easily
+  - videoUrl: https://www.youtube.com/shorts/quKx9tXF4PI
+    title: Protecting my mental space
+  - videoUrl: https://www.youtube.com/shorts/I_nLXnenQRY
+    title: Staying for the good parts
+  - videoUrl: https://www.youtube.com/shorts/HtRvpo4qMs8
+    title: Losing a lifetime in a day
+  - videoUrl: https://www.youtube.com/shorts/Ky7MZ-7eYJk
+    title: Nothing lasts forever
+  - videoUrl: https://www.youtube.com/shorts/ioa2rGqMr2o
+    title: The universe lives in us
+  - videoUrl: https://www.youtube.com/shorts/F7jWdlCb2YM
+    title: What if death isn't the end?
+  - videoUrl: https://www.youtube.com/shorts/7itLv3TWBj4
+    title: Beyond the bubble of life
+  - title: Death isn't the villain
+    videoUrl: https://www.youtube.com/shorts/gy-n3oLFpcM
 ---
 # **Key Takeaways**
 
