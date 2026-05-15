@@ -11,6 +11,7 @@ import {
   InstagramIcon,
   LinkedInIcon,
   LinkIcon,
+  PlayIcon,
   SmsIcon,
   SpotifyIcon,
   XIcon,
@@ -25,8 +26,11 @@ import {
 import {
   getRelatedEpisodes,
   getYouTubeEmbedUrl,
+  getYouTubeId,
+  getYouTubeThumbnailUrl,
   formatEpisodeDate,
   type Episode,
+  type EpisodeClip,
   type EpisodeMeta,
 } from "@/lib/episode-utils";
 
@@ -202,6 +206,84 @@ function ShareSection({ title, slug }: { title: string; slug: string }) {
   );
 }
 
+function EpisodeClips({ clips }: { clips: EpisodeClip[] }) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  if (clips.length === 0) return null;
+
+  return (
+    <section className="max-w-3xl mx-auto px-6 lg:px-10 mt-12">
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+        Clips from this episode
+      </p>
+      <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {clips.map((clip, i) => {
+          const videoId = getYouTubeId(clip.videoUrl);
+          const thumb = getYouTubeThumbnailUrl(clip.videoUrl);
+          const embed = getYouTubeEmbedUrl(clip.videoUrl);
+          const isActive = activeIndex === i;
+
+          return (
+            <li key={i}>
+              <div className="aspect-video overflow-hidden rounded-xl bg-black relative">
+                {isActive && embed ? (
+                  <iframe
+                    src={`${embed}?autoplay=1`}
+                    title={clip.title || `Clip ${i + 1}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setActiveIndex(i)}
+                    className="group w-full h-full cursor-pointer"
+                    aria-label={`Play clip: ${clip.title || `Clip ${i + 1}`}`}
+                  >
+                    {thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={thumb}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[var(--color-warm-gray)]/30" />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
+                      <span className="w-14 h-14 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <PlayIcon className="w-6 h-6 ml-1" />
+                      </span>
+                    </div>
+                  </button>
+                )}
+              </div>
+              {clip.title && (
+                <p className="mt-2 text-sm font-medium leading-snug line-clamp-2">
+                  {clip.title}
+                </p>
+              )}
+              {videoId === null && clip.videoUrl && (
+                <p className="mt-1 text-xs text-[var(--color-black)]/50">
+                  <a
+                    href={clip.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Open on YouTube →
+                  </a>
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 export default function EpisodePage({ episode, related }: Props) {
   const youtubeEmbed = getYouTubeEmbedUrl(episode.youtube);
 
@@ -312,6 +394,9 @@ export default function EpisodePage({ episode, related }: Props) {
             </div>
           </section>
         )}
+
+        {/* Clips */}
+        <EpisodeClips clips={episode.clips} />
 
         {/* Featured image */}
         {episode.image && (

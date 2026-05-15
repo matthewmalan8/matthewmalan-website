@@ -13,6 +13,11 @@ export type GuestBook = {
   link: string;
 };
 
+export type EpisodeClip = {
+  title: string;
+  videoUrl: string;
+};
+
 export type EpisodeFrontmatter = {
   title: string;
   date: string;
@@ -29,6 +34,7 @@ export type EpisodeFrontmatter = {
   spotify: string;
   applePodcasts: string;
   book: GuestBook | null;
+  clips: EpisodeClip[];
   featured: boolean;
 };
 
@@ -105,12 +111,22 @@ export function formatEpisodeDate(date: string): string {
   });
 }
 
-export function getYouTubeEmbedUrl(youtubeUrl: string): string | null {
+export function getYouTubeId(youtubeUrl: string): string | null {
   if (!youtubeUrl) return null;
   const idMatch =
     youtubeUrl.match(/[?&]v=([^&#]+)/) ||
     youtubeUrl.match(/youtu\.be\/([^?&#]+)/) ||
-    youtubeUrl.match(/youtube\.com\/embed\/([^?&#]+)/);
-  if (!idMatch) return null;
-  return `https://www.youtube.com/embed/${idMatch[1]}`;
+    youtubeUrl.match(/youtube\.com\/embed\/([^?&#]+)/) ||
+    youtubeUrl.match(/youtube\.com\/shorts\/([^?&#]+)/);
+  return idMatch ? idMatch[1] : null;
+}
+
+export function getYouTubeEmbedUrl(youtubeUrl: string): string | null {
+  const id = getYouTubeId(youtubeUrl);
+  return id ? `https://www.youtube.com/embed/${id}` : null;
+}
+
+export function getYouTubeThumbnailUrl(youtubeUrl: string): string | null {
+  const id = getYouTubeId(youtubeUrl);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
 }

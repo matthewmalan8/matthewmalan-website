@@ -5,13 +5,21 @@ import { remark } from "remark";
 import html from "remark-html";
 import type {
   Episode,
+  EpisodeClip,
   EpisodeFrontmatter,
   EpisodeMeta,
   GuestBook,
   GuestSocials,
 } from "./episode-utils";
 
-export type { Episode, EpisodeFrontmatter, EpisodeMeta, GuestBook, GuestSocials };
+export type {
+  Episode,
+  EpisodeClip,
+  EpisodeFrontmatter,
+  EpisodeMeta,
+  GuestBook,
+  GuestSocials,
+};
 
 const episodesDir = path.join(process.cwd(), "content", "episodes");
 
@@ -57,6 +65,19 @@ function asSocials(value: unknown): GuestSocials {
   return result;
 }
 
+function asClips(value: unknown): EpisodeClip[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((c) => {
+      if (!c || typeof c !== "object") return null;
+      const cc = c as Record<string, unknown>;
+      const videoUrl = normalizeUrl(asString(cc.videoUrl));
+      if (!videoUrl) return null;
+      return { title: asString(cc.title), videoUrl };
+    })
+    .filter((c): c is EpisodeClip => c !== null);
+}
+
 function asBook(value: unknown): GuestBook | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Record<string, unknown>;
@@ -93,6 +114,7 @@ function readEpisode(slug: string): {
       spotify: normalizeUrl(asString(fm.spotify)),
       applePodcasts: normalizeUrl(asString(fm.applePodcasts)),
       book: asBook(fm.book),
+      clips: asClips(fm.clips),
       featured: fm.featured === true,
     },
     content,

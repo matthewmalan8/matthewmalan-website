@@ -155,6 +155,22 @@ collections:
           widget: "string",
           required: false,
         }
+      - label: "Clips from this episode"
+        name: "clips"
+        widget: "list"
+        required: false
+        collapsed: true
+        label_singular: "Clip"
+        summary: "{{title}}"
+        hint: "Short YouTube clips that play inline on the episode page. Just title + URL."
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - {
+              label: "YouTube URL",
+              name: "videoUrl",
+              widget: "string",
+              hint: "Full YouTube URL (regular video, Shorts, or youtu.be link).",
+            }
       - label: "Guest's Book (optional)"
         name: "book"
         widget: "object"
