@@ -4,6 +4,7 @@ import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import {
   ApplePodcastsIcon,
+  CalendarIcon,
   CheckIcon,
   EmailIcon,
   FacebookIcon,
@@ -24,6 +25,7 @@ import {
   getEpisodeBySlug,
 } from "@/lib/episodes";
 import {
+  formatScheduledClipDate,
   getRelatedEpisodes,
   getYouTubeEmbedUrl,
   formatEpisodeDate,
@@ -218,6 +220,28 @@ function EpisodeClips({ clips }: { clips: EpisodeClip[] }) {
           const embed = getYouTubeEmbedUrl(clip.videoUrl);
           const isActive = activeIndex === i;
           const label = clip.title || `Clip ${i + 1}`;
+
+          // Scheduled clip — not yet released
+          if (clip.isScheduled) {
+            return (
+              <li key={i}>
+                <div className="w-full flex items-center justify-between gap-3 py-3">
+                  <span className="flex items-center gap-3 min-w-0">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/60 flex items-center justify-center">
+                      <CalendarIcon className="w-3.5 h-3.5 animate-pulse" />
+                    </span>
+                    <span className="text-base font-medium truncate text-[var(--color-black)]/60">
+                      {label}
+                    </span>
+                  </span>
+                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-black)] animate-pulse" />
+                    Dropping {formatScheduledClipDate(clip.scheduledFor)}
+                  </span>
+                </div>
+              </li>
+            );
+          }
 
           return (
             <li key={i}>

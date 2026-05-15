@@ -16,7 +16,17 @@ export type GuestBook = {
 export type EpisodeClip = {
   title: string;
   videoUrl: string;
+  scheduledFor: string;
+  isScheduled: boolean;
 };
+
+export function formatScheduledClipDate(dateStr: string): string {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export type EpisodeFrontmatter = {
   title: string;

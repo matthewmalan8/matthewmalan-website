@@ -67,13 +67,23 @@ function asSocials(value: unknown): GuestSocials {
 
 function asClips(value: unknown): EpisodeClip[] {
   if (!Array.isArray(value)) return [];
+  const nowMs = Date.now();
   return value
     .map((c) => {
       if (!c || typeof c !== "object") return null;
       const cc = c as Record<string, unknown>;
       const videoUrl = normalizeUrl(asString(cc.videoUrl));
-      if (!videoUrl) return null;
-      return { title: asString(cc.title), videoUrl };
+      const scheduledFor = normalizeDate(cc.scheduledFor);
+      // Defensive: a clip needs either a URL or a future scheduled date.
+      if (!videoUrl && !scheduledFor) return null;
+      const isScheduled =
+        !!scheduledFor && new Date(scheduledFor).getTime() > nowMs;
+      return {
+        title: asString(cc.title),
+        videoUrl,
+        scheduledFor,
+        isScheduled,
+      };
     })
     .filter((c): c is EpisodeClip => c !== null);
 }

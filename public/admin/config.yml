@@ -162,14 +162,24 @@ collections:
         collapsed: true
         label_singular: "Clip"
         summary: "{{title}}"
-        hint: "Short YouTube clips that play inline on the episode page. Just title + URL."
+        hint: "Short YouTube clips that play inline on the episode page. Set a scheduled date if the clip isn't released yet."
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - {
               label: "YouTube URL",
               name: "videoUrl",
               widget: "string",
-              hint: "Full YouTube URL (regular video, Shorts, or youtu.be link).",
+              required: false,
+              hint: "Full YouTube URL (regular video, Shorts, or youtu.be link). Leave blank if you haven't recorded/uploaded it yet.",
+            }
+          - {
+              label: "Scheduled Release Date",
+              name: "scheduledFor",
+              widget: "datetime",
+              date_format: "YYYY-MM-DD",
+              time_format: false,
+              required: false,
+              hint: "Optional — if set and still in the future at build time, the clip shows as 'Dropping <date>' instead of playable. Becomes playable automatically on the next rebuild after this date.",
             }
       - label: "Guest's Book (optional)"
         name: "book"
