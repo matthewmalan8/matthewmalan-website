@@ -85,6 +85,8 @@ collections:
           - "Creativity"
           - "Authenticity"
           - "Faith"
+          - "AI"
+          - "Technology"
       - { label: "Guest Name", name: "guest", widget: "string", required: false }
       - {
           label: "Guest Bio",

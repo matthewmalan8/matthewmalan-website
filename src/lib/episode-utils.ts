@@ -60,6 +60,8 @@ export const ALL_TOPICS = [
   "Creativity",
   "Authenticity",
   "Faith",
+  "AI",
+  "Technology",
 ] as const;
 
 export type EpisodeMeta = EpisodeFrontmatter & { slug: string };
