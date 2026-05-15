@@ -225,19 +225,19 @@ function EpisodeClips({ clips }: { clips: EpisodeClip[] }) {
           if (clip.isScheduled) {
             return (
               <li key={i}>
-                <div className="w-full flex items-center justify-between gap-3 py-3">
-                  <span className="flex items-center gap-3 min-w-0">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/60 flex items-center justify-center">
-                      <CalendarIcon className="w-3.5 h-3.5 animate-pulse" />
-                    </span>
-                    <span className="text-base font-medium truncate text-[var(--color-black)]/60">
+                <div className="w-full flex items-start gap-3 py-3">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/60 flex items-center justify-center">
+                    <CalendarIcon className="w-3.5 h-3.5 animate-pulse" />
+                  </span>
+                  <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3">
+                    <span className="text-sm sm:text-base font-medium truncate text-[var(--color-black)]/60">
                       {label}
                     </span>
-                  </span>
-                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-black)] animate-pulse" />
-                    Dropping {formatScheduledClipDate(clip.scheduledFor)}
-                  </span>
+                    <span className="flex-shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-black)] animate-pulse" />
+                      Dropping {formatScheduledClipDate(clip.scheduledFor)}
+                    </span>
+                  </div>
                 </div>
               </li>
             );
@@ -263,7 +263,7 @@ function EpisodeClips({ clips }: { clips: EpisodeClip[] }) {
                       <PlayIcon className="w-3.5 h-3.5 ml-0.5" />
                     )}
                   </span>
-                  <span className="text-base font-medium truncate group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
+                  <span className="text-sm sm:text-base font-medium truncate group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
                     {label}
                   </span>
                 </span>
