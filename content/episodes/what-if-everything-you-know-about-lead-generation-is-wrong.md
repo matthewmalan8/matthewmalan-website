@@ -39,6 +39,24 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=fBVsAJ9_34g
 spotify: https://open.spotify.com/episode/6jbHWSjtouPZphv3r1YBDw
 applePodcasts: https://podcasts.apple.com/us/podcast/what-if-everything-you-know-about-lead-generation-is/id1883421904?i=1000767895749
+clips:
+  - title: "Entrepreneurship: Self Improvement in Action"
+    videoUrl: https://youtube.com/shorts/YoGgacszq-s?feature=share
+  - title: Join Groups You Don't Qualify For
+    videoUrl: https://youtube.com/shorts/DG-sYq2nAsY?feature=share
+    scheduledFor: 2026-05-18
+  - title: Money as a Proxy for Value
+    videoUrl: https://youtube.com/shorts/0IaokvEzKZI?feature=share
+    scheduledFor: 2026-05-21
+  - title: Niche Down to Compete with Giants
+    videoUrl: https://youtube.com/shorts/PovFE_SkVrw?feature=share
+    scheduledFor: 2026-05-24
+  - title: "True Wealth: Time Freedom in Business"
+    videoUrl: https://youtube.com/shorts/Ywoo4LvZnDo?feature=share
+    scheduledFor: 2026-05-27
+  - title: Turning Clients into Raving Fans
+    videoUrl: https://youtube.com/shorts/3TUBw0Mfd9w?feature=share
+    scheduledFor: 2026-05-30
 ---
 # **Key takeaways**
 
