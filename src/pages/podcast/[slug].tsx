@@ -26,8 +26,6 @@ import {
 import {
   getRelatedEpisodes,
   getYouTubeEmbedUrl,
-  getYouTubeId,
-  getYouTubeThumbnailUrl,
   formatEpisodeDate,
   type Episode,
   type EpisodeClip,
@@ -215,57 +213,53 @@ function EpisodeClips({ clips }: { clips: EpisodeClip[] }) {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
         Clips from this episode
       </p>
-      <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <ul className="mt-4 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
         {clips.map((clip, i) => {
-          const videoId = getYouTubeId(clip.videoUrl);
-          const thumb = getYouTubeThumbnailUrl(clip.videoUrl);
           const embed = getYouTubeEmbedUrl(clip.videoUrl);
           const isActive = activeIndex === i;
+          const label = clip.title || `Clip ${i + 1}`;
 
           return (
             <li key={i}>
-              <div className="aspect-video overflow-hidden rounded-xl bg-black relative">
-                {isActive && embed ? (
-                  <iframe
-                    src={`${embed}?autoplay=1`}
-                    title={clip.title || `Clip ${i + 1}`}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setActiveIndex(i)}
-                    className="group w-full h-full cursor-pointer"
-                    aria-label={`Play clip: ${clip.title || `Clip ${i + 1}`}`}
-                  >
-                    {thumb ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={thumb}
-                        alt=""
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[var(--color-warm-gray)]/30" />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
-                      <span className="w-14 h-14 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                        <PlayIcon className="w-6 h-6 ml-1" />
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveIndex((curr) => (curr === i ? null : i))
+                }
+                aria-expanded={isActive}
+                className="w-full flex items-center justify-between gap-4 py-3 text-left cursor-pointer group"
+              >
+                <span className="flex items-center gap-3 min-w-0">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center group-hover:scale-105 transition-transform">
+                    {isActive ? (
+                      <span aria-hidden className="text-xs font-bold">
+                        ✕
                       </span>
-                    </div>
-                  </button>
-                )}
-              </div>
-              {clip.title && (
-                <p className="mt-2 text-sm font-medium leading-snug line-clamp-2">
-                  {clip.title}
-                </p>
+                    ) : (
+                      <PlayIcon className="w-3.5 h-3.5 ml-0.5" />
+                    )}
+                  </span>
+                  <span className="text-base font-medium truncate group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
+                    {label}
+                  </span>
+                </span>
+              </button>
+              {isActive && embed && (
+                <div className="pb-4">
+                  <div className="aspect-video overflow-hidden rounded-xl bg-black">
+                    <iframe
+                      src={`${embed}?autoplay=1`}
+                      title={label}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
               )}
-              {videoId === null && clip.videoUrl && (
-                <p className="mt-1 text-xs text-[var(--color-black)]/50">
+              {isActive && !embed && clip.videoUrl && (
+                <p className="pb-4 text-sm text-[var(--color-black)]/60">
+                  Can&apos;t embed this URL.{" "}
                   <a
                     href={clip.videoUrl}
                     target="_blank"
