@@ -32,6 +32,17 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=C6iOrv_ZKPo
 spotify: https://open.spotify.com/episode/4lkAlzBYPvzdo0VXS9adn5?si=VME8gkSvS-WS2zGY-q1d8Q
 applePodcasts: https://podcasts.apple.com/us/podcast/how-he-rewired-his-brain-to-escape-depression-taylor-bowden/id1883421904?i=1000761787641
+clips:
+  - videoUrl: https://www.youtube.com/shorts/7mHVfCXhZBM
+    title: Failure Is Required
+  - title: You Didn't Lose Everything
+    videoUrl: https://www.youtube.com/shorts/GKuXLUUrw3o
+  - title: Pain Has Purpose
+    videoUrl: https://www.youtube.com/shorts/67YCppKe504
+  - videoUrl: https://www.youtube.com/shorts/8si3lH4ijHk
+    title: Manifest Anything
+  - title: You Are Not Your Thoughts
+    videoUrl: https://www.youtube.com/shorts/ylFUfbMi9k0
 book:
   title: "Words May Not Explain: The Spiritual Art of Understanding"
   image: /images/episodes/screenshot-2026-05-10-151721.png
