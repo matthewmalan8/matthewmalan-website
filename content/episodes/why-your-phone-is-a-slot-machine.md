@@ -26,6 +26,37 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=DS3tLypfgY8
 spotify: https://open.spotify.com/episode/07xkTEgzjqYNZa2C0wBhPF?si=Ms0MsjnHQ2S0af5vIEfJ4A
 applePodcasts: https://podcasts.apple.com/us/podcast/why-your-phone-is-a-slot-machine-london-lines/id1883421904?i=1000753830490
+clips:
+  - videoUrl: https://www.youtube.com/shorts/UryjhllT8G0
+    title: Good advice for a first date
+  - videoUrl: https://www.youtube.com/shorts/1gDZP6TkZlM
+    title: God was with me in my darkest days
+  - videoUrl: https://www.youtube.com/shorts/YaXDL0fWn68
+    title: Stan Lee’s best advice for 2026
+  - title: "POV: Your baby is judging your screen time"
+    videoUrl: https://www.youtube.com/shorts/cNFvxj9vL7E
+  - videoUrl: https://www.youtube.com/shorts/-LY14Jvqkkc
+    title: Jordan Peterson Quote
+  - title: Trusting God in a season of waiting
+    videoUrl: https://www.youtube.com/shorts/Q_YBe6U0g90
+  - videoUrl: https://www.youtube.com/shorts/Zu1uz8PTL4o
+    title: Screens are the new drug
+  - videoUrl: https://www.youtube.com/shorts/d2AxToFbwzE
+    title: It is NOT too late to start
+  - title: How can God exist if there’s so much evil?
+    videoUrl: https://www.youtube.com/shorts/Id7uszRMS-A
+  - videoUrl: https://www.youtube.com/shorts/FJ88KgO9I2o
+    title: You're dating a STRANGER. Here’s why
+  - title: Your Perfect Parenting is actually toxic
+    videoUrl: https://www.youtube.com/shorts/VHHkjgN63ls
+  - videoUrl: https://www.youtube.com/shorts/lnyC0lkBQF0
+    title: Why you should be selfish now
+  - videoUrl: https://www.youtube.com/shorts/PkhAfO7hSpE
+    title: Want to stay married? Do THIS one thing
+  - videoUrl: https://www.youtube.com/shorts/701W6uWAIUc
+    title: The Male Loneliness Epidemic
+  - videoUrl: https://www.youtube.com/shorts/59mRAdDL9jw
+    title: Stop carrying the weight of the world
 ---
 # **Key Takeaways**
 
