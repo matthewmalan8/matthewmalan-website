@@ -36,6 +36,22 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=aCxkK8b_UW0
 spotify: https://open.spotify.com/episode/6pWU1y1ojZb13l9Rs2D40G?si=T7JR7aU2QAOj82SUQcW7Aw
 applePodcasts: https://podcasts.apple.com/us/podcast/he-practiced-one-speech-1-000-times-heres-why-derek-lott/id1883421904?i=1000763253596
+clips:
+  - title: Authenticity Over Perfection
+    videoUrl: https://youtube.com/shorts/8UwpvzzdEts?feature=share
+  - title: Love What You Do
+    videoUrl: https://youtube.com/shorts/u4kvsdSjkOc?feature=share
+  - title: The Power of Public Speaking
+    videoUrl: https://youtube.com/shorts/5sgK_bz2ZSI?feature=share
+  - title: Embrace Your Breakthrough
+    videoUrl: https://youtube.com/shorts/642beCy69ys?feature=share
+  - title: Fail Forward
+    videoUrl: https://youtube.com/shorts/_Do5N6E1iwU?feature=share
+  - title: Work from inspiration, not desperation
+    videoUrl: https://youtube.com/shorts/qnuf03VIaoY?feature=share
+  - title: "Coaching: Key to Excellence"
+    videoUrl: https://youtube.com/shorts/9U6P-3CY2GM?feature=share
+    scheduledFor: 2026-05-16
 book:
   title: "Say It Well: Creating and Tailoring Value-Driven Communication"
   link: https://amzn.to/4tunlKP
