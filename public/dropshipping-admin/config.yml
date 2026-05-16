@@ -15,46 +15,81 @@ display_url: https://matthewmalan.com/dropshipping/
 logo_url: https://matthewmalan.com/favicon.svg
 
 collections:
-  - name: "goal"
-    label: "Goal"
-    files:
-      - file: "content/dropshipping/goal.md"
-        name: "goal"
-        label: "Sales Goal"
-        fields:
-          - {
-              label: "Goal Amount (USD)",
-              name: "goalAmount",
-              widget: "number",
-              value_type: "int",
-              default: 100000,
-              hint: "Target sales — drives the headline and progress bar.",
-            }
-          - {
-              label: "Goal Deadline",
-              name: "goalDeadline",
-              widget: "datetime",
-              date_format: "YYYY-MM-DD",
-              time_format: false,
-              default: "2027-01-01",
-            }
-          - {
-              label: "Current Sales (USD)",
-              name: "currentSales",
-              widget: "number",
-              value_type: "float",
-              default: 0,
-              hint: "Update this regularly — drives the progress bar fill.",
-            }
-          - {
-              label: "Last Updated",
-              name: "lastUpdated",
-              widget: "datetime",
-              date_format: "YYYY-MM-DD",
-              time_format: false,
-              required: false,
-              hint: "When you last refreshed the sales total.",
-            }
+  - name: "goals"
+    label: "Goals"
+    label_singular: "Goal"
+    folder: "content/dropshipping/goals"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{deadline}}"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+          hint: "One or two sentences about what this goal is.",
+        }
+      - {
+          label: "Target",
+          name: "target",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+          hint: "The number you're trying to hit.",
+        }
+      - {
+          label: "Current",
+          name: "current",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+          hint: "Where you are right now — drives the progress bar.",
+        }
+      - {
+          label: "Unit",
+          name: "unit",
+          widget: "string",
+          required: false,
+          default: "$",
+          hint: "Use $ for money. Anything else (e.g. 'videos', 'orders') is shown as a suffix.",
+        }
+      - {
+          label: "Deadline",
+          name: "deadline",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "active"
+        options:
+          - { label: "Active", value: "active" }
+          - { label: "Successful", value: "successful" }
+          - { label: "Failed", value: "failed" }
+      - {
+          label: "Pin to top (show as 'The Goal')",
+          name: "pinned",
+          widget: "boolean",
+          default: false,
+          required: false,
+          hint: "Only one goal should be pinned at a time. If multiple are pinned, the first one wins.",
+        }
+      - {
+          label: "Last Updated",
+          name: "lastUpdated",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+          hint: "When you last refreshed the current value.",
+        }
 
   - name: "daily"
     label: "Daily Logs"

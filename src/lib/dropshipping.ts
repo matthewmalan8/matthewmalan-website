@@ -166,22 +166,29 @@ export async function getFailures(): Promise<Failure[]> {
   );
 }
 
-export function getGoal(): DropshippingGoal {
-  const filePath = path.join(baseDir, "goal.md");
-  const fallback: DropshippingGoal = {
-    goalAmount: 100000,
-    goalDeadline: "2027-01-01",
-    currentSales: 0,
-    lastUpdated: "",
-  };
-  if (!fs.existsSync(filePath)) return fallback;
-  const raw = fs.readFileSync(filePath, "utf8");
-  const { data } = matter(raw);
-  const fm = data as Record<string, unknown>;
-  return {
-    goalAmount: asNumber(fm.goalAmount) || fallback.goalAmount,
-    goalDeadline: normalizeDate(fm.goalDeadline) || fallback.goalDeadline,
-    currentSales: asNumber(fm.currentSales),
-    lastUpdated: normalizeDate(fm.lastUpdated),
-  };
+export function getAllGoals(): DropshippingGoal[] {
+  return readMarkdownDir(path.join(baseDir, "goals"), (slug, fm) => {
+    const rawStatus = asString(fm.status);
+    const status: DropshippingGoal["status"] =
+      rawStatus === "successful" || rawStatus === "failed"
+        ? rawStatus
+        : "active";
+    return {
+      slug,
+      title: asString(fm.title),
+      description: asString(fm.description),
+      target: asNumber(fm.target),
+      current: asNumber(fm.current),
+      unit: asString(fm.unit),
+      deadline: normalizeDate(fm.deadline),
+      status,
+      pinned: asBool(fm.pinned),
+      lastUpdated: normalizeDate(fm.lastUpdated),
+    };
+  });
+}
+
+export function getPinnedGoal(goals?: DropshippingGoal[]): DropshippingGoal | null {
+  const all = goals ?? getAllGoals();
+  return all.find((g) => g.pinned) ?? null;
 }

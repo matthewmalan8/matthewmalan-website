@@ -41,12 +41,72 @@ export type Failure = {
   failedOn: string;
 };
 
+export type GoalStatus = "active" | "successful" | "failed";
+
 export type DropshippingGoal = {
-  goalAmount: number;
-  goalDeadline: string;
-  currentSales: number;
+  slug: string;
+  title: string;
+  description: string;
+  target: number;
+  current: number;
+  unit: string;
+  deadline: string;
+  status: GoalStatus;
+  pinned: boolean;
   lastUpdated: string;
 };
+
+export type GoalFilter =
+  | "recent"
+  | "oldest"
+  | "active"
+  | "successful"
+  | "failed";
+
+export const GOAL_FILTERS: Array<{ value: GoalFilter; label: string }> = [
+  { value: "recent", label: "Most recent" },
+  { value: "oldest", label: "Oldest" },
+  { value: "active", label: "Active only" },
+  { value: "successful", label: "Successful only" },
+  { value: "failed", label: "Failed only" },
+];
+
+export function filterAndSortGoals(
+  goals: DropshippingGoal[],
+  filter: GoalFilter
+): DropshippingGoal[] {
+  const byDeadlineDesc = (a: DropshippingGoal, b: DropshippingGoal) =>
+    new Date(b.deadline).getTime() - new Date(a.deadline).getTime();
+  const byDeadlineAsc = (a: DropshippingGoal, b: DropshippingGoal) =>
+    new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+
+  switch (filter) {
+    case "recent":
+      return [...goals].sort(byDeadlineDesc);
+    case "oldest":
+      return [...goals].sort(byDeadlineAsc);
+    case "active":
+      return goals.filter((g) => g.status === "active").sort(byDeadlineDesc);
+    case "successful":
+      return goals
+        .filter((g) => g.status === "successful")
+        .sort(byDeadlineDesc);
+    case "failed":
+      return goals.filter((g) => g.status === "failed").sort(byDeadlineDesc);
+  }
+}
+
+export function formatGoalValue(value: number, unit: string): string {
+  const trimmed = unit.trim();
+  if (!trimmed) return value.toLocaleString();
+  if (trimmed === "$") return formatMoney(value);
+  return `${value.toLocaleString()} ${trimmed}`;
+}
+
+export function goalProgressPct(goal: DropshippingGoal): number {
+  if (!goal.target || goal.target <= 0) return 0;
+  return Math.min(100, Math.max(0, Math.round((goal.current / goal.target) * 100)));
+}
 
 export type Streak = {
   length: number;
