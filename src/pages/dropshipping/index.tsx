@@ -17,6 +17,7 @@ import {
   getPinnedGoal,
   getPledges,
   getScreenshots,
+  getTaskCache,
 } from "@/lib/dropshipping";
 import {
   daysUntil,
@@ -38,6 +39,7 @@ import {
   type DropshippingGoal,
   type Failure,
   type GoalFilter,
+  type GoogleTaskCache,
   type Pledge,
   type Screenshot,
   type Streak,
@@ -50,6 +52,7 @@ type Props = {
   failures: Failure[];
   goals: DropshippingGoal[];
   pinnedGoal: DropshippingGoal | null;
+  taskCache: GoogleTaskCache;
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -62,6 +65,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       failures: await getFailures(),
       goals,
       pinnedGoal: getPinnedGoal(goals),
+      taskCache: getTaskCache(),
     },
   };
 };
@@ -185,6 +189,7 @@ export default function DropshippingPage({
   failures,
   goals,
   pinnedGoal,
+  taskCache,
 }: Props) {
   const [pledgesView, setPledgesView] = useState<ViewMode>("grid");
   const [screenshotsView, setScreenshotsView] = useState<ViewMode>("grid");
@@ -217,6 +222,7 @@ export default function DropshippingPage({
       title="Dropshipping"
       description="Building a dropshipping business in public. Daily videos, real numbers, real failures."
       path="/dropshipping/"
+      ogImage="/og/dropshipping.png"
     >
       {/* Hero */}
       <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
@@ -340,7 +346,7 @@ export default function DropshippingPage({
         <h2 className="text-3xl sm:text-4xl tracking-tight mb-6">
           Daily activity
         </h2>
-        <DropshippingCalendar logs={logs} />
+        <DropshippingCalendar logs={logs} taskCache={taskCache} />
       </section>
 
       {/* Goals */}

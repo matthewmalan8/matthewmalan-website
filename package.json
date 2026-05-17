@@ -4,30 +4,38 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3400",
-    "prebuild": "node scripts/update-cms-default.mjs && node scripts/fetch-hevy.mjs && node scripts/update-gym-pinned-options.mjs",
+    "prebuild": "node scripts/update-cms-default.mjs && node scripts/fetch-hevy.mjs && node scripts/fetch-google-tasks.mjs && node scripts/update-gym-pinned-options.mjs && node scripts/generate-og-images.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-rss.mjs",
     "build": "next build",
+    "postbuild": "pagefind --site out --output-subdir pagefind",
     "start": "next start -p 3400",
     "lint": "next lint",
     "deploy:aws": "pnpm build && aws s3 sync out/ s3://matthewmalan.com --delete && aws cloudfront create-invalidation --distribution-id E2RKBCXIJZTCSR --paths \"/*\""
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "next": "^15.1.0",
+    "next-seo": "^6.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next-seo": "^6.6.0",
-    "gray-matter": "^4.0.3",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/space-grotesk": "^5.2.10",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "pagefind": "^1.5.2",
+    "satori": "^0.26.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["sharp"]
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   }
 }

@@ -35,6 +35,7 @@ export default function ContactPage() {
       title="Contact"
       description="Get in touch with Matthew Malan for consulting, speaking engagements, podcast guesting, and collaborations."
       path="/contact/"
+      ogImage="/og/contact.png"
     >
       <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">
         <div className="max-w-3xl mx-auto px-6 lg:px-10 pt-24 pb-16 lg:pt-32">

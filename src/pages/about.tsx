@@ -7,6 +7,7 @@ export default function AboutPage() {
       title="About"
       description="Matthew Malan is an e-commerce consultant and host of the Stay Hungry Podcast, helping founders scale companies to six figures and beyond."
       path="/about/"
+      ogImage="/og/about.png"
     >
       {/* TITLE + BIO + PHOTO */}
       <section className="bg-[var(--color-off-white)]">

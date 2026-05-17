@@ -73,6 +73,7 @@ export default function BooksPage({ books }: Props) {
       title="Books"
       description="Book reviews by Matthew Malan — what I'm reading, what I'm learning, and what's worth your time."
       path="/books/"
+      ogImage="/og/books.png"
     >
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 sm:pt-20 pb-10 sm:pb-12">
