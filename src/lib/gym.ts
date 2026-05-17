@@ -15,6 +15,12 @@ const cacheDir = path.join(process.cwd(), "content", "gym", "cache");
 const workoutsFile = path.join(cacheDir, "workouts.json");
 const templatesFile = path.join(cacheDir, "exercise-templates.json");
 const overridesDir = path.join(process.cwd(), "content", "gym", "overrides");
+const pinnedFile = path.join(
+  process.cwd(),
+  "content",
+  "gym",
+  "pinned-exercises.md"
+);
 
 type HevyRawSet = {
   type?: string;
@@ -307,4 +313,37 @@ export function getUsedExerciseTemplates(
     }
   }
   return templates.filter((t) => usedIds.has(t.id));
+}
+
+export function getPinnedExerciseTitles(): string[] {
+  if (!fs.existsSync(pinnedFile)) return [];
+  try {
+    const raw = fs.readFileSync(pinnedFile, "utf8");
+    const { data } = matter(raw);
+    const fm = data as Record<string, unknown>;
+    const list = Array.isArray(fm.exercises) ? fm.exercises : [];
+    return list
+      .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
+      .map((s) => s.trim())
+      .slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
+export function resolvePinnedExercises(
+  titles: string[],
+  templates: ExerciseTemplate[]
+): ExerciseTemplate[] {
+  // Match by exact (case-insensitive) title.
+  const byTitle = new Map<string, ExerciseTemplate>();
+  for (const t of templates) {
+    byTitle.set(t.title.toLowerCase(), t);
+  }
+  const resolved: ExerciseTemplate[] = [];
+  for (const title of titles) {
+    const found = byTitle.get(title.toLowerCase());
+    if (found) resolved.push(found);
+  }
+  return resolved;
 }

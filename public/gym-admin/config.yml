@@ -15,6 +15,21 @@ display_url: https://matthewmalan.com/gym/
 logo_url: https://matthewmalan.com/favicon.svg
 
 collections:
+  - name: "settings"
+    label: "Gym Settings"
+    files:
+      - file: "content/gym/pinned-exercises.md"
+        name: "pinned_exercises"
+        label: "Pinned Exercises (Top of /gym/)"
+        fields:
+          - label: "Pinned Exercises"
+            name: "exercises"
+            widget: "list"
+            max: 5
+            required: false
+            hint: "Up to 5 exercise titles to feature at the top of /gym/. Type the exact Hevy exercise name (e.g. 'Bench Press (Barbell)'). Order here = order on the page."
+            field: { label: "Exercise Name", name: "title", widget: "string" }
+
   - name: "manual_workouts"
     label: "Manual Workouts"
     label_singular: "Manual Workout"

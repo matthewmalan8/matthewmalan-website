@@ -7,34 +7,63 @@ import { ChevronDownIcon } from "@/components/Icons";
 import {
   getAllExerciseTemplates,
   getAllWorkouts,
+  getPinnedExerciseTitles,
   getUsedExerciseTemplates,
+  resolvePinnedExercises,
 } from "@/lib/gym";
 import {
   formatDuration,
+  formatShortDate,
+  formatWeight,
   getCurrentGymStreak,
+  getExerciseStats,
   getMuscleGroups,
   getTemplateSessionCount,
   getTotalSecondsInRange,
   humanizeMuscle,
   TIME_RANGES,
+  type ExerciseStats,
   type ExerciseTemplate,
   type GymWorkout,
   type TimeRange,
 } from "@/lib/gym-utils";
 
+type PinnedExercise = {
+  template: ExerciseTemplate;
+  highestPrKg: number | null;
+  highestPrDate: string | null;
+  totalSessions: number;
+};
+
 type Props = {
   workouts: GymWorkout[];
   templates: ExerciseTemplate[];
+  pinnedExercises: PinnedExercise[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const workouts = getAllWorkouts();
   const allTemplates = getAllExerciseTemplates();
   const templates = getUsedExerciseTemplates(workouts, allTemplates);
-  return { props: { workouts, templates } };
+  const pinnedTitles = getPinnedExerciseTitles();
+  const pinnedTemplates = resolvePinnedExercises(pinnedTitles, allTemplates);
+  const pinnedExercises: PinnedExercise[] = pinnedTemplates.map((template) => {
+    const stats: ExerciseStats = getExerciseStats(template, workouts);
+    return {
+      template,
+      highestPrKg: stats.highestPrKg,
+      highestPrDate: stats.highestPrDate,
+      totalSessions: stats.totalSessions,
+    };
+  });
+  return { props: { workouts, templates, pinnedExercises } };
 };
 
-export default function GymPage({ workouts, templates }: Props) {
+export default function GymPage({
+  workouts,
+  templates,
+  pinnedExercises,
+}: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [search, setSearch] = useState("");
   const [muscle, setMuscle] = useState<string | null>(null);
@@ -104,6 +133,39 @@ export default function GymPage({ workouts, templates }: Props) {
         </section>
       ) : (
         <>
+          {/* Pinned exercises */}
+          {pinnedExercises.length > 0 && (
+            <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-4">
+                Pinned exercises
+              </h2>
+              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {pinnedExercises.map(
+                  ({ template, highestPrKg, highestPrDate }) => (
+                    <li key={template.id}>
+                      <Link
+                        href={`/gym/exercise/${template.slug}/`}
+                        className="group block h-full rounded-2xl border-2 border-[var(--color-warm-gray)] hover:border-[var(--color-black)] bg-[var(--color-off-white)] p-4 transition-colors"
+                      >
+                        <p className="text-sm font-semibold tracking-tight leading-tight line-clamp-2 group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 min-h-[2.5em]">
+                          {template.title}
+                        </p>
+                        <p className="mt-3 font-[family-name:var(--font-display)] text-3xl tracking-tight">
+                          {formatWeight(highestPrKg)}
+                        </p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--color-black)]/55">
+                          {highestPrDate
+                            ? `Last: ${formatShortDate(highestPrDate)}`
+                            : "No weighted PR yet"}
+                        </p>
+                      </Link>
+                    </li>
+                  )
+                )}
+              </ul>
+            </section>
+          )}
+
           {/* Stats */}
           <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
