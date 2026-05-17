@@ -193,13 +193,13 @@ export default function ExerciseDetailPage({ stats }: Props) {
 
         {/* Stats */}
         <section className="max-w-5xl mx-auto px-6 lg:px-10 mt-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Best 1RM */}
             <div className="bg-[var(--color-yellow)] text-[var(--color-black)] rounded-2xl p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
                 Best 1RM
               </p>
-              <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
+              <p className="mt-3 font-[family-name:var(--font-display)] text-3xl lg:text-4xl tracking-tight">
                 {format1Rm(bestPR.oneRmKg)}
               </p>
               {bestPR.oneRmWeightKg != null && bestPR.oneRmReps != null && (
@@ -219,7 +219,7 @@ export default function ExerciseDetailPage({ stats }: Props) {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
                 Best Set Volume
               </p>
-              <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
+              <p className="mt-3 font-[family-name:var(--font-display)] text-3xl lg:text-4xl tracking-tight">
                 {formatVolume(bestPR.volumeKg)}
               </p>
               {bestPR.volumeWeightKg != null && bestPR.volumeReps != null && (
@@ -234,12 +234,33 @@ export default function ExerciseDetailPage({ stats }: Props) {
               </p>
             </div>
 
+            {/* Best Session Volume */}
+            <div className="bg-[var(--color-black)] text-[var(--color-off-white)] rounded-2xl p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-lime)]">
+                Best Session Volume
+              </p>
+              <p className="mt-3 font-[family-name:var(--font-display)] text-3xl lg:text-4xl tracking-tight">
+                {formatVolume(bestPR.sessionVolumeKg)}
+              </p>
+              {bestPR.sessionVolumeSetCount != null && (
+                <p className="mt-1 text-xs text-[var(--color-warm-gray)]">
+                  across {bestPR.sessionVolumeSetCount}{" "}
+                  {bestPR.sessionVolumeSetCount === 1 ? "set" : "sets"}
+                </p>
+              )}
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-[var(--color-warm-gray)]">
+                {bestPR.sessionVolumeDate
+                  ? `Last: ${formatShortDate(bestPR.sessionVolumeDate)}`
+                  : "No session PR yet"}
+              </p>
+            </div>
+
             {/* Total sessions */}
             <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
                 Total sessions
               </p>
-              <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
+              <p className="mt-3 font-[family-name:var(--font-display)] text-3xl lg:text-4xl tracking-tight">
                 {totalSessions}
               </p>
             </div>

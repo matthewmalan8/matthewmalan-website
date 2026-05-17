@@ -224,6 +224,12 @@ export type BestPR = {
   volumeWeightKg: number | null;
   volumeReps: number | null;
   volumeDate: string | null;
+
+  /** Best total volume in one session (sum of weight × reps across all
+   * non-warmup sets of this exercise in that workout). */
+  sessionVolumeKg: number | null;
+  sessionVolumeSetCount: number | null;
+  sessionVolumeDate: string | null;
 };
 
 export type ExerciseStats = {
@@ -259,6 +265,9 @@ export function getExerciseStats(
     volumeWeightKg: null,
     volumeReps: null,
     volumeDate: null,
+    sessionVolumeKg: null,
+    sessionVolumeSetCount: null,
+    sessionVolumeDate: null,
   };
 
   for (const workout of workouts) {
@@ -277,6 +286,11 @@ export function getExerciseStats(
       ) {
         lastSessionDate = workout.startTime;
       }
+
+      // Accumulate this session's total volume across all working sets.
+      let sessionVolume = 0;
+      let sessionSetCount = 0;
+
       for (const set of ex.sets) {
         if (set.type === "warmup") continue;
         if (set.weightKg == null || set.weightKg <= 0) continue;
@@ -305,6 +319,19 @@ export function getExerciseStats(
           bestPR.volumeReps = set.reps;
           bestPR.volumeDate = workout.startTime;
         }
+
+        sessionVolume += volume;
+        sessionSetCount += 1;
+      }
+
+      if (
+        sessionVolume > 0 &&
+        (bestPR.sessionVolumeKg == null ||
+          sessionVolume > bestPR.sessionVolumeKg)
+      ) {
+        bestPR.sessionVolumeKg = sessionVolume;
+        bestPR.sessionVolumeSetCount = sessionSetCount;
+        bestPR.sessionVolumeDate = workout.startTime;
       }
     }
   }
