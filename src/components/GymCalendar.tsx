@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   formatDuration,
   formatLongDate,
-  formatWeight,
+  formatSetSummary,
   isoDate,
+  isWorkoutIncomplete,
   type GymWorkout,
 } from "@/lib/gym-utils";
 
@@ -29,7 +31,6 @@ export default function GymCalendar({ workouts }: Props) {
   });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // Group workouts by date.
   const workoutsByDate = useMemo(() => {
     const map = new Map<string, GymWorkout[]>();
     for (const w of workouts) {
@@ -65,6 +66,119 @@ export default function GymCalendar({ workouts }: Props) {
       return m > 11 ? { year: v.year + 1, month: 0 } : { year: v.year, month: m };
     });
 
+  // ---- Detail view: replaces the calendar grid ----
+  if (selectedDate && selectedWorkouts.length > 0) {
+    const anyIncomplete = selectedWorkouts.some(isWorkoutIncomplete);
+    return (
+      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setSelectedDate(null)}
+            className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#4A4A4A] cursor-pointer"
+          >
+            ← Back to calendar
+          </button>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-black)]/50">
+            {formatLongDate(selectedDate)}
+          </p>
+        </div>
+
+        <div className="space-y-10">
+          {selectedWorkouts.map((w) => {
+            const incomplete = isWorkoutIncomplete(w);
+            return (
+              <div key={w.id}>
+                <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                  <h3 className="font-[family-name:var(--font-display)] text-2xl tracking-tight">
+                    {w.title}
+                  </h3>
+                  {w.durationSeconds > 0 && (
+                    <span className="text-sm text-[var(--color-black)]/60">
+                      {formatDuration(w.durationSeconds)}
+                    </span>
+                  )}
+                </div>
+                {incomplete && (
+                  <div className="mt-3 inline-flex items-center gap-2 bg-[#D64545]/10 border border-[#D64545]/30 text-[#A92A2A] rounded-lg px-3 py-2 text-xs font-semibold">
+                    <span aria-hidden>⚠</span>
+                    <span>
+                      Clarification needed —{" "}
+                      <Link href="/gym-admin/" className="underline">
+                        add the data in /gym-admin/
+                      </Link>
+                    </span>
+                  </div>
+                )}
+                {w.description && (
+                  <p className="mt-3 text-sm text-[var(--color-black)]/70">
+                    {w.description}
+                  </p>
+                )}
+                <ul className="mt-5 space-y-5">
+                  {w.exercises.map((ex, i) => (
+                    <li key={i}>
+                      <p className="text-base font-semibold tracking-tight">
+                        {ex.title}
+                      </p>
+                      {ex.notes && (
+                        <p className="mt-1 text-xs text-[var(--color-black)]/55">
+                          {ex.notes}
+                        </p>
+                      )}
+                      {ex.sets.length > 0 ? (
+                        <ul className="mt-2 text-sm text-[var(--color-black)]/80 space-y-1">
+                          {ex.sets.map((set, j) => {
+                            const isWarmup = set.type === "warmup";
+                            return (
+                              <li
+                                key={j}
+                                className={`flex gap-3 ${
+                                  isWarmup
+                                    ? "text-[var(--color-black)]/45 italic"
+                                    : ""
+                                }`}
+                              >
+                                <span className="w-6 text-right">{j + 1}.</span>
+                                <span className="flex-1">
+                                  {formatSetSummary(set)}
+                                  {isWarmup && (
+                                    <span className="ml-2 text-[10px] uppercase tracking-wider">
+                                      warmup
+                                    </span>
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : (
+                        <p className="mt-2 text-sm text-[var(--color-black)]/50 italic">
+                          No sets logged
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+
+        {anyIncomplete && selectedWorkouts.length > 1 && (
+          <p className="mt-8 text-xs text-[var(--color-black)]/55 italic">
+            One or more workouts on this day have missing data. Open{" "}
+            <Link href="/gym-admin/" className="underline">
+              /gym-admin/
+            </Link>{" "}
+            to fill them in.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // ---- Grid view ----
   return (
     <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
@@ -101,21 +215,22 @@ export default function GymCalendar({ workouts }: Props) {
           const inMonth = d.getMonth() === view.month;
           const dayWorkouts = workoutsByDate.get(iso) ?? [];
           const hasWorkout = dayWorkouts.length > 0;
+          const allIncomplete =
+            hasWorkout && dayWorkouts.every(isWorkoutIncomplete);
           const isToday = iso === todayIso;
-          const isSelected = iso === selectedDate;
 
           const baseClasses =
             "aspect-square rounded-lg p-1.5 sm:p-2 flex flex-col items-start justify-between text-left transition-colors w-full";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
-            : hasWorkout
-              ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
-              : "bg-transparent text-[var(--color-black)]/70 cursor-default";
-          const ringClasses = isSelected
-            ? "ring-2 ring-[var(--color-black)]"
-            : isToday
-              ? "ring-2 ring-[var(--color-black)]/40 ring-inset"
-              : "";
+            : allIncomplete
+              ? "bg-[#D64545] text-[var(--color-off-white)] hover:opacity-90 cursor-pointer"
+              : hasWorkout
+                ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
+                : "bg-transparent text-[var(--color-black)]/70 cursor-default";
+          const ringClasses = isToday
+            ? "ring-2 ring-[var(--color-black)]/40 ring-inset"
+            : "";
 
           const content = (
             <>
@@ -123,8 +238,17 @@ export default function GymCalendar({ workouts }: Props) {
                 {d.getDate()}
               </span>
               {hasWorkout && (
-                <span className="text-[10px] sm:text-xs font-bold self-end text-[#6B7280]">
-                  {dayWorkouts.length > 1 ? `${dayWorkouts.length}×` : "✓"}
+                <span
+                  className={`text-[10px] sm:text-xs font-bold self-end ${
+                    allIncomplete ? "text-white/80" : "text-[#6B7280]"
+                  }`}
+                  title={allIncomplete ? "Clarification needed" : undefined}
+                >
+                  {allIncomplete
+                    ? "⚠"
+                    : dayWorkouts.length > 1
+                      ? `${dayWorkouts.length}×`
+                      : "✓"}
                 </span>
               )}
             </>
@@ -135,10 +259,8 @@ export default function GymCalendar({ workouts }: Props) {
               <button
                 key={iso}
                 type="button"
-                onClick={() =>
-                  setSelectedDate((curr) => (curr === iso ? null : iso))
-                }
-                title={`${iso} — ${dayWorkouts.length} workout${dayWorkouts.length > 1 ? "s" : ""}`}
+                onClick={() => setSelectedDate(iso)}
+                title={`${iso} — ${dayWorkouts.length} workout${dayWorkouts.length > 1 ? "s" : ""}${allIncomplete ? " · clarification needed" : ""}`}
                 className={`${baseClasses} ${stateClasses} ${ringClasses}`}
               >
                 {content}
@@ -164,95 +286,14 @@ export default function GymCalendar({ workouts }: Props) {
           Workout logged
         </span>
         <span className="flex items-center gap-1.5">
+          <span className="inline-block w-3 h-3 rounded bg-[#D64545]" />
+          Clarification needed
+        </span>
+        <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)]/40 ring-inset" />
           Today
         </span>
       </div>
-
-      {/* Selected-day workouts */}
-      {selectedWorkouts.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-[var(--color-warm-gray)]">
-          <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-                Workout
-              </p>
-              <p className="mt-1 font-[family-name:var(--font-display)] text-2xl tracking-tight">
-                {formatLongDate(selectedDate!)}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelectedDate(null)}
-              aria-label="Close workout"
-              className="text-[var(--color-black)]/50 hover:text-[var(--color-black)] text-xl cursor-pointer leading-none"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="space-y-8">
-            {selectedWorkouts.map((w) => (
-              <div key={w.id}>
-                <div className="flex items-baseline justify-between gap-3 flex-wrap">
-                  <h4 className="text-xl font-semibold">{w.title}</h4>
-                  <span className="text-sm text-[var(--color-black)]/60">
-                    {formatDuration(w.durationSeconds)}
-                  </span>
-                </div>
-                {w.description && (
-                  <p className="mt-2 text-sm text-[var(--color-black)]/70">
-                    {w.description}
-                  </p>
-                )}
-                <ul className="mt-4 space-y-4">
-                  {w.exercises.map((ex, i) => (
-                    <li key={i}>
-                      <p className="text-sm font-semibold tracking-tight">
-                        {ex.title}
-                      </p>
-                      {ex.sets.length > 0 ? (
-                        <ul className="mt-1.5 text-xs text-[var(--color-black)]/75 space-y-1">
-                          {ex.sets.map((set, j) => {
-                            const isWarmup = set.type === "warmup";
-                            return (
-                              <li
-                                key={j}
-                                className={`flex gap-3 ${
-                                  isWarmup
-                                    ? "text-[var(--color-black)]/45 italic"
-                                    : ""
-                                }`}
-                              >
-                                <span className="w-5 text-right">{j + 1}.</span>
-                                <span className="flex-1">
-                                  {formatWeight(set.weightKg)}
-                                  {set.reps != null && (
-                                    <span> × {set.reps} reps</span>
-                                  )}
-                                  {isWarmup && (
-                                    <span className="ml-2 text-[10px] uppercase tracking-wider">
-                                      warmup
-                                    </span>
-                                  )}
-                                </span>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      ) : (
-                        <p className="mt-1 text-xs text-[var(--color-black)]/50 italic">
-                          No sets logged
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

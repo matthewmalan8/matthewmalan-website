@@ -111,11 +111,12 @@ export function getCurrentGymStreak(workouts: GymWorkout[]): number {
 
 // ---- Time totals ----------------------------------------------------------
 
-export type TimeRange = "week" | "month" | "year" | "all";
+export type TimeRange = "week" | "month" | "last3months" | "year" | "all";
 
 export const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
   { value: "week", label: "This week" },
   { value: "month", label: "This month" },
+  { value: "last3months", label: "Last 3 months" },
   { value: "year", label: "This year" },
   { value: "all", label: "All time" },
 ];
@@ -143,13 +144,63 @@ export function getTotalSecondsInRange(
   let cutoff: Date | null = null;
   if (range === "week") cutoff = startOfWeek(now);
   else if (range === "month") cutoff = startOfMonth(now);
-  else if (range === "year") cutoff = startOfYear(now);
+  else if (range === "last3months") {
+    const c = new Date(now);
+    c.setMonth(c.getMonth() - 3);
+    cutoff = c;
+  } else if (range === "year") cutoff = startOfYear(now);
 
   return workouts.reduce((sum, w) => {
     if (cutoff && new Date(w.startTime).getTime() < cutoff.getTime())
       return sum;
     return sum + w.durationSeconds;
   }, 0);
+}
+
+export function isSetEmpty(set: GymSet): boolean {
+  return (
+    (set.weightKg == null || set.weightKg <= 0) &&
+    (set.reps == null || set.reps <= 0) &&
+    (set.durationSeconds == null || set.durationSeconds <= 0) &&
+    (set.distanceMeters == null || set.distanceMeters <= 0)
+  );
+}
+
+export function isWorkoutIncomplete(workout: GymWorkout): boolean {
+  if (workout.exercises.length === 0) return true;
+  for (const ex of workout.exercises) {
+    for (const set of ex.sets) {
+      if (!isSetEmpty(set)) return false;
+    }
+  }
+  return true;
+}
+
+export function formatSetSummary(set: GymSet): string {
+  const parts: string[] = [];
+  if (set.weightKg != null && set.weightKg > 0) {
+    parts.push(formatWeight(set.weightKg));
+  }
+  if (set.reps != null && set.reps > 0) {
+    parts.push(`${set.reps} reps`);
+  }
+  if (set.durationSeconds != null && set.durationSeconds > 0) {
+    parts.push(formatDuration(set.durationSeconds));
+  }
+  if (set.distanceMeters != null && set.distanceMeters > 0) {
+    const meters = set.distanceMeters;
+    parts.push(
+      meters >= 1000
+        ? `${(meters / 1000).toFixed(2)} km`
+        : `${Math.round(meters)} m`
+    );
+  }
+  if (parts.length === 0) return "—";
+  if (parts.length === 1) return parts[0];
+  if (parts[0].endsWith(" lb") && parts[1].endsWith(" reps")) {
+    return `${parts[0]} × ${parts[1]}`;
+  }
+  return parts.join(" · ");
 }
 
 // ---- Exercise stats -------------------------------------------------------

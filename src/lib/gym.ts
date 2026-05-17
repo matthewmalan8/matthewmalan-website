@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
 import type {
   ExerciseInstance,
   ExerciseTemplate,
@@ -13,6 +14,7 @@ export type { ExerciseTemplate, GymWorkout };
 const cacheDir = path.join(process.cwd(), "content", "gym", "cache");
 const workoutsFile = path.join(cacheDir, "workouts.json");
 const templatesFile = path.join(cacheDir, "exercise-templates.json");
+const overridesDir = path.join(process.cwd(), "content", "gym", "overrides");
 
 type HevyRawSet = {
   type?: string;
@@ -138,6 +140,95 @@ function parseTemplate(raw: HevyRawTemplate): ExerciseTemplate | null {
   };
 }
 
+type OverrideSet = {
+  weightLb?: number;
+  reps?: number;
+  durationSeconds?: number;
+  distanceMeters?: number;
+  type?: string;
+};
+
+type OverrideExercise = {
+  title?: string;
+  templateId?: string;
+  notes?: string;
+  sets?: OverrideSet[];
+};
+
+type WorkoutOverride = {
+  date: string;
+  title: string;
+  description: string;
+  exercises: ExerciseInstance[];
+};
+
+function lbsToKg(lbs: number): number {
+  return Math.round((lbs / 2.20462) * 100) / 100;
+}
+
+function loadOverrides(): Map<string, WorkoutOverride> {
+  const map = new Map<string, WorkoutOverride>();
+  if (!fs.existsSync(overridesDir)) return map;
+  const files = fs.readdirSync(overridesDir).filter((f) => f.endsWith(".md"));
+  for (const f of files) {
+    try {
+      const raw = fs.readFileSync(path.join(overridesDir, f), "utf8");
+      const { data } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      let date = "";
+      if (fm.date instanceof Date) {
+        date = isoDate(fm.date);
+      } else if (typeof fm.date === "string") {
+        // Normalize to YYYY-MM-DD
+        const d = new Date(fm.date);
+        date = isNaN(d.getTime())
+          ? fm.date.slice(0, 10)
+          : isoDate(d);
+      }
+      if (!date) continue;
+      const title = typeof fm.title === "string" ? fm.title : "Manual workout";
+      const description =
+        typeof fm.description === "string" ? fm.description : "";
+      const rawExercises = Array.isArray(fm.exercises)
+        ? (fm.exercises as OverrideExercise[])
+        : [];
+      const exercises: ExerciseInstance[] = rawExercises.map((ex) => ({
+        templateId: typeof ex.templateId === "string" ? ex.templateId : "",
+        title: typeof ex.title === "string" ? ex.title : "",
+        notes: typeof ex.notes === "string" ? ex.notes : "",
+        sets: Array.isArray(ex.sets)
+          ? ex.sets.map((s): GymSet => ({
+              type: typeof s.type === "string" ? s.type : "normal",
+              weightKg:
+                typeof s.weightLb === "number" && Number.isFinite(s.weightLb)
+                  ? lbsToKg(s.weightLb)
+                  : null,
+              reps:
+                typeof s.reps === "number" && Number.isFinite(s.reps)
+                  ? s.reps
+                  : null,
+              distanceMeters:
+                typeof s.distanceMeters === "number" &&
+                Number.isFinite(s.distanceMeters)
+                  ? s.distanceMeters
+                  : null,
+              durationSeconds:
+                typeof s.durationSeconds === "number" &&
+                Number.isFinite(s.durationSeconds)
+                  ? s.durationSeconds
+                  : null,
+              rpe: null,
+            }))
+          : [],
+      }));
+      map.set(date, { date, title, description, exercises });
+    } catch {
+      // skip malformed override files
+    }
+  }
+  return map;
+}
+
 export function getAllWorkouts(): GymWorkout[] {
   const raw = readJson<HevyRawWorkout[]>(workoutsFile, []);
   const parsed: GymWorkout[] = [];
@@ -145,6 +236,46 @@ export function getAllWorkouts(): GymWorkout[] {
     const p = parseWorkout(w);
     if (p) parsed.push(p);
   }
+
+  // Merge in manual overrides keyed by date.
+  const overrides = loadOverrides();
+  if (overrides.size > 0) {
+    const merged: GymWorkout[] = [];
+    const seenDates = new Set<string>();
+    for (const w of parsed) {
+      const override = overrides.get(w.date);
+      if (override) {
+        merged.push({
+          ...w,
+          title: override.title || w.title,
+          description: override.description || w.description,
+          exercises:
+            override.exercises.length > 0 ? override.exercises : w.exercises,
+        });
+        seenDates.add(w.date);
+      } else {
+        merged.push(w);
+      }
+    }
+    // Add any overrides for dates with no matching Hevy workout.
+    for (const [date, override] of overrides) {
+      if (seenDates.has(date)) continue;
+      const start = `${date}T12:00:00Z`;
+      merged.push({
+        id: `manual-${date}`,
+        title: override.title,
+        description: override.description,
+        date,
+        startTime: start,
+        endTime: start,
+        durationSeconds: 0,
+        exercises: override.exercises,
+      });
+    }
+    parsed.length = 0;
+    parsed.push(...merged);
+  }
+
   // Sort newest first.
   return parsed.sort(
     (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()

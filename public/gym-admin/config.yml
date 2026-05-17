@@ -1,0 +1,110 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/gym"
+public_folder: "/images/gym"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/gym/
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  - name: "manual_workouts"
+    label: "Manual Workouts"
+    label_singular: "Manual Workout"
+    folder: "content/gym/overrides"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} — {{title}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          hint: "Matches the calendar date for the workout. Overrides any Hevy data for that day.",
+        }
+      - {
+          label: "Title",
+          name: "title",
+          widget: "string",
+          default: "Manual workout",
+        }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+        }
+      - label: "Exercises"
+        name: "exercises"
+        widget: "list"
+        required: false
+        collapsed: false
+        label_singular: "Exercise"
+        summary: "{{title}}"
+        fields:
+          - { label: "Exercise Name", name: "title", widget: "string" }
+          - {
+              label: "Notes",
+              name: "notes",
+              widget: "string",
+              required: false,
+            }
+          - label: "Sets"
+            name: "sets"
+            widget: "list"
+            required: false
+            collapsed: false
+            label_singular: "Set"
+            summary: "{{weightLb}}lb × {{reps}}"
+            fields:
+              - label: "Type"
+                name: "type"
+                widget: "select"
+                default: "normal"
+                options:
+                  - { label: "Normal", value: "normal" }
+                  - { label: "Warmup", value: "warmup" }
+                  - { label: "Failure", value: "failure" }
+                  - { label: "Dropset", value: "dropset" }
+              - {
+                  label: "Weight (lb)",
+                  name: "weightLb",
+                  widget: "number",
+                  value_type: "float",
+                  required: false,
+                }
+              - {
+                  label: "Reps",
+                  name: "reps",
+                  widget: "number",
+                  value_type: "int",
+                  required: false,
+                }
+              - {
+                  label: "Duration (seconds)",
+                  name: "durationSeconds",
+                  widget: "number",
+                  value_type: "int",
+                  required: false,
+                  hint: "For timed holds like planks.",
+                }
+              - {
+                  label: "Distance (meters)",
+                  name: "distanceMeters",
+                  widget: "number",
+                  value_type: "int",
+                  required: false,
+                  hint: "For running, walking, etc.",
+                }
