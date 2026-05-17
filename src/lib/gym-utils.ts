@@ -459,6 +459,80 @@ export function format1Rm(oneRmKg: number | null): string {
   return `${lbs} lb`;
 }
 
+/**
+ * Returns the set of ISO dates where the user hit a NEW PR (1RM,
+ * set volume, or session volume) on any exercise. The first time an
+ * exercise is performed doesn't count as a PR — improvements over a
+ * previous best do.
+ */
+export function getPrDates(workouts: GymWorkout[]): Set<string> {
+  const prDates = new Set<string>();
+
+  // Bucket each exercise instance with its parent workout, then iterate
+  // per-template chronologically (oldest → newest) so we can detect
+  // when each PR was actually broken.
+  type Entry = { workout: GymWorkout; exercise: ExerciseInstance };
+  const perTemplate = new Map<string, Entry[]>();
+  for (const w of workouts) {
+    for (const ex of w.exercises) {
+      if (!ex.templateId) continue;
+      const list = perTemplate.get(ex.templateId) ?? [];
+      list.push({ workout: w, exercise: ex });
+      perTemplate.set(ex.templateId, list);
+    }
+  }
+
+  for (const list of perTemplate.values()) {
+    list.sort(
+      (a, b) =>
+        new Date(a.workout.startTime).getTime() -
+        new Date(b.workout.startTime).getTime()
+    );
+
+    let maxOneRm = 0;
+    let maxSetVolume = 0;
+    let maxSessionVolume = 0;
+    let isFirstEntry = true;
+
+    for (const { workout, exercise } of list) {
+      let bestSetOneRm = 0;
+      let bestSetVolume = 0;
+      let sessionVolume = 0;
+
+      for (const set of exercise.sets) {
+        if (set.type === "warmup") continue;
+        if (set.weightKg == null || set.weightKg <= 0) continue;
+        if (set.reps == null || set.reps <= 0) continue;
+        const oneRm = set.weightKg * (1 + set.reps / 30);
+        const vol = set.weightKg * set.reps;
+        if (oneRm > bestSetOneRm) bestSetOneRm = oneRm;
+        if (vol > bestSetVolume) bestSetVolume = vol;
+        sessionVolume += vol;
+      }
+
+      // Skip the very first appearance of this exercise — there's
+      // nothing to beat yet, so flagging it as a PR is noise.
+      if (
+        !isFirstEntry &&
+        (bestSetOneRm > maxOneRm ||
+          bestSetVolume > maxSetVolume ||
+          sessionVolume > maxSessionVolume)
+      ) {
+        prDates.add(workout.date);
+      }
+
+      // Always update the running maxes (including the first session).
+      if (bestSetOneRm > maxOneRm) maxOneRm = bestSetOneRm;
+      if (bestSetVolume > maxSetVolume) maxSetVolume = bestSetVolume;
+      if (sessionVolume > maxSessionVolume) maxSessionVolume = sessionVolume;
+
+      isFirstEntry = false;
+    }
+  }
+
+  return prDates;
+}
+
 export function getMuscleGroups(templates: ExerciseTemplate[]): string[] {
   const set = new Set<string>();
   for (const t of templates) {

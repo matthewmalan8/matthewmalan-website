@@ -18,7 +18,7 @@ function formatDurationCompact(seconds: number): string {
   return `${h}h ${m}m`;
 }
 
-type Props = { workouts: GymWorkout[] };
+type Props = { workouts: GymWorkout[]; prDates?: string[] };
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -32,7 +32,7 @@ function buildMonthCells(year: number, month: number): Date[] {
   return cells;
 }
 
-export default function GymCalendar({ workouts }: Props) {
+export default function GymCalendar({ workouts, prDates = [] }: Props) {
   const today = new Date();
   const [view, setView] = useState({
     year: today.getFullYear(),
@@ -49,6 +49,8 @@ export default function GymCalendar({ workouts }: Props) {
     }
     return map;
   }, [workouts]);
+
+  const prDateSet = useMemo(() => new Set(prDates), [prDates]);
 
   const cells = useMemo(
     () => buildMonthCells(view.year, view.month),
@@ -249,11 +251,21 @@ export default function GymCalendar({ workouts }: Props) {
           const titles = dayWorkouts
             .map((w) => w.title?.trim())
             .filter((t): t is string => !!t);
+          const isPrDay = inMonth && prDateSet.has(iso);
 
           const content = (
             <>
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0 sm:gap-1 leading-none">
-                <span className="text-[10px] sm:text-sm font-semibold">
+                <span className="text-[10px] sm:text-sm font-semibold inline-flex items-center gap-0.5">
+                  {isPrDay && (
+                    <span
+                      className="text-[#2563EB] text-[10px] sm:text-xs leading-none"
+                      title="New PR set on this day"
+                      aria-label="PR achieved"
+                    >
+                      ★
+                    </span>
+                  )}
                   {d.getDate()}
                 </span>
                 {hasWorkout && (timeText || allIncomplete) && (
@@ -322,6 +334,10 @@ export default function GymCalendar({ workouts }: Props) {
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded bg-[#D64545]" />
           Clarification needed
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-[#2563EB] text-base leading-none">★</span>
+          New PR
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)]/40 ring-inset" />
