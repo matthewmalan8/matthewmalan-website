@@ -9,6 +9,15 @@ import {
   type GymWorkout,
 } from "@/lib/gym-utils";
 
+function formatDurationCompact(seconds: number): string {
+  if (!seconds || seconds <= 0) return "";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
 type Props = { workouts: GymWorkout[] };
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
@@ -220,7 +229,7 @@ export default function GymCalendar({ workouts }: Props) {
           const isToday = iso === todayIso;
 
           const baseClasses =
-            "min-h-20 sm:min-h-24 rounded-lg p-1.5 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
+            "min-h-24 sm:min-h-28 rounded-lg p-1 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
             : allIncomplete
@@ -232,37 +241,49 @@ export default function GymCalendar({ workouts }: Props) {
             ? "ring-2 ring-[var(--color-black)]/40 ring-inset"
             : "";
 
-          const primaryTitle = dayWorkouts[0]?.title?.trim() || "";
+          const totalSeconds = dayWorkouts.reduce(
+            (sum, w) => sum + (w.durationSeconds || 0),
+            0
+          );
+          const timeText = formatDurationCompact(totalSeconds);
+          const titles = dayWorkouts
+            .map((w) => w.title?.trim())
+            .filter((t): t is string => !!t);
 
           const content = (
             <>
               <div className="flex items-start justify-between gap-1">
-                <span className="text-xs sm:text-sm font-semibold">
+                <span className="text-[10px] sm:text-sm font-semibold">
                   {d.getDate()}
                 </span>
-                {hasWorkout && (
+                {hasWorkout && (timeText || allIncomplete) && (
                   <span
-                    className={`text-[10px] sm:text-xs font-bold ${
-                      allIncomplete ? "text-white/80" : "text-[#6B7280]"
+                    className={`text-[8px] sm:text-[10px] font-bold whitespace-nowrap ${
+                      allIncomplete ? "text-white/85" : "text-[#6B7280]"
                     }`}
                     title={allIncomplete ? "Clarification needed" : undefined}
                   >
-                    {allIncomplete
-                      ? "⚠"
-                      : dayWorkouts.length > 1
-                        ? `${dayWorkouts.length}×`
-                        : "✓"}
+                    {timeText || "⚠"}
                   </span>
                 )}
               </div>
-              {hasWorkout && primaryTitle && (
-                <p
-                  className={`mt-1 text-[10px] sm:text-xs font-semibold leading-tight line-clamp-2 ${
-                    allIncomplete ? "text-white/90" : ""
+              {hasWorkout && titles.length > 0 && (
+                <ul
+                  className={`mt-0.5 sm:mt-1 space-y-0.5 text-[8px] sm:text-[11px] font-semibold leading-tight ${
+                    allIncomplete ? "text-white/95" : ""
                   }`}
                 >
-                  {primaryTitle}
-                </p>
+                  {titles.slice(0, 3).map((t, i) => (
+                    <li key={i} className="truncate">
+                      {t}
+                    </li>
+                  ))}
+                  {titles.length > 3 && (
+                    <li className="text-[7px] sm:text-[9px] opacity-70 truncate">
+                      +{titles.length - 3} more
+                    </li>
+                  )}
+                </ul>
               )}
             </>
           );

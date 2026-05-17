@@ -45,7 +45,10 @@ const titles = Array.from(
   )
 ).sort((a, b) => a.localeCompare(b));
 
-const indent = "              ";
+// 12-space indent — matches the column of "field:" / the AUTO marker
+// comments in public/gym-admin/config.yml. Off-by-2 here breaks Decap
+// with "All collection items must start at the same column".
+const indent = "            ";
 const optionsYaml = titles
   .map((title) => `${indent}  - ${JSON.stringify(title)}`)
   .join("\n");
