@@ -212,13 +212,34 @@ export type ExerciseHistoryEntry = {
   sets: GymSet[];
 };
 
+export type BestPR = {
+  /** Estimated 1RM (Epley): weight × (1 + reps/30). */
+  oneRmKg: number | null;
+  oneRmWeightKg: number | null;
+  oneRmReps: number | null;
+  oneRmDate: string | null;
+
+  /** Single-set volume: weight × reps. */
+  volumeKg: number | null;
+  volumeWeightKg: number | null;
+  volumeReps: number | null;
+  volumeDate: string | null;
+};
+
 export type ExerciseStats = {
   template: ExerciseTemplate;
   totalSessions: number;
+  lastSessionDate: string | null;
   highestPrKg: number | null;
   highestPrDate: string | null;
+  bestPR: BestPR;
   history: ExerciseHistoryEntry[];
 };
+
+function epleyOneRm(weightKg: number, reps: number): number {
+  if (weightKg <= 0 || reps <= 0) return 0;
+  return weightKg * (1 + reps / 30);
+}
 
 export function getExerciseStats(
   template: ExerciseTemplate,
@@ -227,6 +248,18 @@ export function getExerciseStats(
   const history: ExerciseHistoryEntry[] = [];
   let highestPrKg: number | null = null;
   let highestPrDate: string | null = null;
+  let lastSessionDate: string | null = null;
+
+  const bestPR: BestPR = {
+    oneRmKg: null,
+    oneRmWeightKg: null,
+    oneRmReps: null,
+    oneRmDate: null,
+    volumeKg: null,
+    volumeWeightKg: null,
+    volumeReps: null,
+    volumeDate: null,
+  };
 
   for (const workout of workouts) {
     for (const ex of workout.exercises) {
@@ -237,13 +270,40 @@ export function getExerciseStats(
         date: workout.startTime,
         sets: ex.sets,
       });
-      // Find this exercise's heaviest non-warmup set in this workout
+      if (
+        lastSessionDate === null ||
+        new Date(workout.startTime).getTime() >
+          new Date(lastSessionDate).getTime()
+      ) {
+        lastSessionDate = workout.startTime;
+      }
       for (const set of ex.sets) {
         if (set.type === "warmup") continue;
-        if (set.weightKg == null) continue;
+        if (set.weightKg == null || set.weightKg <= 0) continue;
+
+        // Highest single-set weight (legacy PR)
         if (highestPrKg == null || set.weightKg > highestPrKg) {
           highestPrKg = set.weightKg;
           highestPrDate = workout.startTime;
+        }
+
+        // 1RM and volume require reps
+        if (set.reps == null || set.reps <= 0) continue;
+
+        const oneRm = epleyOneRm(set.weightKg, set.reps);
+        if (bestPR.oneRmKg == null || oneRm > bestPR.oneRmKg) {
+          bestPR.oneRmKg = oneRm;
+          bestPR.oneRmWeightKg = set.weightKg;
+          bestPR.oneRmReps = set.reps;
+          bestPR.oneRmDate = workout.startTime;
+        }
+
+        const volume = set.weightKg * set.reps;
+        if (bestPR.volumeKg == null || volume > bestPR.volumeKg) {
+          bestPR.volumeKg = volume;
+          bestPR.volumeWeightKg = set.weightKg;
+          bestPR.volumeReps = set.reps;
+          bestPR.volumeDate = workout.startTime;
         }
       }
     }
@@ -256,8 +316,10 @@ export function getExerciseStats(
   return {
     template,
     totalSessions: history.length,
+    lastSessionDate,
     highestPrKg,
     highestPrDate,
+    bestPR,
     history,
   };
 }
@@ -276,6 +338,98 @@ export function getTemplateSessionCount(
     }
   }
   return count;
+}
+
+export function getTemplateLastSessionDate(
+  templateId: string,
+  workouts: GymWorkout[]
+): string | null {
+  // workouts are pre-sorted newest first by getAllWorkouts, but don't depend on it.
+  let latest: string | null = null;
+  for (const w of workouts) {
+    for (const ex of w.exercises) {
+      if (ex.templateId !== templateId) continue;
+      if (latest === null || new Date(w.startTime).getTime() > new Date(latest).getTime()) {
+        latest = w.startTime;
+      }
+      break;
+    }
+  }
+  return latest;
+}
+
+export type ExerciseSort =
+  | "most-sessions"
+  | "least-sessions"
+  | "newest"
+  | "oldest"
+  | "alpha";
+
+export const EXERCISE_SORTS: Array<{ value: ExerciseSort; label: string }> = [
+  { value: "most-sessions", label: "Most sessions" },
+  { value: "least-sessions", label: "Least sessions" },
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+  { value: "alpha", label: "A → Z" },
+];
+
+export function sortTemplates(
+  templates: ExerciseTemplate[],
+  sort: ExerciseSort,
+  sessionCounts: Map<string, number>,
+  lastSessionDates: Map<string, string | null>
+): ExerciseTemplate[] {
+  const out = [...templates];
+  switch (sort) {
+    case "most-sessions":
+      out.sort(
+        (a, b) =>
+          (sessionCounts.get(b.id) ?? 0) - (sessionCounts.get(a.id) ?? 0) ||
+          a.title.localeCompare(b.title)
+      );
+      break;
+    case "least-sessions":
+      out.sort(
+        (a, b) =>
+          (sessionCounts.get(a.id) ?? 0) - (sessionCounts.get(b.id) ?? 0) ||
+          a.title.localeCompare(b.title)
+      );
+      break;
+    case "newest":
+      out.sort((a, b) => {
+        const da = lastSessionDates.get(a.id);
+        const db = lastSessionDates.get(b.id);
+        const ta = da ? new Date(da).getTime() : 0;
+        const tb = db ? new Date(db).getTime() : 0;
+        return tb - ta || a.title.localeCompare(b.title);
+      });
+      break;
+    case "oldest":
+      out.sort((a, b) => {
+        const da = lastSessionDates.get(a.id);
+        const db = lastSessionDates.get(b.id);
+        const ta = da ? new Date(da).getTime() : Number.MAX_SAFE_INTEGER;
+        const tb = db ? new Date(db).getTime() : Number.MAX_SAFE_INTEGER;
+        return ta - tb || a.title.localeCompare(b.title);
+      });
+      break;
+    case "alpha":
+      out.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+  }
+  return out;
+}
+
+export function formatVolume(totalKg: number | null): string {
+  if (totalKg == null || totalKg <= 0) return "—";
+  const lbs = totalKg * 2.20462;
+  return `${Math.round(lbs).toLocaleString()} lb`;
+}
+
+export function format1Rm(oneRmKg: number | null): string {
+  if (oneRmKg == null || oneRmKg <= 0) return "—";
+  const lbs = Math.round(oneRmKg * 2.20462 * 2) / 2;
+  return `${lbs} lb`;
 }
 
 export function getMuscleGroups(templates: ExerciseTemplate[]): string[] {

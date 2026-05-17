@@ -7,8 +7,10 @@ import {
   getUsedExerciseTemplates,
 } from "@/lib/gym";
 import {
+  format1Rm,
   formatSetSummary,
   formatShortDate,
+  formatVolume,
   formatWeight,
   getExerciseStats,
   humanizeMuscle,
@@ -153,7 +155,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
 };
 
 export default function ExerciseDetailPage({ stats }: Props) {
-  const { template, totalSessions, highestPrKg, highestPrDate, history } = stats;
+  const { template, totalSessions, bestPR, history } = stats;
 
   return (
     <Layout
@@ -192,22 +194,47 @@ export default function ExerciseDetailPage({ stats }: Props) {
         {/* Stats */}
         <section className="max-w-5xl mx-auto px-6 lg:px-10 mt-10">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Best 1RM */}
             <div className="bg-[var(--color-yellow)] text-[var(--color-black)] rounded-2xl p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
-                Highest PR
+                Best 1RM
               </p>
               <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
-                {formatWeight(highestPrKg)}
+                {format1Rm(bestPR.oneRmKg)}
+              </p>
+              {bestPR.oneRmWeightKg != null && bestPR.oneRmReps != null && (
+                <p className="mt-1 text-xs text-[var(--color-black)]/65">
+                  from {formatWeight(bestPR.oneRmWeightKg)} × {bestPR.oneRmReps} reps
+                </p>
+              )}
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-[var(--color-black)]/60">
+                {bestPR.oneRmDate
+                  ? `Last: ${formatShortDate(bestPR.oneRmDate)}`
+                  : "No weighted PR yet"}
               </p>
             </div>
-            <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-                Last achieved
+
+            {/* Best Set Volume */}
+            <div className="bg-[var(--color-black)] text-[var(--color-off-white)] rounded-2xl p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
+                Best Set Volume
               </p>
-              <p className="mt-3 font-[family-name:var(--font-display)] text-2xl tracking-tight">
-                {highestPrDate ? formatShortDate(highestPrDate) : "—"}
+              <p className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-tight">
+                {formatVolume(bestPR.volumeKg)}
+              </p>
+              {bestPR.volumeWeightKg != null && bestPR.volumeReps != null && (
+                <p className="mt-1 text-xs text-[var(--color-warm-gray)]">
+                  {formatWeight(bestPR.volumeWeightKg)} × {bestPR.volumeReps} reps
+                </p>
+              )}
+              <p className="mt-2 text-[10px] uppercase tracking-wider text-[var(--color-warm-gray)]">
+                {bestPR.volumeDate
+                  ? `Last: ${formatShortDate(bestPR.volumeDate)}`
+                  : "No volume PR yet"}
               </p>
             </div>
+
+            {/* Total sessions */}
             <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
                 Total sessions

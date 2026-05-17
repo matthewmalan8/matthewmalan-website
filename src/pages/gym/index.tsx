@@ -12,16 +12,20 @@ import {
   resolvePinnedExercises,
 } from "@/lib/gym";
 import {
+  EXERCISE_SORTS,
+  format1Rm,
   formatDuration,
   formatShortDate,
-  formatWeight,
   getCurrentGymStreak,
   getExerciseStats,
   getMuscleGroups,
+  getTemplateLastSessionDate,
   getTemplateSessionCount,
   getTotalSecondsInRange,
   humanizeMuscle,
+  sortTemplates,
   TIME_RANGES,
+  type ExerciseSort,
   type ExerciseStats,
   type ExerciseTemplate,
   type GymWorkout,
@@ -30,8 +34,8 @@ import {
 
 type PinnedExercise = {
   template: ExerciseTemplate;
-  highestPrKg: number | null;
-  highestPrDate: string | null;
+  oneRmKg: number | null;
+  oneRmDate: string | null;
   totalSessions: number;
 };
 
@@ -51,8 +55,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     const stats: ExerciseStats = getExerciseStats(template, workouts);
     return {
       template,
-      highestPrKg: stats.highestPrKg,
-      highestPrDate: stats.highestPrDate,
+      oneRmKg: stats.bestPR.oneRmKg,
+      oneRmDate: stats.bestPR.oneRmDate,
       totalSessions: stats.totalSessions,
     };
   });
@@ -67,6 +71,8 @@ export default function GymPage({
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [search, setSearch] = useState("");
   const [muscle, setMuscle] = useState<string | null>(null);
+  const [exerciseSort, setExerciseSort] =
+    useState<ExerciseSort>("most-sessions");
   const [showAllExercises, setShowAllExercises] = useState(false);
 
   const hasActiveExerciseFilter =
@@ -84,15 +90,6 @@ export default function GymPage({
   );
   const muscleGroups = useMemo(() => getMuscleGroups(templates), [templates]);
 
-  const filteredTemplates = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return templates.filter((t) => {
-      const matchesSearch = !q || t.title.toLowerCase().includes(q);
-      const matchesMuscle = !muscle || t.primaryMuscleGroup === muscle;
-      return matchesSearch && matchesMuscle;
-    });
-  }, [templates, search, muscle]);
-
   const sessionCounts = useMemo(() => {
     const map = new Map<string, number>();
     for (const t of templates) {
@@ -100,6 +97,24 @@ export default function GymPage({
     }
     return map;
   }, [templates, workouts]);
+
+  const lastSessionDates = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const t of templates) {
+      map.set(t.id, getTemplateLastSessionDate(t.id, workouts));
+    }
+    return map;
+  }, [templates, workouts]);
+
+  const filteredTemplates = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const filtered = templates.filter((t) => {
+      const matchesSearch = !q || t.title.toLowerCase().includes(q);
+      const matchesMuscle = !muscle || t.primaryMuscleGroup === muscle;
+      return matchesSearch && matchesMuscle;
+    });
+    return sortTemplates(filtered, exerciseSort, sessionCounts, lastSessionDates);
+  }, [templates, search, muscle, exerciseSort, sessionCounts, lastSessionDates]);
 
   return (
     <Layout
@@ -147,7 +162,7 @@ export default function GymPage({
               </h2>
               <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {pinnedExercises.map(
-                  ({ template, highestPrKg, highestPrDate }) => (
+                  ({ template, oneRmKg, oneRmDate }) => (
                     <li key={template.id}>
                       <Link
                         href={`/gym/exercise/${template.slug}/`}
@@ -156,12 +171,15 @@ export default function GymPage({
                         <p className="text-sm font-semibold tracking-tight leading-tight line-clamp-2 group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 min-h-[2.5em]">
                           {template.title}
                         </p>
-                        <p className="mt-3 font-[family-name:var(--font-display)] text-3xl tracking-tight">
-                          {formatWeight(highestPrKg)}
+                        <p className="mt-3 text-[10px] uppercase tracking-wider text-[var(--color-black)]/55">
+                          Best 1RM
+                        </p>
+                        <p className="font-[family-name:var(--font-display)] text-3xl tracking-tight">
+                          {format1Rm(oneRmKg)}
                         </p>
                         <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--color-black)]/55">
-                          {highestPrDate
-                            ? `Last: ${formatShortDate(highestPrDate)}`
+                          {oneRmDate
+                            ? `Last: ${formatShortDate(oneRmDate)}`
                             : "No weighted PR yet"}
                         </p>
                       </Link>
@@ -246,7 +264,7 @@ export default function GymPage({
             </p>
 
             <div className="mt-8 space-y-4">
-              <div>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <label htmlFor="exercise-search" className="sr-only">
                   Search exercises
                 </label>
@@ -256,8 +274,28 @@ export default function GymPage({
                   placeholder="Search exercises by name"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none focus:bg-white"
+                  className="flex-1 min-w-0 px-5 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] focus:outline-none focus:bg-white"
                 />
+                <label htmlFor="exercise-sort" className="sr-only">
+                  Sort exercises
+                </label>
+                <div className="relative">
+                  <select
+                    id="exercise-sort"
+                    value={exerciseSort}
+                    onChange={(e) =>
+                      setExerciseSort(e.target.value as ExerciseSort)
+                    }
+                    className="appearance-none pl-5 pr-11 py-3 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] text-sm font-semibold focus:outline-none cursor-pointer w-full sm:w-auto"
+                  >
+                    {EXERCISE_SORTS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        Sort: {s.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-black)] pointer-events-none" />
+                </div>
               </div>
               {muscleGroups.length > 0 && (
                 <div className="flex flex-wrap gap-2">
