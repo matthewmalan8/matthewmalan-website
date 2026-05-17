@@ -8,17 +8,25 @@ import {
 } from "@/lib/gym";
 import {
   format1Rm,
+  formatPrDeltaLb,
+  formatPrNewLb,
   formatSetSummary,
   formatShortDate,
   formatVolume,
   formatWeight,
   getExerciseStats,
+  getWorkoutPrInfo,
   humanizeMuscle,
   kgToLbs,
   type ExerciseStats,
+  type WorkoutPrMap,
 } from "@/lib/gym-utils";
 
-type Props = { stats: ExerciseStats };
+type Props = {
+  stats: ExerciseStats;
+  templateId: string;
+  workoutPrInfo: WorkoutPrMap;
+};
 
 function ProgressChart({ stats }: { stats: ExerciseStats }) {
   // Compute heaviest non-warmup weight per session (in chronological order).
@@ -151,10 +159,15 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     return { notFound: true };
   }
   const stats = getExerciseStats(template, workouts);
-  return { props: { stats } };
+  const workoutPrInfo = getWorkoutPrInfo(workouts);
+  return { props: { stats, templateId: template.id, workoutPrInfo } };
 };
 
-export default function ExerciseDetailPage({ stats }: Props) {
+export default function ExerciseDetailPage({
+  stats,
+  templateId,
+  workoutPrInfo,
+}: Props) {
   const { template, totalSessions, bestPR, history } = stats;
 
   return (
@@ -281,19 +294,73 @@ export default function ExerciseDetailPage({ stats }: Props) {
             </p>
           ) : (
             <ul className="mt-6 space-y-6">
-              {history.map((entry, i) => (
+              {history.map((entry, i) => {
+                const prInfo = workoutPrInfo[`${entry.workoutId}|${templateId}`];
+                const hasPr =
+                  !!prInfo &&
+                  (prInfo.oneRm || prInfo.setVolume || prInfo.sessionVolume);
+                return (
                 <li
                   key={i}
-                  className="border border-[var(--color-warm-gray)] rounded-xl p-5"
+                  className={`border rounded-xl p-5 ${
+                    hasPr
+                      ? "border-[#2563EB]/40 bg-[#2563EB]/5"
+                      : "border-[var(--color-warm-gray)]"
+                  }`}
                 >
                   <div className="flex items-baseline justify-between gap-3 flex-wrap">
-                    <p className="font-semibold tracking-tight">
-                      {entry.workoutTitle}
+                    <p className="font-semibold tracking-tight inline-flex items-center gap-1.5">
+                      {hasPr && (
+                        <span
+                          className="text-[#2563EB] text-lg leading-none"
+                          title="New PR achieved on this date"
+                        >
+                          ★
+                        </span>
+                      )}
+                      <span>{entry.workoutTitle}</span>
                     </p>
                     <p className="text-sm text-[var(--color-black)]/60">
                       {formatShortDate(entry.date)}
                     </p>
                   </div>
+                  {hasPr && (
+                    <ul className="mt-2 flex flex-wrap gap-1.5">
+                      {prInfo!.oneRm && (
+                        <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                          <span>★ 1RM</span>
+                          <span className="text-[#2563EB]">
+                            +{formatPrDeltaLb(prInfo!.oneRm.deltaKg)} lb
+                          </span>
+                          <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                            (now {formatPrNewLb(prInfo!.oneRm.newKg)} lb)
+                          </span>
+                        </li>
+                      )}
+                      {prInfo!.setVolume && (
+                        <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                          <span>★ Set Vol</span>
+                          <span className="text-[#2563EB]">
+                            +{formatPrDeltaLb(prInfo!.setVolume.deltaKg)} lb
+                          </span>
+                          <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                            (now {formatPrNewLb(prInfo!.setVolume.newKg)} lb)
+                          </span>
+                        </li>
+                      )}
+                      {prInfo!.sessionVolume && (
+                        <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                          <span>★ Session Vol</span>
+                          <span className="text-[#2563EB]">
+                            +{formatPrDeltaLb(prInfo!.sessionVolume.deltaKg)} lb
+                          </span>
+                          <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                            (now {formatPrNewLb(prInfo!.sessionVolume.newKg)} lb)
+                          </span>
+                        </li>
+                      )}
+                    </ul>
+                  )}
                   {entry.sets.length > 0 ? (
                     <ul className="mt-3 text-sm text-[var(--color-black)]/80 space-y-1">
                       {entry.sets.map((set, j) => {
@@ -331,7 +398,8 @@ export default function ExerciseDetailPage({ stats }: Props) {
                     </p>
                   )}
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </section>

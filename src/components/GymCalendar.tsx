@@ -3,10 +3,11 @@ import Link from "next/link";
 import {
   formatDuration,
   formatLongDate,
+  formatPrDeltaLb,
+  formatPrNewLb,
   formatSetSummary,
   isoDate,
   isWorkoutIncomplete,
-  kgToLbs,
   type GymWorkout,
   type WorkoutPrMap,
 } from "@/lib/gym-utils";
@@ -26,16 +27,6 @@ type Props = {
   workoutPrInfo?: WorkoutPrMap;
 };
 
-function formatDeltaLb(deltaKg: number): string {
-  const lb = (kgToLbs(deltaKg) ?? 0);
-  // Round to whole number for small deltas; one decimal for fractional
-  return lb >= 10 ? `${Math.round(lb)}` : `${(Math.round(lb * 2) / 2).toString()}`;
-}
-
-function formatNewLb(newKg: number): string {
-  const lb = kgToLbs(newKg) ?? 0;
-  return `${Math.round(lb).toLocaleString()}`;
-}
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -173,10 +164,10 @@ export default function GymCalendar({
                             <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
                               <span>★ 1RM</span>
                               <span className="text-[#2563EB]">
-                                +{formatDeltaLb(prInfo!.oneRm.deltaKg)} lb
+                                +{formatPrDeltaLb(prInfo!.oneRm.deltaKg)} lb
                               </span>
                               <span className="text-[#1E4FCC]/70 normal-case font-medium">
-                                (now {formatNewLb(prInfo!.oneRm.newKg)} lb)
+                                (now {formatPrNewLb(prInfo!.oneRm.newKg)} lb)
                               </span>
                             </li>
                           )}
@@ -184,10 +175,10 @@ export default function GymCalendar({
                             <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
                               <span>★ Set Vol</span>
                               <span className="text-[#2563EB]">
-                                +{formatDeltaLb(prInfo!.setVolume.deltaKg)} lb
+                                +{formatPrDeltaLb(prInfo!.setVolume.deltaKg)} lb
                               </span>
                               <span className="text-[#1E4FCC]/70 normal-case font-medium">
-                                (now {formatNewLb(prInfo!.setVolume.newKg)} lb)
+                                (now {formatPrNewLb(prInfo!.setVolume.newKg)} lb)
                               </span>
                             </li>
                           )}
@@ -195,10 +186,10 @@ export default function GymCalendar({
                             <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
                               <span>★ Session Vol</span>
                               <span className="text-[#2563EB]">
-                                +{formatDeltaLb(prInfo!.sessionVolume.deltaKg)} lb
+                                +{formatPrDeltaLb(prInfo!.sessionVolume.deltaKg)} lb
                               </span>
                               <span className="text-[#1E4FCC]/70 normal-case font-medium">
-                                (now {formatNewLb(prInfo!.sessionVolume.newKg)} lb)
+                                (now {formatPrNewLb(prInfo!.sessionVolume.newKg)} lb)
                               </span>
                             </li>
                           )}

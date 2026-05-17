@@ -459,6 +459,20 @@ export function format1Rm(oneRmKg: number | null): string {
   return `${lbs} lb`;
 }
 
+/** Format a positive PR improvement in lb (rounded). */
+export function formatPrDeltaLb(deltaKg: number): string {
+  const lb = (kgToLbs(deltaKg) ?? 0);
+  return lb >= 10
+    ? `${Math.round(lb)}`
+    : `${(Math.round(lb * 2) / 2).toString()}`;
+}
+
+/** Format a PR's new absolute value in lb (rounded whole). */
+export function formatPrNewLb(newKg: number): string {
+  const lb = kgToLbs(newKg) ?? 0;
+  return `${Math.round(lb).toLocaleString()}`;
+}
+
 export type ExercisePrInfo = {
   oneRm?: { newKg: number; deltaKg: number };
   setVolume?: { newKg: number; deltaKg: number };
