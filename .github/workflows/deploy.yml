@@ -45,4 +45,6 @@ jobs:
           aws-region: us-east-1
 
       - name: Build + deploy to S3 + invalidate CloudFront
+        env:
+          HEVY_API_KEY: ${{ secrets.HEVY_API_KEY }}
         run: pnpm run deploy:aws
