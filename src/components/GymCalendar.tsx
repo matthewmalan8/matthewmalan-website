@@ -6,7 +6,9 @@ import {
   formatSetSummary,
   isoDate,
   isWorkoutIncomplete,
+  kgToLbs,
   type GymWorkout,
+  type WorkoutPrMap,
 } from "@/lib/gym-utils";
 
 function formatDurationCompact(seconds: number): string {
@@ -18,7 +20,22 @@ function formatDurationCompact(seconds: number): string {
   return `${h}h ${m}m`;
 }
 
-type Props = { workouts: GymWorkout[]; prDates?: string[] };
+type Props = {
+  workouts: GymWorkout[];
+  prDates?: string[];
+  workoutPrInfo?: WorkoutPrMap;
+};
+
+function formatDeltaLb(deltaKg: number): string {
+  const lb = (kgToLbs(deltaKg) ?? 0);
+  // Round to whole number for small deltas; one decimal for fractional
+  return lb >= 10 ? `${Math.round(lb)}` : `${(Math.round(lb * 2) / 2).toString()}`;
+}
+
+function formatNewLb(newKg: number): string {
+  const lb = kgToLbs(newKg) ?? 0;
+  return `${Math.round(lb).toLocaleString()}`;
+}
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -32,7 +49,11 @@ function buildMonthCells(year: number, month: number): Date[] {
   return cells;
 }
 
-export default function GymCalendar({ workouts, prDates = [] }: Props) {
+export default function GymCalendar({
+  workouts,
+  prDates = [],
+  workoutPrInfo = {},
+}: Props) {
   const today = new Date();
   const [view, setView] = useState({
     year: today.getFullYear(),
@@ -127,11 +148,62 @@ export default function GymCalendar({ workouts, prDates = [] }: Props) {
                   </p>
                 )}
                 <ul className="mt-5 space-y-5">
-                  {w.exercises.map((ex, i) => (
+                  {w.exercises.map((ex, i) => {
+                    const prKey = `${w.id}|${ex.templateId}`;
+                    const prInfo = workoutPrInfo[prKey];
+                    const hasPr =
+                      !!prInfo &&
+                      (prInfo.oneRm || prInfo.setVolume || prInfo.sessionVolume);
+                    return (
                     <li key={i}>
-                      <p className="text-base font-semibold tracking-tight">
-                        {ex.title}
+                      <p className="text-base font-semibold tracking-tight inline-flex items-center gap-1.5 flex-wrap">
+                        {hasPr && (
+                          <span
+                            className="text-[#2563EB] text-lg leading-none"
+                            title="New PR achieved"
+                          >
+                            ★
+                          </span>
+                        )}
+                        <span>{ex.title}</span>
                       </p>
+                      {hasPr && (
+                        <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                          {prInfo!.oneRm && (
+                            <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                              <span>★ 1RM</span>
+                              <span className="text-[#2563EB]">
+                                +{formatDeltaLb(prInfo!.oneRm.deltaKg)} lb
+                              </span>
+                              <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                                (now {formatNewLb(prInfo!.oneRm.newKg)} lb)
+                              </span>
+                            </li>
+                          )}
+                          {prInfo!.setVolume && (
+                            <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                              <span>★ Set Vol</span>
+                              <span className="text-[#2563EB]">
+                                +{formatDeltaLb(prInfo!.setVolume.deltaKg)} lb
+                              </span>
+                              <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                                (now {formatNewLb(prInfo!.setVolume.newKg)} lb)
+                              </span>
+                            </li>
+                          )}
+                          {prInfo!.sessionVolume && (
+                            <li className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2563EB]/12 text-[#1E4FCC] border border-[#2563EB]/30">
+                              <span>★ Session Vol</span>
+                              <span className="text-[#2563EB]">
+                                +{formatDeltaLb(prInfo!.sessionVolume.deltaKg)} lb
+                              </span>
+                              <span className="text-[#1E4FCC]/70 normal-case font-medium">
+                                (now {formatNewLb(prInfo!.sessionVolume.newKg)} lb)
+                              </span>
+                            </li>
+                          )}
+                        </ul>
+                      )}
                       {ex.notes && (
                         <p className="mt-1 text-xs text-[var(--color-black)]/55">
                           {ex.notes}
@@ -169,7 +241,8 @@ export default function GymCalendar({ workouts, prDates = [] }: Props) {
                         </p>
                       )}
                     </li>
-                  ))}
+                  );
+                  })}
                 </ul>
               </div>
             );

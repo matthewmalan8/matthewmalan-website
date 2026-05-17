@@ -20,6 +20,7 @@ import {
   getExerciseStats,
   getMuscleGroups,
   getPrDates,
+  getWorkoutPrInfo,
   getTemplateLastSessionDate,
   getTemplateSessionCount,
   getTotalSecondsInRange,
@@ -31,6 +32,7 @@ import {
   type ExerciseTemplate,
   type GymWorkout,
   type TimeRange,
+  type WorkoutPrMap,
 } from "@/lib/gym-utils";
 
 type PinnedExercise = {
@@ -45,6 +47,7 @@ type Props = {
   templates: ExerciseTemplate[];
   pinnedExercises: PinnedExercise[];
   prDates: string[];
+  workoutPrInfo: WorkoutPrMap;
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -63,7 +66,16 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     };
   });
   const prDates = Array.from(getPrDates(workouts));
-  return { props: { workouts, templates, pinnedExercises, prDates } };
+  const workoutPrInfo = getWorkoutPrInfo(workouts);
+  return {
+    props: {
+      workouts,
+      templates,
+      pinnedExercises,
+      prDates,
+      workoutPrInfo,
+    },
+  };
 };
 
 export default function GymPage({
@@ -71,6 +83,7 @@ export default function GymPage({
   templates,
   pinnedExercises,
   prDates,
+  workoutPrInfo,
 }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [search, setSearch] = useState("");
@@ -257,7 +270,11 @@ export default function GymPage({
             <h2 className="text-3xl sm:text-4xl tracking-tight mb-6">
               Workout calendar
             </h2>
-            <GymCalendar workouts={workouts} prDates={prDates} />
+            <GymCalendar
+              workouts={workouts}
+              prDates={prDates}
+              workoutPrInfo={workoutPrInfo}
+            />
           </section>
 
           {/* Exercise library */}

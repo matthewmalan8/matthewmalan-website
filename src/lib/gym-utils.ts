@@ -459,6 +459,102 @@ export function format1Rm(oneRmKg: number | null): string {
   return `${lbs} lb`;
 }
 
+export type ExercisePrInfo = {
+  oneRm?: { newKg: number; deltaKg: number };
+  setVolume?: { newKg: number; deltaKg: number };
+  sessionVolume?: { newKg: number; deltaKg: number };
+};
+
+/** Keyed by `${workoutId}|${templateId}`. */
+export type WorkoutPrMap = Record<string, ExercisePrInfo>;
+
+/**
+ * Walks each exercise's history chronologically, tracking running
+ * maxes for 1RM, set volume, and session volume. For every session
+ * (after the first) that beats one of those records, returns the new
+ * value and the delta over the previous best. Keyed by workout id +
+ * exercise template id so the calendar can attach the badge to a
+ * specific exercise inside a workout.
+ */
+export function getWorkoutPrInfo(workouts: GymWorkout[]): WorkoutPrMap {
+  const result: WorkoutPrMap = {};
+
+  type Entry = { workout: GymWorkout; exercise: ExerciseInstance };
+  const perTemplate = new Map<string, Entry[]>();
+  for (const w of workouts) {
+    for (const ex of w.exercises) {
+      if (!ex.templateId) continue;
+      const list = perTemplate.get(ex.templateId) ?? [];
+      list.push({ workout: w, exercise: ex });
+      perTemplate.set(ex.templateId, list);
+    }
+  }
+
+  for (const [templateId, list] of perTemplate.entries()) {
+    list.sort(
+      (a, b) =>
+        new Date(a.workout.startTime).getTime() -
+        new Date(b.workout.startTime).getTime()
+    );
+
+    let maxOneRm = 0;
+    let maxSetVolume = 0;
+    let maxSessionVolume = 0;
+    let isFirstEntry = true;
+
+    for (const { workout, exercise } of list) {
+      let bestSetOneRm = 0;
+      let bestSetVolume = 0;
+      let sessionVolume = 0;
+
+      for (const set of exercise.sets) {
+        if (set.type === "warmup") continue;
+        if (set.weightKg == null || set.weightKg <= 0) continue;
+        if (set.reps == null || set.reps <= 0) continue;
+        const oneRm = set.weightKg * (1 + set.reps / 30);
+        const vol = set.weightKg * set.reps;
+        if (oneRm > bestSetOneRm) bestSetOneRm = oneRm;
+        if (vol > bestSetVolume) bestSetVolume = vol;
+        sessionVolume += vol;
+      }
+
+      const info: ExercisePrInfo = {};
+      if (!isFirstEntry) {
+        if (bestSetOneRm > maxOneRm) {
+          info.oneRm = {
+            newKg: bestSetOneRm,
+            deltaKg: bestSetOneRm - maxOneRm,
+          };
+        }
+        if (bestSetVolume > maxSetVolume) {
+          info.setVolume = {
+            newKg: bestSetVolume,
+            deltaKg: bestSetVolume - maxSetVolume,
+          };
+        }
+        if (sessionVolume > maxSessionVolume) {
+          info.sessionVolume = {
+            newKg: sessionVolume,
+            deltaKg: sessionVolume - maxSessionVolume,
+          };
+        }
+      }
+
+      if (info.oneRm || info.setVolume || info.sessionVolume) {
+        const key = `${workout.id}|${templateId}`;
+        result[key] = info;
+      }
+
+      if (bestSetOneRm > maxOneRm) maxOneRm = bestSetOneRm;
+      if (bestSetVolume > maxSetVolume) maxSetVolume = bestSetVolume;
+      if (sessionVolume > maxSessionVolume) maxSessionVolume = sessionVolume;
+      isFirstEntry = false;
+    }
+  }
+
+  return result;
+}
+
 /**
  * Returns the set of ISO dates where the user hit a NEW PR (1RM,
  * set volume, or session volume) on any exercise. The first time an
