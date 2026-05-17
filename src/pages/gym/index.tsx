@@ -67,6 +67,12 @@ export default function GymPage({
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [search, setSearch] = useState("");
   const [muscle, setMuscle] = useState<string | null>(null);
+  const [showAllExercises, setShowAllExercises] = useState(false);
+
+  const hasActiveExerciseFilter =
+    search.trim().length > 0 || muscle !== null;
+  const shouldShowExerciseList =
+    hasActiveExerciseFilter || showAllExercises;
 
   const currentStreak = useMemo(
     () => getCurrentGymStreak(workouts),
@@ -198,13 +204,17 @@ export default function GymPage({
                       onChange={(e) =>
                         setTimeRange(e.target.value as TimeRange)
                       }
+                      style={{ colorScheme: "light" }}
                       className="appearance-none pl-4 pr-10 py-2 rounded-full border border-[var(--color-warm-gray)]/40 bg-[var(--color-black)] text-xs font-semibold uppercase tracking-wider text-[var(--color-off-white)] focus:outline-none focus:border-[var(--color-yellow)] hover:border-[var(--color-yellow)]/70 cursor-pointer transition-colors"
                     >
                       {TIME_RANGES.map((r) => (
                         <option
                           key={r.value}
                           value={r.value}
-                          className="text-[var(--color-black)] normal-case"
+                          style={{
+                            backgroundColor: "#FFFDF9",
+                            color: "#1C1400",
+                          }}
                         >
                           {r.label}
                         </option>
@@ -280,42 +290,65 @@ export default function GymPage({
               )}
             </div>
 
-            {filteredTemplates.length === 0 ? (
+            {!shouldShowExerciseList ? (
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowAllExercises(true)}
+                  className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors cursor-pointer"
+                >
+                  Show all {templates.length} exercises →
+                </button>
+              </div>
+            ) : filteredTemplates.length === 0 ? (
               <p className="mt-8 text-[var(--color-black)]/60">
                 No exercises match that filter.
               </p>
             ) : (
-              <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
-                {filteredTemplates.map((t) => {
-                  const sessions = sessionCounts.get(t.id) ?? 0;
-                  return (
-                    <li key={t.id}>
-                      <Link
-                        href={`/gym/exercise/${t.slug}/`}
-                        className="group flex items-center justify-between gap-4 py-4"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold tracking-tight truncate group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
-                            {t.title}
-                          </p>
-                          <p className="mt-0.5 text-xs uppercase tracking-wider text-[var(--color-black)]/50">
-                            {humanizeMuscle(t.primaryMuscleGroup) || "—"}
-                            {sessions > 0 && (
-                              <span className="ml-2">
-                                · {sessions}{" "}
-                                {sessions === 1 ? "session" : "sessions"}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        <span className="text-[var(--color-black)]/50 text-sm font-semibold flex-shrink-0">
-                          →
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              <>
+                <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+                  {filteredTemplates.map((t) => {
+                    const sessions = sessionCounts.get(t.id) ?? 0;
+                    return (
+                      <li key={t.id}>
+                        <Link
+                          href={`/gym/exercise/${t.slug}/`}
+                          className="group flex items-center justify-between gap-4 py-4"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold tracking-tight truncate group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2">
+                              {t.title}
+                            </p>
+                            <p className="mt-0.5 text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                              {humanizeMuscle(t.primaryMuscleGroup) || "—"}
+                              {sessions > 0 && (
+                                <span className="ml-2">
+                                  · {sessions}{" "}
+                                  {sessions === 1 ? "session" : "sessions"}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <span className="text-[var(--color-black)]/50 text-sm font-semibold flex-shrink-0">
+                            →
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {showAllExercises && !hasActiveExerciseFilter && (
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowAllExercises(false)}
+                      className="text-sm font-semibold text-[var(--color-black)]/60 hover:text-[var(--color-black)] cursor-pointer"
+                    >
+                      ↑ Hide list
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </section>
         </>

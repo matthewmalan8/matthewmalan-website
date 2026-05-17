@@ -220,7 +220,7 @@ export default function GymCalendar({ workouts }: Props) {
           const isToday = iso === todayIso;
 
           const baseClasses =
-            "aspect-square rounded-lg p-1.5 sm:p-2 flex flex-col items-start justify-between text-left transition-colors w-full";
+            "min-h-20 sm:min-h-24 rounded-lg p-1.5 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
             : allIncomplete
@@ -232,24 +232,37 @@ export default function GymCalendar({ workouts }: Props) {
             ? "ring-2 ring-[var(--color-black)]/40 ring-inset"
             : "";
 
+          const primaryTitle = dayWorkouts[0]?.title?.trim() || "";
+
           const content = (
             <>
-              <span className="text-xs sm:text-sm font-semibold">
-                {d.getDate()}
-              </span>
-              {hasWorkout && (
-                <span
-                  className={`text-[10px] sm:text-xs font-bold self-end ${
-                    allIncomplete ? "text-white/80" : "text-[#6B7280]"
-                  }`}
-                  title={allIncomplete ? "Clarification needed" : undefined}
-                >
-                  {allIncomplete
-                    ? "⚠"
-                    : dayWorkouts.length > 1
-                      ? `${dayWorkouts.length}×`
-                      : "✓"}
+              <div className="flex items-start justify-between gap-1">
+                <span className="text-xs sm:text-sm font-semibold">
+                  {d.getDate()}
                 </span>
+                {hasWorkout && (
+                  <span
+                    className={`text-[10px] sm:text-xs font-bold ${
+                      allIncomplete ? "text-white/80" : "text-[#6B7280]"
+                    }`}
+                    title={allIncomplete ? "Clarification needed" : undefined}
+                  >
+                    {allIncomplete
+                      ? "⚠"
+                      : dayWorkouts.length > 1
+                        ? `${dayWorkouts.length}×`
+                        : "✓"}
+                  </span>
+                )}
+              </div>
+              {hasWorkout && primaryTitle && (
+                <p
+                  className={`mt-1 text-[10px] sm:text-xs font-semibold leading-tight line-clamp-2 ${
+                    allIncomplete ? "text-white/90" : ""
+                  }`}
+                >
+                  {primaryTitle}
+                </p>
               )}
             </>
           );

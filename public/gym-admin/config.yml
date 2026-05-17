@@ -27,8 +27,10 @@ collections:
             widget: "list"
             max: 5
             required: false
-            hint: "Up to 5 exercise titles to feature at the top of /gym/. Type the exact Hevy exercise name (e.g. 'Bench Press (Barbell)'). Order here = order on the page."
+            hint: "Up to 5 exercises to feature at the top of /gym/. Order here = order on the page. The list of options is auto-generated from your Hevy data on each build."
+            # AUTO-EXERCISE-OPTIONS-START
             field: { label: "Exercise Name", name: "title", widget: "string" }
+            # AUTO-EXERCISE-OPTIONS-END
 
   - name: "manual_workouts"
     label: "Manual Workouts"
