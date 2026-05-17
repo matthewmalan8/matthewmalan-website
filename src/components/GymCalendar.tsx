@@ -189,36 +189,36 @@ export default function GymCalendar({ workouts }: Props) {
 
   // ---- Grid view ----
   return (
-    <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-2 sm:p-6 lg:p-8">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 px-1">
         <button
           type="button"
           onClick={prevMonth}
           aria-label="Previous month"
-          className="w-10 h-10 flex items-center justify-center rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:border-[var(--color-black)] cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:border-[var(--color-black)] cursor-pointer"
         >
           ←
         </button>
-        <h3 className="font-[family-name:var(--font-display)] text-2xl tracking-tight">
+        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl tracking-tight">
           {monthName}
         </h3>
         <button
           type="button"
           onClick={nextMonth}
           aria-label="Next month"
-          className="w-10 h-10 flex items-center justify-center rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:border-[var(--color-black)] cursor-pointer"
+          className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-[var(--color-warm-gray)] text-[var(--color-black)] hover:border-[var(--color-black)] cursor-pointer"
         >
           →
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase tracking-wider text-[var(--color-black)]/50 mb-2">
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[var(--color-black)]/50 mb-1.5 sm:mb-2">
         {DAY_LABELS.map((d, i) => (
           <div key={i}>{d}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 auto-rows-fr">
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-2 auto-rows-fr">
         {cells.map((d) => {
           const iso = isoDate(d);
           const inMonth = d.getMonth() === view.month;
@@ -229,7 +229,7 @@ export default function GymCalendar({ workouts }: Props) {
           const isToday = iso === todayIso;
 
           const baseClasses =
-            "min-h-24 sm:min-h-28 rounded-lg p-1 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
+            "min-h-20 sm:min-h-28 rounded-md sm:rounded-lg p-1 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
             : allIncomplete
@@ -252,13 +252,13 @@ export default function GymCalendar({ workouts }: Props) {
 
           const content = (
             <>
-              <div className="flex items-start justify-between gap-1">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0 sm:gap-1 leading-none">
                 <span className="text-[10px] sm:text-sm font-semibold">
                   {d.getDate()}
                 </span>
                 {hasWorkout && (timeText || allIncomplete) && (
                   <span
-                    className={`text-[8px] sm:text-[10px] font-bold whitespace-nowrap ${
+                    className={`text-[8px] sm:text-[10px] font-bold whitespace-nowrap mt-0.5 sm:mt-0 ${
                       allIncomplete ? "text-white/85" : "text-[#6B7280]"
                     }`}
                     title={allIncomplete ? "Clarification needed" : undefined}
@@ -269,18 +269,18 @@ export default function GymCalendar({ workouts }: Props) {
               </div>
               {hasWorkout && titles.length > 0 && (
                 <ul
-                  className={`mt-0.5 sm:mt-1 space-y-0.5 text-[8px] sm:text-[11px] font-semibold leading-tight ${
+                  className={`mt-1 sm:mt-1.5 space-y-0.5 text-[8px] sm:text-[11px] font-semibold leading-tight ${
                     allIncomplete ? "text-white/95" : ""
                   }`}
                 >
-                  {titles.slice(0, 3).map((t, i) => (
+                  {titles.slice(0, 2).map((t, i) => (
                     <li key={i} className="truncate">
                       {t}
                     </li>
                   ))}
-                  {titles.length > 3 && (
+                  {titles.length > 2 && (
                     <li className="text-[7px] sm:text-[9px] opacity-70 truncate">
-                      +{titles.length - 3} more
+                      +{titles.length - 2} more
                     </li>
                   )}
                 </ul>
