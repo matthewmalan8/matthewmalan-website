@@ -16,30 +16,6 @@ const topics = [
   },
 ];
 
-const stages = [
-  {
-    name: "Shopify Unite",
-    logo: "https://cdn.simpleicons.org/shopify/95BF47",
-  },
-  {
-    name: "BigCommerce Make It Big",
-    logo: "https://cdn.simpleicons.org/bigcommerce/121118",
-  },
-  { name: "TEDx Phoenix", logo: "https://cdn.simpleicons.org/ted/E62B1E" },
-  {
-    name: "Stripe Sessions",
-    logo: "https://cdn.simpleicons.org/stripe/635BFF",
-  },
-  {
-    name: "HubSpot INBOUND",
-    logo: "https://cdn.simpleicons.org/hubspot/FF7A59",
-  },
-  {
-    name: "Y Combinator Demo Day",
-    logo: "https://cdn.simpleicons.org/ycombinator/F26625",
-  },
-];
-
 export default function SpeakingPage() {
   return (
     <Layout
@@ -97,38 +73,6 @@ export default function SpeakingPage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* PAST STAGES */}
-      <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-28">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
-            Past stages
-          </p>
-          <h2 className="mt-4 text-3xl lg:text-5xl tracking-tight max-w-2xl">
-            A few of the rooms I&apos;ve had the privilege of speaking in.
-          </h2>
-
-          <ul className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {stages.map((s) => (
-              <li
-                key={s.name}
-                className="aspect-[3/2] bg-[var(--color-warm-gray)]/10 border border-[var(--color-warm-gray)]/30 rounded-xl flex flex-col items-center justify-center gap-3 p-6 text-center"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={s.logo}
-                  alt={s.name}
-                  className="h-10 w-auto max-w-[60%] object-contain"
-                  loading="lazy"
-                />
-                <span className="text-xs uppercase tracking-wider text-[var(--color-warm-gray)]">
-                  {s.name}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
