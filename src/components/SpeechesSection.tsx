@@ -111,9 +111,9 @@ function CompactRow({ speech }: { speech: Speech }) {
       href={speech.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center gap-3 sm:gap-4 bg-[var(--color-off-white)] rounded-lg overflow-hidden ring-1 ring-[var(--color-warm-gray)]/30 hover:ring-[var(--color-yellow)] hover:shadow-lg transition-all p-2 sm:p-3"
+      className="group flex items-stretch gap-3 bg-[var(--color-off-white)] rounded-md overflow-hidden ring-1 ring-[var(--color-warm-gray)]/30 hover:ring-[var(--color-yellow)] transition-all"
     >
-      <div className="relative aspect-video w-28 sm:w-36 flex-shrink-0 bg-[var(--color-warm-gray)]/20 rounded overflow-hidden">
+      <div className="relative aspect-video w-24 sm:w-28 flex-shrink-0 bg-[var(--color-warm-gray)]/20 overflow-hidden">
         {speech.thumbnail && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -124,20 +124,20 @@ function CompactRow({ speech }: { speech: Speech }) {
           />
         )}
         <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-black)]/10 group-hover:bg-[var(--color-black)]/40 transition-colors">
-          <span className="w-8 h-8 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center opacity-90 group-hover:scale-110 transition-transform shadow">
+          <span className="w-7 h-7 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center opacity-90 group-hover:scale-110 transition-transform shadow">
             <PlayIcon small />
           </span>
         </div>
+        {speech.videoPublishedAt && (
+          <span className="absolute bottom-1 right-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[var(--color-black)]/80 text-[var(--color-off-white)] leading-none">
+            {formatDate(speech.videoPublishedAt)}
+          </span>
+        )}
       </div>
-      <div className="min-w-0 flex-1 py-1 pr-2">
-        <h3 className="font-[family-name:var(--font-display)] text-sm sm:text-base tracking-tight leading-tight text-[var(--color-black)] line-clamp-2">
+      <div className="min-w-0 flex-1 flex items-center pr-3">
+        <h3 className="font-[family-name:var(--font-display)] text-sm sm:text-base tracking-tight leading-snug text-[var(--color-black)] line-clamp-2">
           {speech.title}
         </h3>
-        {speech.videoPublishedAt && (
-          <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-black)]/50">
-            {formatDate(speech.videoPublishedAt)}
-          </p>
-        )}
       </div>
     </a>
   );
