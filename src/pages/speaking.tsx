@@ -44,24 +44,24 @@ function SpeechCard({ speech }: { speech: Speech }) {
       href={speech.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl overflow-hidden hover:border-[var(--color-black)] transition-colors"
+      className="group flex flex-col bg-[var(--color-off-white)] rounded-xl overflow-hidden ring-1 ring-[var(--color-warm-gray)]/30 hover:ring-[var(--color-yellow)] hover:shadow-2xl transition-all"
     >
-      <div className="relative aspect-video bg-[var(--color-warm-gray)]/30 overflow-hidden">
+      <div className="relative aspect-video bg-[var(--color-warm-gray)]/20 overflow-hidden">
         {speech.thumbnail && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={speech.thumbnail}
             alt={speech.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         )}
         {/* Play overlay */}
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-black)]/0 group-hover:bg-[var(--color-black)]/30 transition-colors">
-          <span className="w-16 h-16 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center opacity-90 group-hover:scale-110 group-hover:opacity-100 transition-all shadow-lg">
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-black)]/10 group-hover:bg-[var(--color-black)]/40 transition-colors">
+          <span className="w-12 h-12 rounded-full bg-[var(--color-yellow)] text-[var(--color-black)] flex items-center justify-center opacity-95 group-hover:scale-110 transition-transform shadow-lg">
             <svg
               viewBox="0 0 24 24"
-              className="w-7 h-7 ml-1"
+              className="w-5 h-5 ml-0.5"
               fill="currentColor"
               aria-hidden="true"
             >
@@ -69,16 +69,16 @@ function SpeechCard({ speech }: { speech: Speech }) {
             </svg>
           </span>
         </div>
+        {speech.videoPublishedAt && (
+          <span className="absolute bottom-2 right-2 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-[var(--color-black)]/75 text-[var(--color-off-white)] backdrop-blur-sm">
+            {formatDate(speech.videoPublishedAt)}
+          </span>
+        )}
       </div>
-      <div className="flex flex-col flex-1 p-5">
-        <h3 className="font-[family-name:var(--font-display)] text-lg tracking-tight leading-snug line-clamp-2">
+      <div className="p-4">
+        <h3 className="font-[family-name:var(--font-display)] text-base tracking-tight leading-tight text-[var(--color-black)] line-clamp-2 min-h-[2.5rem]">
           {speech.title}
         </h3>
-        {speech.videoPublishedAt && (
-          <p className="mt-2 text-xs uppercase tracking-wider text-[var(--color-black)]/50">
-            {formatDate(speech.videoPublishedAt)}
-          </p>
-        )}
       </div>
     </a>
   );
