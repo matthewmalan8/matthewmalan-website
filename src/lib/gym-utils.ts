@@ -228,25 +228,63 @@ function startOfYear(d: Date): Date {
   return new Date(d.getFullYear(), 0, 1);
 }
 
+function rangeCutoff(range: TimeRange): Date | null {
+  const now = new Date();
+  if (range === "week") return startOfWeek(now);
+  if (range === "month") return startOfMonth(now);
+  if (range === "last3months") {
+    const c = new Date(now);
+    c.setMonth(c.getMonth() - 3);
+    return c;
+  }
+  if (range === "year") return startOfYear(now);
+  return null;
+}
+
+export function getWorkoutsInRange(
+  workouts: GymWorkout[],
+  range: TimeRange
+): GymWorkout[] {
+  const cutoff = rangeCutoff(range);
+  if (!cutoff) return workouts;
+  return workouts.filter(
+    (w) => new Date(w.startTime).getTime() >= cutoff.getTime()
+  );
+}
+
 export function getTotalSecondsInRange(
   workouts: GymWorkout[],
   range: TimeRange
 ): number {
-  const now = new Date();
-  let cutoff: Date | null = null;
-  if (range === "week") cutoff = startOfWeek(now);
-  else if (range === "month") cutoff = startOfMonth(now);
-  else if (range === "last3months") {
-    const c = new Date(now);
-    c.setMonth(c.getMonth() - 3);
-    cutoff = c;
-  } else if (range === "year") cutoff = startOfYear(now);
+  return getWorkoutsInRange(workouts, range).reduce(
+    (sum, w) => sum + w.durationSeconds,
+    0
+  );
+}
 
-  return workouts.reduce((sum, w) => {
-    if (cutoff && new Date(w.startTime).getTime() < cutoff.getTime())
-      return sum;
-    return sum + w.durationSeconds;
-  }, 0);
+export function getRangeStats(
+  workouts: GymWorkout[],
+  range: TimeRange
+): {
+  totalSeconds: number;
+  workoutCount: number;
+  averageSeconds: number;
+  uniqueDays: number;
+} {
+  const inRange = getWorkoutsInRange(workouts, range);
+  const totalSeconds = inRange.reduce(
+    (sum, w) => sum + (w.durationSeconds || 0),
+    0
+  );
+  const workoutCount = inRange.length;
+  const days = new Set<string>();
+  for (const w of inRange) if (w.date) days.add(w.date);
+  return {
+    totalSeconds,
+    workoutCount,
+    averageSeconds: workoutCount > 0 ? Math.round(totalSeconds / workoutCount) : 0,
+    uniqueDays: days.size,
+  };
 }
 
 export function isSetEmpty(set: GymSet): boolean {

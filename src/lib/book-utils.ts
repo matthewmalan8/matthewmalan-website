@@ -1,4 +1,4 @@
-export type ReadingMeta = { date: string; videoUrl: string; hasNotes: boolean };
+export type ReadingMeta = { date: string; videoUrl: string };
 export type Reading = {
   date: string;
   notesHtml: string;

@@ -24,10 +24,10 @@ import {
   getLongestHourPlusStreak,
   getMuscleGroups,
   getPrDates,
+  getRangeStats,
   getWorkoutPrInfo,
   getTemplateLastSessionDate,
   getTemplateSessionCount,
-  getTotalSecondsInRange,
   humanizeMuscle,
   sortTemplates,
   TIME_RANGES,
@@ -117,8 +117,8 @@ export default function GymPage({
     () => getLongestHourPlusStreak(workouts),
     [workouts]
   );
-  const totalSecondsInRange = useMemo(
-    () => getTotalSecondsInRange(workouts, timeRange),
+  const rangeStats = useMemo(
+    () => getRangeStats(workouts, timeRange),
     [workouts, timeRange]
   );
   const muscleGroups = useMemo(() => getMuscleGroups(templates), [templates]);
@@ -326,8 +326,40 @@ export default function GymPage({
                   </div>
                 </div>
                 <p className="mt-4 font-[family-name:var(--font-display)] text-5xl lg:text-6xl tracking-tight">
-                  {formatDuration(totalSecondsInRange)}
+                  {formatDuration(rangeStats.totalSeconds)}
                 </p>
+                {rangeStats.workoutCount > 0 ? (
+                  <dl className="mt-6 pt-5 border-t border-[var(--color-off-white)]/15 grid grid-cols-3 gap-3 text-xs">
+                    <div>
+                      <dt className="uppercase tracking-wider text-[var(--color-off-white)]/60">
+                        Workouts
+                      </dt>
+                      <dd className="mt-1 text-2xl font-[family-name:var(--font-display)] tracking-tight text-[var(--color-yellow)]">
+                        {rangeStats.workoutCount}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="uppercase tracking-wider text-[var(--color-off-white)]/60">
+                        Days
+                      </dt>
+                      <dd className="mt-1 text-2xl font-[family-name:var(--font-display)] tracking-tight text-[var(--color-yellow)]">
+                        {rangeStats.uniqueDays}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="uppercase tracking-wider text-[var(--color-off-white)]/60">
+                        Avg / workout
+                      </dt>
+                      <dd className="mt-1 text-2xl font-[family-name:var(--font-display)] tracking-tight text-[var(--color-yellow)]">
+                        {formatDuration(rangeStats.averageSeconds)}
+                      </dd>
+                    </div>
+                  </dl>
+                ) : (
+                  <p className="mt-6 pt-5 border-t border-[var(--color-off-white)]/15 text-sm text-[var(--color-off-white)]/60 italic">
+                    No workouts in this range.
+                  </p>
+                )}
               </div>
             </div>
           </section>

@@ -158,37 +158,55 @@ export default function AuthorPage({
         </ul>
       </section>
 
-      {/* If we've read other authors who write about the same things,
-          surface them here. Hidden entirely when the library is too
-          thin to find a real match. */}
+      {/* "If you liked X" — yellow shelf, visually distinct from the
+          dark footer. Hidden when the library is too thin to recommend. */}
       {relatedAuthors.length > 0 && (
-        <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">
+        <section className="relative bg-[var(--color-yellow)] text-[var(--color-black)] overflow-hidden">
+          {/* Black accent strip top + bottom for shelf feel */}
+          <div
+            aria-hidden="true"
+            className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-black)]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--color-black)]"
+          />
           <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 sm:py-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
-              If you liked {author.split(/\s+/)[0]}
-            </p>
-            <h2 className="mt-3 text-3xl sm:text-4xl tracking-tight max-w-2xl">
-              Authors with similar themes.
-            </h2>
-            <ul className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="flex items-end justify-between gap-4 flex-wrap mb-10">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
+                  If you liked {author.split(/\s+/)[0]}
+                </p>
+                <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl sm:text-5xl tracking-tight max-w-2xl leading-[1.05]">
+                  Authors with similar themes.
+                </h2>
+              </div>
+              <span
+                aria-hidden="true"
+                className="hidden sm:inline-block text-7xl lg:text-8xl leading-none text-[var(--color-black)]/15 select-none"
+              >
+                ✦
+              </span>
+            </div>
+            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
               {relatedAuthors.map((a) => (
                 <li key={a.slug}>
                   <Link
                     href={`/books/author/${a.slug}/`}
-                    className="group flex flex-col items-center text-center"
+                    className="group flex flex-col items-center text-center bg-[var(--color-off-white)] rounded-2xl px-4 py-6 ring-2 ring-[var(--color-black)] shadow-[6px_6px_0_var(--color-black)] hover:shadow-[10px_10px_0_var(--color-black)] hover:-translate-x-1 hover:-translate-y-1 transition-all"
                   >
                     {a.photo ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.photo}
                         alt={a.photoAlt || a.name}
-                        className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover ring-2 ring-[var(--color-warm-gray)]/40 group-hover:ring-[var(--color-yellow)] transition-all"
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-2 ring-[var(--color-black)]"
                         loading="lazy"
                       />
                     ) : (
                       <span
                         aria-hidden="true"
-                        className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-[var(--color-warm-gray)]/20 text-[var(--color-off-white)]/80 inline-flex items-center justify-center text-2xl font-semibold ring-2 ring-[var(--color-warm-gray)]/40 group-hover:ring-[var(--color-yellow)] transition-all"
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]/70 inline-flex items-center justify-center text-2xl font-bold ring-2 ring-[var(--color-black)]"
                       >
                         {a.name
                           .split(/\s+/)
@@ -197,14 +215,14 @@ export default function AuthorPage({
                           .join("")}
                       </span>
                     )}
-                    <h3 className="mt-4 font-[family-name:var(--font-display)] text-lg tracking-tight group-hover:text-[var(--color-yellow)] transition-colors">
+                    <h3 className="mt-4 font-[family-name:var(--font-display)] text-lg tracking-tight text-[var(--color-black)] leading-tight">
                       {a.name}
                     </h3>
-                    <p className="mt-1 text-xs uppercase tracking-wider text-[var(--color-warm-gray)]">
+                    <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-black)]/60">
                       {a.bookCount} {a.bookCount === 1 ? "book" : "books"} read
                     </p>
                     {a.sharedTags.length > 0 && (
-                      <p className="mt-2 text-xs text-[var(--color-warm-gray)] line-clamp-2 px-2">
+                      <p className="mt-2 text-xs text-[var(--color-black)]/70 line-clamp-2">
                         {a.sharedTags.slice(0, 3).join(" · ")}
                       </p>
                     )}
