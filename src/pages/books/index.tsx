@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import { ChevronDownIcon, GridIcon, ListIcon } from "@/components/Icons";
+import AuthorTag from "@/components/AuthorTag";
 import StarRating from "@/components/StarRating";
 import { getAllBooks } from "@/lib/books";
 import {
@@ -180,8 +181,8 @@ export default function BooksPage({ books }: Props) {
         ) : view === "grid" ? (
           <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {filtered.map((b) => (
-              <li key={b.slug}>
-                <Link href={`/books/${b.slug}/`} className="group block">
+              <li key={b.slug} className="group">
+                <Link href={`/books/${b.slug}/`} className="block">
                   {b.coverImage && (
                     <div className="aspect-[2/3] overflow-hidden rounded-lg bg-[var(--color-warm-gray)] shadow-md">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -196,39 +197,48 @@ export default function BooksPage({ books }: Props) {
                   <h2 className="mt-3 text-base sm:text-lg tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-2">
                     {b.title}
                   </h2>
-                  <p className="mt-1 text-sm text-[var(--color-black)]/70 line-clamp-1">
-                    by {b.author}
-                  </p>
-                  <div className="mt-1 text-sm">
-                    <StarRow rating={b.rating} />
-                  </div>
-                  {b.lastReadOn && (
-                    <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wider text-[var(--color-black)]/50">
-                      {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
-                      <time dateTime={b.lastReadOn}>
-                        {formatReadOn(b.lastReadOn)}
-                      </time>
-                      {b.readings.length > 1 && (
-                        <span className="ml-1 text-[var(--color-black)]/40">
-                          ({b.readings.length}x)
-                        </span>
-                      )}
-                    </p>
-                  )}
                 </Link>
+                <div className="mt-1.5 text-sm text-[var(--color-black)]/70 line-clamp-1">
+                  <AuthorTag
+                    name={b.author}
+                    photo={b.authorPhoto}
+                    photoAlt={b.authorPhotoAlt}
+                    size="sm"
+                  />
+                </div>
+                <div className="mt-1.5 text-sm">
+                  <StarRow rating={b.rating} />
+                </div>
+                {b.lastReadOn && (
+                  <p className="mt-1 text-[10px] sm:text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                    {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
+                    <time dateTime={b.lastReadOn}>
+                      {formatReadOn(b.lastReadOn)}
+                    </time>
+                    {b.readings.length > 1 && (
+                      <span className="ml-1 text-[var(--color-black)]/40">
+                        ({b.readings.length}x)
+                      </span>
+                    )}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
         ) : (
           <ul className="divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
             {filtered.map((b) => (
-              <li key={b.slug}>
+              <li
+                key={b.slug}
+                className="group flex gap-4 sm:gap-6 py-4 sm:py-5"
+              >
                 <Link
                   href={`/books/${b.slug}/`}
-                  className="group flex gap-4 sm:gap-6 py-4 sm:py-5"
+                  className="flex-shrink-0"
+                  aria-label={b.title}
                 >
                   {b.coverImage && (
-                    <div className="flex-shrink-0 w-14 h-20 sm:w-16 sm:h-24 overflow-hidden rounded-md bg-[var(--color-warm-gray)] shadow">
+                    <div className="w-14 h-20 sm:w-16 sm:h-24 overflow-hidden rounded-md bg-[var(--color-warm-gray)] shadow">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={b.coverImage}
@@ -238,31 +248,38 @@ export default function BooksPage({ books }: Props) {
                       />
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
+                </Link>
+                <div className="flex-1 min-w-0">
+                  <Link href={`/books/${b.slug}/`} className="block">
                     <h2 className="text-base sm:text-lg font-semibold tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-1">
                       {b.title}
                     </h2>
-                    <p className="text-sm text-[var(--color-black)]/70 line-clamp-1">
-                      by {b.author}
-                    </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                      <StarRow rating={b.rating} />
-                      {b.lastReadOn && (
-                        <span className="text-xs uppercase tracking-wider text-[var(--color-black)]/50">
-                          {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
-                          <time dateTime={b.lastReadOn}>
-                            {formatReadOn(b.lastReadOn)}
-                          </time>
-                          {b.readings.length > 1 && (
-                            <span className="ml-1 text-[var(--color-black)]/40">
-                              ({b.readings.length}x)
-                            </span>
-                          )}
-                        </span>
-                      )}
-                    </div>
+                  </Link>
+                  <div className="text-sm text-[var(--color-black)]/70 line-clamp-1">
+                    <AuthorTag
+                      name={b.author}
+                      photo={b.authorPhoto}
+                      photoAlt={b.authorPhotoAlt}
+                      size="sm"
+                    />
                   </div>
-                </Link>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                    <StarRow rating={b.rating} />
+                    {b.lastReadOn && (
+                      <span className="text-xs uppercase tracking-wider text-[var(--color-black)]/50">
+                        {b.readings.length > 1 ? "Last read:" : "Read on:"}{" "}
+                        <time dateTime={b.lastReadOn}>
+                          {formatReadOn(b.lastReadOn)}
+                        </time>
+                        {b.readings.length > 1 && (
+                          <span className="ml-1 text-[var(--color-black)]/40">
+                            ({b.readings.length}x)
+                          </span>
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

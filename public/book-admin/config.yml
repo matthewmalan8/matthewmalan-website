@@ -28,6 +28,20 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Author", name: "author", widget: "string" }
+      - {
+          label: "Author Photo",
+          name: "authorPhoto",
+          widget: "image",
+          required: false,
+          hint: "Square headshot of the author. Shown as a circular avatar next to the author's name on /books. Use the same photo for every book by this author for consistency.",
+        }
+      - {
+          label: "Author Photo Alt Text",
+          name: "authorPhotoAlt",
+          widget: "string",
+          required: false,
+          hint: "Description of the author photo for screen readers, e.g. \"Headshot of James Clear\". Optional.",
+        }
       - { label: "Cover Image", name: "coverImage", widget: "image" }
       - {
           label: "Cover Image Alt Text",

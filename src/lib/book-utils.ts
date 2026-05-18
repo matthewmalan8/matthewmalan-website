@@ -8,12 +8,25 @@ export type Reading = {
 export type BookFrontmatter = {
   title: string;
   author: string;
+  authorPhoto: string;
+  authorPhotoAlt: string;
   coverImage: string;
   coverImageAlt: string;
   rating: number;
   amazonLink: string;
   tags: string[];
 };
+
+// Used in URLs for /books/author/<slug>/ and for grouping books by author.
+// Lowercase, alphanumeric, hyphenated. "James Clear" -> "james-clear".
+export function authorSlug(author: string): string {
+  return author
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 export type BookMeta = BookFrontmatter & {
   slug: string;

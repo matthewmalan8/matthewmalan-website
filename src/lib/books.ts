@@ -79,6 +79,8 @@ function readBookRaw(slug: string): {
     data: {
       title: asString(fm.title),
       author: asString(fm.author),
+      authorPhoto: asString(fm.authorPhoto),
+      authorPhotoAlt: asString(fm.authorPhotoAlt),
       coverImage: asString(fm.coverImage),
       coverImageAlt: asString(fm.coverImageAlt),
       rating: Number.isFinite(ratingRaw)

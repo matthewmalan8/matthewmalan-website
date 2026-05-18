@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import AuthorTag from "@/components/AuthorTag";
 import StarRating from "@/components/StarRating";
 import { getAllBooks, getAllBookSlugs, getBookBySlug } from "@/lib/books";
 import {
@@ -80,12 +81,15 @@ export default function BookReviewPage({ book, related }: Props) {
               <h1 className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl tracking-tight">
                 {book.title}
               </h1>
-              <p className="mt-3 text-xl text-[var(--color-black)]/70">
-                by{" "}
-                <span className="font-medium text-[var(--color-black)]">
-                  {book.author}
-                </span>
-              </p>
+              <div className="mt-4 text-xl text-[var(--color-black)]/70 flex items-center gap-2">
+                <span>by</span>
+                <AuthorTag
+                  name={book.author}
+                  photo={book.authorPhoto}
+                  photoAlt={book.authorPhotoAlt}
+                  size="lg"
+                />
+              </div>
               <div className="mt-5 text-2xl">
                 <StarRating rating={book.rating} />
               </div>
@@ -204,8 +208,8 @@ export default function BookReviewPage({ book, related }: Props) {
             </h2>
             <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
               {related.map((b) => (
-                <li key={b.slug}>
-                  <Link href={`/books/${b.slug}/`} className="group block">
+                <li key={b.slug} className="group">
+                  <Link href={`/books/${b.slug}/`} className="block">
                     {b.coverImage && (
                       <div className="aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-warm-gray)] shadow-md">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -220,13 +224,18 @@ export default function BookReviewPage({ book, related }: Props) {
                     <h3 className="mt-4 text-base sm:text-lg tracking-tight group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-2">
                       {b.title}
                     </h3>
-                    <p className="mt-1 text-sm text-[var(--color-black)]/70">
-                      by {b.author}
-                    </p>
-                    <div className="mt-1 text-sm">
-                      <StarRating rating={b.rating} />
-                    </div>
                   </Link>
+                  <div className="mt-1.5 text-sm text-[var(--color-black)]/70">
+                    <AuthorTag
+                      name={b.author}
+                      photo={b.authorPhoto}
+                      photoAlt={b.authorPhotoAlt}
+                      size="sm"
+                    />
+                  </div>
+                  <div className="mt-1.5 text-sm">
+                    <StarRating rating={b.rating} />
+                  </div>
                 </li>
               ))}
             </ul>
