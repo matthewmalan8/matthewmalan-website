@@ -11,14 +11,19 @@ If the secrets below are missing the build still succeeds — the calendar just 
 1. Go to https://console.cloud.google.com/projectcreate and create a project (name it anything — e.g. `matthewmalan-tasks`).
 2. With that project selected, open **APIs & Services → Library**, search for **Tasks API**, and click **Enable**.
 
-## 2. Create an OAuth client
+## 2. Configure the OAuth consent screen
 
-1. **APIs & Services → OAuth consent screen**. Pick **External**, fill in the app name (`matthewmalan.com`), your email, save. Add yourself as a Test User on the next screen so unverified consent works.
-2. **APIs & Services → Credentials → Create credentials → OAuth client ID**.
-3. Application type: **Desktop app**. Name: `matthewmalan-tasks-local`. Create.
-4. Copy the **Client ID** and **Client Secret** from the modal. These become `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` later.
+1. **APIs & Services → OAuth consent screen**. Pick **External**, fill in the app name (`matthewmalan.com`), your email, save through to the end.
+2. **Test users → + Add users → `mattmalan6@gmail.com` → Save.** Without this you'll hit `Error 403: access_denied` when trying to authorize.
+3. **Publish the app.** Back on the OAuth consent screen, click **Publish app → Confirm**. You're only asking for the `tasks.readonly` scope on your own account, so Google won't actually require formal verification — but publishing matters because **refresh tokens issued in Testing mode expire after 7 days**, while published-app tokens don't expire. If you skip this, you'll be regenerating tokens weekly.
 
-## 3. Get a refresh token (one-time)
+## 3. Create OAuth credentials
+
+1. **APIs & Services → Credentials → Create credentials → OAuth client ID**.
+2. Application type: **Desktop app**. Name: `matthewmalan-tasks-local`. Create.
+3. Copy the **Client ID** and **Client Secret** from the modal. These become `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` later.
+
+## 4. Get a refresh token (one-time)
 
 This is the only step that needs a browser. You're using your own desktop machine.
 
@@ -43,7 +48,7 @@ curl -X POST https://oauth2.googleapis.com/token \
 
 The `refresh_token` field in the response is what we want. Save it.
 
-## 4. Add the secrets to GitHub
+## 5. Add the secrets to GitHub
 
 In the repo → **Settings → Secrets and variables → Actions → New repository secret**, add:
 
@@ -51,7 +56,7 @@ In the repo → **Settings → Secrets and variables → Actions → New reposit
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_TASKS_REFRESH_TOKEN`
 
-## 5. Trigger a rebuild
+## 6. Trigger a rebuild
 
 Either push any commit, or open **Actions → Deploy to AWS → Run workflow**. The build log will show:
 
@@ -63,7 +68,8 @@ After deploy, click any calendar date on `/dropshipping/` — the panel will sho
 
 ## Troubleshooting
 
-- **`Token refresh failed: 400 invalid_grant`** — the refresh token was revoked (likely because the OAuth consent screen is in Testing mode and tokens expire after 7 days). Either publish the consent screen, or regenerate the refresh token from step 3.
+- **`Access blocked: ... has not completed the Google verification process` / `Error 403: access_denied`** — your email isn't on the Test users list, OR the app isn't published. Go to step 2 and either add yourself as a test user (token expires in 7 days) or publish the app (token never expires).
+- **`Token refresh failed: 400 invalid_grant`** — the refresh token was revoked. Most common cause: the consent screen was in Testing mode and 7 days have passed. Publish the app (step 2.3) and regenerate the token (step 4).
 - **`Missing GOOGLE_*` in build log** — one of the secrets isn't set. The build still succeeds with an empty cache; add the secret and rerun.
 - **Empty cache despite credentials present** — check that you granted the `tasks.readonly` scope during the OAuth dance. The `prompt=consent` query param in the auth URL forces re-prompting.
 
@@ -77,3 +83,5 @@ node scripts/fetch-google-tasks.mjs
 ```
 
 Then `pnpm dev` and open `/dropshipping/`. Click any day with a green dot.
+
+The numbered sections above are now: (1) Google Cloud project + Tasks API, (2) OAuth consent screen + Test user + Publish, (3) OAuth credentials, (4) Refresh token, (5) GitHub secrets, (6) Trigger rebuild.
