@@ -2,11 +2,11 @@ import Link from "next/link";
 import { useState } from "react";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import StarRating from "@/components/StarRating";
 import { getAllBooks, getAllBookSlugs, getBookBySlug } from "@/lib/books";
 import {
   formatReadOn,
   getRelatedBooks,
-  ratingStars,
   type Book,
   type BookMeta,
 } from "@/lib/book-utils";
@@ -86,17 +86,9 @@ export default function BookReviewPage({ book, related }: Props) {
                   {book.author}
                 </span>
               </p>
-              <p
-                aria-label={`Rated ${book.rating} out of 5`}
-                className="mt-5 text-2xl"
-              >
-                <span className="text-[var(--color-yellow)]">
-                  {ratingStars(book.rating).slice(0, book.rating)}
-                </span>
-                <span className="text-[var(--color-warm-gray)]">
-                  {ratingStars(book.rating).slice(book.rating)}
-                </span>
-              </p>
+              <div className="mt-5 text-2xl">
+                <StarRating rating={book.rating} />
+              </div>
               {book.lastReadOn && (
                 <p className="mt-4 text-sm uppercase tracking-wider text-[var(--color-black)]/60">
                   {multipleReadings ? "Last read:" : "Read on:"}{" "}
@@ -231,17 +223,9 @@ export default function BookReviewPage({ book, related }: Props) {
                     <p className="mt-1 text-sm text-[var(--color-black)]/70">
                       by {b.author}
                     </p>
-                    <p
-                      aria-label={`Rated ${b.rating} out of 5`}
-                      className="mt-1 text-sm"
-                    >
-                      <span className="text-[var(--color-yellow)]">
-                        {ratingStars(b.rating).slice(0, b.rating)}
-                      </span>
-                      <span className="text-[var(--color-warm-gray)]">
-                        {ratingStars(b.rating).slice(b.rating)}
-                      </span>
-                    </p>
+                    <div className="mt-1 text-sm">
+                      <StarRating rating={b.rating} />
+                    </div>
                   </Link>
                 </li>
               ))}

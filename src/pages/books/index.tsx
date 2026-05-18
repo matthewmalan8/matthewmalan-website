@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import { ChevronDownIcon, GridIcon, ListIcon } from "@/components/Icons";
+import StarRating from "@/components/StarRating";
 import { getAllBooks } from "@/lib/books";
 import {
   BOOK_SORTS,
   formatReadOn,
-  ratingStars,
   sortBooks,
   type BookMeta,
   type BookSort,
@@ -22,16 +22,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 function StarRow({ rating }: { rating: number }) {
-  return (
-    <p aria-label={`Rated ${rating} out of 5`}>
-      <span className="text-[var(--color-yellow)]">
-        {ratingStars(rating).slice(0, rating)}
-      </span>
-      <span className="text-[var(--color-warm-gray)]">
-        {ratingStars(rating).slice(rating)}
-      </span>
-    </p>
-  );
+  return <StarRating rating={rating} />;
 }
 
 export default function BooksPage({ books }: Props) {
