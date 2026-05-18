@@ -36,6 +36,35 @@ const today = isoDate(new Date());
 const episodeSlugs = listSlugs(path.join(process.cwd(), "content", "episodes"));
 const bookSlugs = listSlugs(path.join(process.cwd(), "content", "books"));
 
+// Author slugs are derived from book frontmatter `author` fields.
+function slugifyAuthor(name) {
+  return name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+const authorSlugs = (() => {
+  const slugs = new Set();
+  const booksDir = path.join(process.cwd(), "content", "books");
+  if (!fs.existsSync(booksDir)) return [];
+  for (const file of fs.readdirSync(booksDir)) {
+    if (!file.endsWith(".md")) continue;
+    try {
+      const raw = fs.readFileSync(path.join(booksDir, file), "utf8");
+      const { data } = matter(raw);
+      if (typeof data.author === "string" && data.author.trim()) {
+        const s = slugifyAuthor(data.author);
+        if (s) slugs.add(s);
+      }
+    } catch {
+      // skip
+    }
+  }
+  return Array.from(slugs);
+})();
+
 // Gym exercise slugs come from the Hevy cache (only used templates).
 let exerciseSlugs = [];
 try {
@@ -131,6 +160,9 @@ const urls = [
     urlEntry(`/podcast/${slug}/`, episodeDate(slug), 0.8)
   ),
   ...bookSlugs.map((slug) => urlEntry(`/books/${slug}/`, booksLastMod, 0.6)),
+  ...authorSlugs.map((slug) =>
+    urlEntry(`/books/author/${slug}/`, booksLastMod, 0.5)
+  ),
   ...exerciseSlugs.map((slug) =>
     urlEntry(`/gym/exercise/${slug}/`, today, 0.4)
   ),
@@ -145,5 +177,5 @@ ${urls.join("\n")}
 const outPath = path.join(process.cwd(), "public", "sitemap.xml");
 fs.writeFileSync(outPath, xml, "utf8");
 console.log(
-  `[sitemap] Wrote ${urls.length} URLs (${staticPages.length} static, ${episodeSlugs.length} episodes, ${bookSlugs.length} books, ${exerciseSlugs.length} exercises) → public/sitemap.xml`
+  `[sitemap] Wrote ${urls.length} URLs (${staticPages.length} static, ${episodeSlugs.length} episodes, ${bookSlugs.length} books, ${authorSlugs.length} authors, ${exerciseSlugs.length} exercises) → public/sitemap.xml`
 );
