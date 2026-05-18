@@ -73,19 +73,19 @@ export default function AuthorPage({
         >
           ← Back to all books
         </Link>
-        <div className="mt-6 flex items-center gap-5 flex-wrap">
+        <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10">
           {authorPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={authorPhoto}
               alt={authorPhotoAlt || author}
-              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full object-cover ring-2 ring-[var(--color-warm-gray)]"
+              className="w-40 h-40 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-full object-cover ring-4 ring-[var(--color-warm-gray)] shadow-xl flex-shrink-0"
               loading="lazy"
             />
           ) : (
             <span
               aria-hidden="true"
-              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/70 inline-flex items-center justify-center text-2xl font-semibold"
+              className="w-40 h-40 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-full bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/70 inline-flex items-center justify-center text-5xl sm:text-6xl font-semibold ring-4 ring-[var(--color-warm-gray)] flex-shrink-0"
             >
               {author
                 .split(/\s+/)
