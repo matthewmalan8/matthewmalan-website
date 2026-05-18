@@ -12,9 +12,9 @@ type Props = {
 };
 
 const SIZE = {
-  sm: "w-6 h-6 text-xs",
-  md: "w-8 h-8 text-sm",
-  lg: "w-10 h-10 text-base",
+  sm: "w-10 h-10 text-sm",
+  md: "w-12 h-12 text-base",
+  lg: "w-14 h-14 text-lg",
 };
 
 function Initials({ name, sizeClass }: { name: string; sizeClass: string }) {
