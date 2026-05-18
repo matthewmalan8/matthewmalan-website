@@ -113,7 +113,6 @@ export function getAllBooks(): BookMeta[] {
       const readingDates: ReadingMeta[] = readings.map((r) => ({
         date: r.date,
         videoUrl: r.videoUrl,
-        hasNotes: r.notes.trim().length > 0,
       }));
       return {
         slug,
