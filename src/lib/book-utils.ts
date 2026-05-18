@@ -1,4 +1,4 @@
-export type ReadingMeta = { date: string; videoUrl: string };
+export type ReadingMeta = { date: string; videoUrl: string; hasNotes: boolean };
 export type Reading = {
   date: string;
   notesHtml: string;
@@ -93,7 +93,7 @@ export function formatReadOn(date: string): string {
 }
 
 export function getRelatedBooks(
-  current: BookMeta,
+  current: { slug: string; tags: string[] },
   all: BookMeta[],
   limit = 3
 ): BookMeta[] {
