@@ -2,7 +2,7 @@
 title: You Were Born Rich
 author: Bob Proctor
 coverImage: https://m.media-amazon.com/images/I/710cIeql55L._AC_UF1000,1000_QL80_.jpg
-rating: 5
+rating: 4.5
 amazonLink: https://amzn.to/4ukqw9t
 tags:
   - Mindset
