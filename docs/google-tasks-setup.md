@@ -17,36 +17,26 @@ If the secrets below are missing the build still succeeds — the calendar just 
 2. **Test users → + Add users → `mattmalan6@gmail.com` → Save.** Without this you'll hit `Error 403: access_denied` when trying to authorize.
 3. **Publish the app.** Back on the OAuth consent screen, click **Publish app → Confirm**. You're only asking for the `tasks.readonly` scope on your own account, so Google won't actually require formal verification — but publishing matters because **refresh tokens issued in Testing mode expire after 7 days**, while published-app tokens don't expire. If you skip this, you'll be regenerating tokens weekly.
 
-## 3. Create OAuth credentials
+## 3. Create OAuth credentials (Web application)
 
-1. **APIs & Services → Credentials → Create credentials → OAuth client ID**.
-2. Application type: **Desktop app**. Name: `matthewmalan-tasks-local`. Create.
-3. Copy the **Client ID** and **Client Secret** from the modal. These become `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` later.
+We use a Web application client + Google's OAuth Playground to capture the refresh token, because Google deprecated the old `urn:ietf:wg:oauth:2.0:oob` "out-of-band" flow that Desktop app clients relied on, and new projects get rejected with `Error 403: access_denied` if they try to use it.
+
+1. Left sidebar → **Clients** → **+ Create client**.
+2. Application type: **Web application**. Name: `matthewmalan-tasks-playground`.
+3. Under **Authorized redirect URIs**, add: `https://developers.google.com/oauthplayground`
+4. Create. Copy the **Client ID** and **Client Secret** — these become `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
 
 ## 4. Get a refresh token (one-time)
 
-This is the only step that needs a browser. You're using your own desktop machine.
-
-```bash
-# Replace <CLIENT_ID> below.
-# 1. Open this URL in a browser, approve access, copy the "code" param from the redirect.
-echo "https://accounts.google.com/o/oauth2/v2/auth?client_id=<CLIENT_ID>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/tasks.readonly&access_type=offline&prompt=consent"
-```
-
-> Note: `urn:ietf:wg:oauth:2.0:oob` (the "out of band" flow) is deprecated for new projects. If Google rejects it, instead create the OAuth client as a **Web application** with redirect URI `http://localhost:8080`, then run a one-off local listener (e.g. `npx oauth2-local-listener`) to capture the code.
-
-Then exchange the code for a refresh token:
-
-```bash
-curl -X POST https://oauth2.googleapis.com/token \
-  -d "code=<CODE>" \
-  -d "client_id=<CLIENT_ID>" \
-  -d "client_secret=<CLIENT_SECRET>" \
-  -d "redirect_uri=urn:ietf:wg:oauth:2.0:oob" \
-  -d "grant_type=authorization_code"
-```
-
-The `refresh_token` field in the response is what we want. Save it.
+1. Open https://developers.google.com/oauthplayground/
+2. Click the ⚙️ gear icon (top-right).
+3. Check **Use your own OAuth credentials**.
+4. Paste the Client ID and Client Secret from step 3 → close the settings.
+5. In the left scope list, scroll down to **Tasks API v1** → check `https://www.googleapis.com/auth/tasks.readonly`.
+6. Click **Authorize APIs**.
+7. Sign in as the account whose tasks you want to read. You'll see "Google hasn't verified this app" — click **Advanced → Go to matthewmalan.com (unsafe) → Continue**. (Normal for unverified apps with sensitive scopes; you're authorizing your own app to access your own data.)
+8. Back in the Playground, you're now on Step 2. Click **Exchange authorization code for tokens**.
+9. The response on the right shows `"refresh_token": "1//..."`. Copy that value — that's `GOOGLE_TASKS_REFRESH_TOKEN`.
 
 ## 5. Add the secrets to GitHub
 
@@ -68,7 +58,7 @@ After deploy, click any calendar date on `/dropshipping/` — the panel will sho
 
 ## Troubleshooting
 
-- **`Access blocked: ... has not completed the Google verification process` / `Error 403: access_denied`** — your email isn't on the Test users list, OR the app isn't published. Go to step 2 and either add yourself as a test user (token expires in 7 days) or publish the app (token never expires).
+- **`Access blocked: ... has not completed the Google verification process` / `Error 403: access_denied`** — most common cause is using the deprecated `urn:ietf:wg:oauth:2.0:oob` redirect URI with a Desktop app client. Use the OAuth Playground flow in steps 3–4 instead. Second most common: the app is in Testing mode and your email isn't on the Test users list (Audience → Test users) — publish the app (step 2.3) so this stops mattering.
 - **`Token refresh failed: 400 invalid_grant`** — the refresh token was revoked. Most common cause: the consent screen was in Testing mode and 7 days have passed. Publish the app (step 2.3) and regenerate the token (step 4).
 - **`Missing GOOGLE_*` in build log** — one of the secrets isn't set. The build still succeeds with an empty cache; add the secret and rerun.
 - **Empty cache despite credentials present** — check that you granted the `tasks.readonly` scope during the OAuth dance. The `prompt=consent` query param in the auth URL forces re-prompting.
