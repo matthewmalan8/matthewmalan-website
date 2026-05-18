@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   formatHoursMinutes,
   formatHoursMinutesShort,
@@ -92,26 +92,28 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
     });
   };
 
-  // ---- Detail view: replaces the calendar grid ----
+  // ---- Detail panel (rendered above the calendar when a day is selected) ----
+  let detailPanel: ReactNode = null;
   if (selectedIso) {
     const log = logByDate.get(selectedIso);
     const tasks = taskCache?.byDate?.[selectedIso] ?? [];
     const minutes = logMinutes(log);
     const done = tasks.filter((t) => t.status === "completed").length;
 
-    return (
-      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
+    detailPanel = (
+      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-black)] rounded-2xl p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between gap-3 mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+            {formatLongDate(selectedIso)}
+          </p>
           <button
             type="button"
             onClick={() => setSelectedIso(null)}
-            className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#4A4A4A] cursor-pointer"
+            aria-label="Close day view"
+            className="text-[var(--color-black)]/60 hover:text-[var(--color-black)] text-2xl leading-none cursor-pointer"
           >
-            ← Back to calendar
+            ×
           </button>
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-black)]/50">
-            {formatLongDate(selectedIso)}
-          </p>
         </div>
 
         {/* Summary chips */}
@@ -247,7 +249,9 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
   }
 
   return (
-    <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
+    <div className="space-y-6">
+      {detailPanel}
+      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <button
           type="button"
@@ -397,6 +401,7 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
         <span className="text-[var(--color-black)]/60 italic">
           Click any day to see tasks + notes.
         </span>
+      </div>
       </div>
     </div>
   );

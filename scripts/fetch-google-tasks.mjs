@@ -98,12 +98,11 @@ try {
       if (pageToken) url.searchParams.set("pageToken", pageToken);
       const page = await gfetch(url.toString(), token);
       for (const task of page.items ?? []) {
-        // Group by completion date if completed, else by due date, else by
-        // updated date (fallback so nothing is invisible).
-        const key =
-          isoDay(task.completed) ??
-          isoDay(task.due) ??
-          isoDay(task.updated);
+        // Group by due date — this is "the day I was supposed to do it."
+        // Completion date is intentionally ignored so finishing a task late
+        // doesn't move it off the day it was planned for. Fall back to
+        // updated date only when a task has no due date set.
+        const key = isoDay(task.due) ?? isoDay(task.updated);
         if (!key) continue;
         if (!byDate[key]) byDate[key] = [];
         byDate[key].push({
