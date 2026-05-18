@@ -161,42 +161,70 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
               </p>
             ) : (
               <ul className="space-y-3">
-                {tasks.map((t) => (
-                  <li
-                    key={`${t.listId}-${t.id}`}
-                    className="flex items-start gap-3 text-sm"
-                  >
-                    <span
-                      className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
-                        t.status === "completed"
-                          ? "bg-[var(--color-lime)] border-[var(--color-lime)] text-[var(--color-black)]"
-                          : "border-[var(--color-warm-gray)] bg-transparent"
-                      }`}
-                      aria-hidden="true"
+                {tasks.map((t) => {
+                  const dueDay = t.due ? t.due.slice(0, 10) : null;
+                  const isOverdue =
+                    t.status === "needsAction" &&
+                    !!dueDay &&
+                    dueDay < todayIso;
+                  return (
+                    <li
+                      key={`${t.listId}-${t.id}`}
+                      className="flex items-start gap-3 text-sm"
                     >
-                      {t.status === "completed" ? "✓" : ""}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={
+                      <span
+                        className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
                           t.status === "completed"
-                            ? "line-through text-[var(--color-black)]/50"
-                            : "text-[var(--color-black)]"
-                        }
+                            ? "bg-[var(--color-lime)] border-[var(--color-lime)] text-[var(--color-black)]"
+                            : isOverdue
+                              ? "border-[#D64545] bg-transparent"
+                              : "border-[var(--color-warm-gray)] bg-transparent"
+                        }`}
+                        aria-hidden="true"
                       >
-                        {t.title}
-                      </p>
-                      {t.notes && (
-                        <p className="mt-0.5 text-xs text-[var(--color-black)]/60 whitespace-pre-line">
-                          {t.notes}
+                        {t.status === "completed" ? "✓" : ""}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`flex flex-wrap items-center gap-2 ${
+                            t.status === "completed"
+                              ? "line-through text-[var(--color-black)]/50"
+                              : "text-[var(--color-black)]"
+                          }`}
+                        >
+                          <span>{t.title}</span>
+                          {isOverdue && (
+                            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#D64545] text-[var(--color-off-white)]">
+                              Missed
+                            </span>
+                          )}
                         </p>
-                      )}
-                      <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--color-black)]/40">
-                        {t.listTitle}
-                      </p>
-                    </div>
-                  </li>
-                ))}
+                        {t.notes && (
+                          <p className="mt-0.5 text-xs text-[var(--color-black)]/60 whitespace-pre-line">
+                            {t.notes}
+                          </p>
+                        )}
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--color-black)]/40">
+                          {t.listTitle}
+                          {dueDay && (
+                            <>
+                              {" · "}
+                              <span
+                                className={
+                                  isOverdue
+                                    ? "text-[#D64545] font-semibold"
+                                    : ""
+                                }
+                              >
+                                Due {dueDay}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
