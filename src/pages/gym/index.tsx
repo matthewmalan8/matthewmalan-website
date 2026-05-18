@@ -138,6 +138,7 @@ export default function GymPage({
       title="Gym"
       description="Workouts, streaks, and personal records — pulled live from my Hevy log."
       path="/gym/"
+      ogImage="/og/gym.png"
     >
       {/* Hero */}
       <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">

@@ -85,6 +85,7 @@ export default function PodcastPage({
       title="Stay Hungry Podcast"
       description="Stay Hungry — business strategies from the entrepreneurs and executives who built something worth studying. Hosted by Matthew Malan."
       path="/podcast/"
+      ogImage="/og/podcast.png"
     >
       {/* Hero */}
       <section className="bg-[var(--color-black)] text-[var(--color-off-white)]">

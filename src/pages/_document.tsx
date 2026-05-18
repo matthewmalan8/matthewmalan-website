@@ -26,6 +26,12 @@ export default function Document() {
           crossOrigin="anonymous"
         />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Stay Hungry Podcast"
+          href="/rss.xml"
+        />
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-TGMZJS95HP"

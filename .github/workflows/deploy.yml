@@ -47,4 +47,7 @@ jobs:
       - name: Build + deploy to S3 + invalidate CloudFront
         env:
           HEVY_API_KEY: ${{ secrets.HEVY_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_TASKS_REFRESH_TOKEN: ${{ secrets.GOOGLE_TASKS_REFRESH_TOKEN }}
         run: pnpm run deploy:aws

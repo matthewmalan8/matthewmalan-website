@@ -4,9 +4,14 @@ import {
   formatHoursMinutesShort,
   logMinutes,
   type DailyLog,
+  type GoogleTask,
+  type GoogleTaskCache,
 } from "@/lib/dropshipping-utils";
 
-type Props = { logs: DailyLog[] };
+type Props = {
+  logs: DailyLog[];
+  taskCache?: GoogleTaskCache;
+};
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -32,12 +37,158 @@ function buildMonthCells(year: number, month: number): Date[] {
   return cells;
 }
 
-export default function DropshippingCalendar({ logs }: Props) {
+function formatLongDate(iso: string): string {
+  // Avoid timezone shift by treating the date as local at noon.
+  const [y, m, d] = iso.split("-").map((p) => parseInt(p, 10));
+  return new Date(y, m - 1, d, 12).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function DayPanel({
+  iso,
+  log,
+  tasks,
+  hasTaskData,
+  onClose,
+}: {
+  iso: string;
+  log: DailyLog | undefined;
+  tasks: GoogleTask[];
+  hasTaskData: boolean;
+  onClose: () => void;
+}) {
+  const minutes = logMinutes(log);
+  const done = tasks.filter((t) => t.status === "completed").length;
+  const pending = tasks.length - done;
+
+  return (
+    <div className="mt-6 border-2 border-[var(--color-black)] rounded-2xl p-5 sm:p-6 bg-[var(--color-off-white)]">
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+            Selected day
+          </p>
+          <h4 className="mt-1 font-[family-name:var(--font-display)] text-2xl tracking-tight">
+            {formatLongDate(iso)}
+          </h4>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close day view"
+          className="text-[var(--color-black)]/60 hover:text-[var(--color-black)] text-2xl leading-none"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* Summary chips */}
+      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+        {log && minutes > 0 && (
+          <span className="px-3 py-1.5 bg-[var(--color-warm-gray)]/40 text-[var(--color-black)] rounded-full">
+            {formatHoursMinutes(minutes)} logged
+          </span>
+        )}
+        {log?.videoUrl && (
+          <a
+            href={log.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 bg-[var(--color-yellow)] text-[var(--color-black)] rounded-full hover:opacity-90"
+          >
+            Watch video →
+          </a>
+        )}
+        {hasTaskData && tasks.length > 0 && (
+          <span className="px-3 py-1.5 bg-[var(--color-black)] text-[var(--color-off-white)] rounded-full">
+            {done}/{tasks.length} tasks done
+          </span>
+        )}
+      </div>
+
+      {/* Notes */}
+      {log?.notesHtml && (
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-2">
+            Daily log
+          </p>
+          <div
+            className="prose prose-sm max-w-none text-[var(--color-black)]/80"
+            dangerouslySetInnerHTML={{ __html: log.notesHtml }}
+          />
+        </div>
+      )}
+
+      {/* Tasks */}
+      <div className="mt-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-2">
+          Tasks
+        </p>
+        {!hasTaskData ? (
+          <p className="text-sm text-[var(--color-black)]/60 italic">
+            Google Tasks not connected yet. Once the OAuth refresh token is set
+            in GitHub Secrets, daily task lists will appear here automatically.
+          </p>
+        ) : tasks.length === 0 ? (
+          <p className="text-sm text-[var(--color-black)]/60 italic">
+            No tasks recorded for this day.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {tasks.map((t) => (
+              <li
+                key={`${t.listId}-${t.id}`}
+                className="flex items-start gap-3 text-sm"
+              >
+                <span
+                  className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
+                    t.status === "completed"
+                      ? "bg-[var(--color-lime)] border-[var(--color-lime)] text-[var(--color-black)]"
+                      : "border-[var(--color-warm-gray)] bg-transparent"
+                  }`}
+                  aria-hidden="true"
+                >
+                  {t.status === "completed" ? "✓" : ""}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={`${
+                      t.status === "completed"
+                        ? "line-through text-[var(--color-black)]/50"
+                        : "text-[var(--color-black)]"
+                    }`}
+                  >
+                    {t.title}
+                  </p>
+                  {t.notes && (
+                    <p className="mt-0.5 text-xs text-[var(--color-black)]/60 whitespace-pre-line">
+                      {t.notes}
+                    </p>
+                  )}
+                  <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--color-black)]/40">
+                    {t.listTitle}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function DropshippingCalendar({ logs, taskCache }: Props) {
   const today = new Date();
   const [view, setView] = useState({
     year: today.getFullYear(),
     month: today.getMonth(),
   });
+  const [selectedIso, setSelectedIso] = useState<string | null>(null);
 
   const logByDate = useMemo(() => {
     const map = new Map<string, DailyLog>();
@@ -56,6 +207,7 @@ export default function DropshippingCalendar({ logs }: Props) {
   );
 
   const todayIso = isoDate(today);
+  const hasTaskData = !!taskCache?.generatedAt;
 
   const prevMonth = () => {
     setView((v) => {
@@ -111,12 +263,15 @@ export default function DropshippingCalendar({ logs }: Props) {
           const inMonth = d.getMonth() === view.month;
           const log = logByDate.get(iso);
           const isToday = iso === todayIso;
+          const isSelected = iso === selectedIso;
           const hasVideo = !!log?.videoUrl;
           const minutes = logMinutes(log);
           const isVideoZero = hasVideo && minutes === 0;
+          const dayTasks = taskCache?.byDate?.[iso] ?? [];
+          const hasTasks = dayTasks.length > 0;
 
           const baseClasses =
-            "min-h-20 sm:min-h-28 rounded-lg p-1.5 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden";
+            "min-h-20 sm:min-h-28 rounded-lg p-1.5 sm:p-2 flex flex-col text-left transition-colors w-full overflow-hidden relative";
           const stateClasses = !inMonth
             ? "opacity-30 cursor-default"
             : isVideoZero
@@ -124,19 +279,18 @@ export default function DropshippingCalendar({ logs }: Props) {
               : hasVideo
                 ? "bg-[var(--color-yellow)] text-[var(--color-black)] hover:opacity-90 cursor-pointer"
                 : minutes > 0 || log
-                  ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]"
-                  : "bg-transparent text-[var(--color-black)]/70 cursor-default";
-          const ringClasses = isToday
-            ? "ring-2 ring-[var(--color-black)] ring-inset"
-            : "";
+                  ? "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)] hover:bg-[var(--color-warm-gray)]/50 cursor-pointer"
+                  : "bg-transparent text-[var(--color-black)]/70 hover:bg-[var(--color-warm-gray)]/20 cursor-pointer";
+          const ringClasses = isSelected
+            ? "ring-2 ring-[var(--color-lime)] ring-inset"
+            : isToday
+              ? "ring-2 ring-[var(--color-black)] ring-inset"
+              : "";
 
           const showTime = minutes > 0 || isVideoZero;
           const timeText = isVideoZero
             ? "0m"
             : formatHoursMinutesShort(minutes);
-
-          // Hours/minutes always render in a muted dark-silver-gray; on red
-          // cells we use a lighter neutral so it stays legible.
           const timeColor = isVideoZero ? "text-white/80" : "text-[#6B7280]";
 
           const header = (
@@ -154,8 +308,7 @@ export default function DropshippingCalendar({ logs }: Props) {
             </div>
           );
 
-          const noteText =
-            inMonth && log?.notesText ? log.notesText : "";
+          const noteText = inMonth && log?.notesText ? log.notesText : "";
 
           const body = noteText && (
             <p className="hidden sm:block mt-1 text-xs leading-snug line-clamp-4">
@@ -163,35 +316,40 @@ export default function DropshippingCalendar({ logs }: Props) {
             </p>
           );
 
-          if (hasVideo && inMonth) {
+          const taskDot = hasTasks && inMonth && (
+            <span
+              aria-hidden="true"
+              className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--color-lime)] ring-1 ring-[var(--color-black)]/30"
+              title={`${dayTasks.length} task${dayTasks.length === 1 ? "" : "s"}`}
+            />
+          );
+
+          if (!inMonth) {
             return (
-              <a
+              <div
                 key={iso}
-                href={log!.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={`${iso} — ${isVideoZero ? "0m" : formatHoursMinutes(minutes)} · click to watch the video`}
-                className={`${baseClasses} ${stateClasses} ${ringClasses}`}
+                className={`${baseClasses} ${stateClasses}`}
+                aria-hidden="true"
               >
                 {header}
-                {body}
-              </a>
+              </div>
             );
           }
 
           return (
-            <div
+            <button
+              type="button"
               key={iso}
-              title={
-                inMonth
-                  ? `${iso}${minutes > 0 ? ` — ${formatHoursMinutes(minutes)}` : ""}`
-                  : ""
+              onClick={() =>
+                setSelectedIso((cur) => (cur === iso ? null : iso))
               }
+              title={`${iso}${minutes > 0 ? ` — ${formatHoursMinutes(minutes)}` : ""}${hasVideo ? " · video posted" : ""}${hasTasks ? ` · ${dayTasks.length} task${dayTasks.length === 1 ? "" : "s"}` : ""}`}
               className={`${baseClasses} ${stateClasses} ${ringClasses}`}
             >
               {header}
               {body}
-            </div>
+              {taskDot}
+            </button>
           );
         })}
       </div>
@@ -199,7 +357,7 @@ export default function DropshippingCalendar({ logs }: Props) {
       <div className="mt-6 flex flex-wrap gap-4 text-xs text-[var(--color-black)]/60">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded bg-[var(--color-yellow)]" />
-          Video posted — click to watch
+          Video posted
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded bg-[#D64545]" />
@@ -210,10 +368,27 @@ export default function DropshippingCalendar({ logs }: Props) {
           Hours logged
         </span>
         <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-lime)] ring-1 ring-[var(--color-black)]/30" />
+          Has tasks
+        </span>
+        <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)] ring-inset" />
           Today
         </span>
+        <span className="text-[var(--color-black)]/60 italic">
+          Click any day to see tasks + notes.
+        </span>
       </div>
+
+      {selectedIso && (
+        <DayPanel
+          iso={selectedIso}
+          log={logByDate.get(selectedIso)}
+          tasks={taskCache?.byDate?.[selectedIso] ?? []}
+          hasTaskData={hasTaskData}
+          onClose={() => setSelectedIso(null)}
+        />
+      )}
     </div>
   );
 }

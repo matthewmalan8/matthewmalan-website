@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { CloseIcon, MenuIcon } from "./Icons";
+import { CloseIcon, MenuIcon, SearchIcon } from "./Icons";
+import SearchModal from "./SearchModal";
 
 const links = [
   { href: "/speaking/", label: "Speaking" },
@@ -15,6 +16,7 @@ const links = [
 export default function Navigation() {
   const { pathname } = useRouter();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const isActive = (href: string) => {
     const normalized = href.replace(/\/$/, "");
@@ -24,7 +26,20 @@ export default function Navigation() {
   // Close the mobile menu whenever the route changes.
   useEffect(() => {
     setOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
+
+  // Cmd/Ctrl-K opens search.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   // Lock background scroll while the mobile menu is open.
   useEffect(() => {
@@ -64,6 +79,15 @@ export default function Navigation() {
             ))}
           </ul>
 
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search"
+            className="p-2 -ml-1 text-[var(--color-black)]/70 hover:text-[var(--color-black)] transition-colors"
+          >
+            <SearchIcon className="w-5 h-5" />
+          </button>
+
           <Link
             href="/contact/"
             className="inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-5 py-2.5 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors"
@@ -72,20 +96,30 @@ export default function Navigation() {
           </Link>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          className="md:hidden p-2 -mr-2 text-[var(--color-black)]"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          {open ? (
-            <CloseIcon className="w-6 h-6" />
-          ) : (
-            <MenuIcon className="w-6 h-6" />
-          )}
-        </button>
+        {/* Mobile: search + hamburger */}
+        <div className="md:hidden flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search"
+            className="p-2 text-[var(--color-black)]"
+          >
+            <SearchIcon className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            className="p-2 -mr-2 text-[var(--color-black)]"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+          >
+            {open ? (
+              <CloseIcon className="w-6 h-6" />
+            ) : (
+              <MenuIcon className="w-6 h-6" />
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu drawer */}
@@ -119,6 +153,7 @@ export default function Navigation() {
           </ul>
         </div>
       )}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }

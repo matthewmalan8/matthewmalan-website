@@ -46,6 +46,7 @@ export default function SpeakingPage() {
       title="Speaking"
       description="Keynotes on resilience, the human spirit, and scaling e-commerce businesses by Matthew Malan."
       path="/speaking/"
+      ogImage="/og/speaking.png"
     >
       {/* HERO */}
       <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">

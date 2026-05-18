@@ -7,6 +7,7 @@ import type {
   DailyLog,
   DropshippingGoal,
   Failure,
+  GoogleTaskCache,
   Pledge,
   Screenshot,
 } from "./dropshipping-utils";
@@ -15,6 +16,7 @@ export type {
   DailyLog,
   DropshippingGoal,
   Failure,
+  GoogleTaskCache,
   Pledge,
   Screenshot,
 };
@@ -191,4 +193,22 @@ export function getAllGoals(): DropshippingGoal[] {
 export function getPinnedGoal(goals?: DropshippingGoal[]): DropshippingGoal | null {
   const all = goals ?? getAllGoals();
   return all.find((g) => g.pinned) ?? null;
+}
+
+export function getTaskCache(): GoogleTaskCache {
+  const cachePath = path.join(baseDir, "cache", "tasks.json");
+  if (!fs.existsSync(cachePath)) {
+    return { generatedAt: "", byDate: {} };
+  }
+  try {
+    const raw = fs.readFileSync(cachePath, "utf8");
+    const parsed = JSON.parse(raw) as GoogleTaskCache;
+    return {
+      generatedAt: parsed.generatedAt ?? "",
+      lists: parsed.lists ?? [],
+      byDate: parsed.byDate ?? {},
+    };
+  } catch {
+    return { generatedAt: "", byDate: {} };
+  }
 }
