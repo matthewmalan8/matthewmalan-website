@@ -4,7 +4,6 @@ import {
   formatHoursMinutesShort,
   logMinutes,
   type DailyLog,
-  type GoogleTask,
   type GoogleTaskCache,
 } from "@/lib/dropshipping-utils";
 
@@ -46,140 +45,6 @@ function formatLongDate(iso: string): string {
     day: "numeric",
     year: "numeric",
   });
-}
-
-function DayPanel({
-  iso,
-  log,
-  tasks,
-  hasTaskData,
-  onClose,
-}: {
-  iso: string;
-  log: DailyLog | undefined;
-  tasks: GoogleTask[];
-  hasTaskData: boolean;
-  onClose: () => void;
-}) {
-  const minutes = logMinutes(log);
-  const done = tasks.filter((t) => t.status === "completed").length;
-  const pending = tasks.length - done;
-
-  return (
-    <div className="mt-6 border-2 border-[var(--color-black)] rounded-2xl p-5 sm:p-6 bg-[var(--color-off-white)]">
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
-            Selected day
-          </p>
-          <h4 className="mt-1 font-[family-name:var(--font-display)] text-2xl tracking-tight">
-            {formatLongDate(iso)}
-          </h4>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close day view"
-          className="text-[var(--color-black)]/60 hover:text-[var(--color-black)] text-2xl leading-none"
-        >
-          ×
-        </button>
-      </div>
-
-      {/* Summary chips */}
-      <div className="flex flex-wrap gap-2 text-xs font-semibold">
-        {log && minutes > 0 && (
-          <span className="px-3 py-1.5 bg-[var(--color-warm-gray)]/40 text-[var(--color-black)] rounded-full">
-            {formatHoursMinutes(minutes)} logged
-          </span>
-        )}
-        {log?.videoUrl && (
-          <a
-            href={log.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 bg-[var(--color-yellow)] text-[var(--color-black)] rounded-full hover:opacity-90"
-          >
-            Watch video →
-          </a>
-        )}
-        {hasTaskData && tasks.length > 0 && (
-          <span className="px-3 py-1.5 bg-[var(--color-black)] text-[var(--color-off-white)] rounded-full">
-            {done}/{tasks.length} tasks done
-          </span>
-        )}
-      </div>
-
-      {/* Notes */}
-      {log?.notesHtml && (
-        <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-2">
-            Daily log
-          </p>
-          <div
-            className="prose prose-sm max-w-none text-[var(--color-black)]/80"
-            dangerouslySetInnerHTML={{ __html: log.notesHtml }}
-          />
-        </div>
-      )}
-
-      {/* Tasks */}
-      <div className="mt-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-2">
-          Tasks
-        </p>
-        {!hasTaskData ? (
-          <p className="text-sm text-[var(--color-black)]/60 italic">
-            Google Tasks not connected yet. Once the OAuth refresh token is set
-            in GitHub Secrets, daily task lists will appear here automatically.
-          </p>
-        ) : tasks.length === 0 ? (
-          <p className="text-sm text-[var(--color-black)]/60 italic">
-            No tasks recorded for this day.
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {tasks.map((t) => (
-              <li
-                key={`${t.listId}-${t.id}`}
-                className="flex items-start gap-3 text-sm"
-              >
-                <span
-                  className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
-                    t.status === "completed"
-                      ? "bg-[var(--color-lime)] border-[var(--color-lime)] text-[var(--color-black)]"
-                      : "border-[var(--color-warm-gray)] bg-transparent"
-                  }`}
-                  aria-hidden="true"
-                >
-                  {t.status === "completed" ? "✓" : ""}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`${
-                      t.status === "completed"
-                        ? "line-through text-[var(--color-black)]/50"
-                        : "text-[var(--color-black)]"
-                    }`}
-                  >
-                    {t.title}
-                  </p>
-                  {t.notes && (
-                    <p className="mt-0.5 text-xs text-[var(--color-black)]/60 whitespace-pre-line">
-                      {t.notes}
-                    </p>
-                  )}
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--color-black)]/40">
-                    {t.listTitle}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
 }
 
 export default function DropshippingCalendar({ logs, taskCache }: Props) {
@@ -226,6 +91,132 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
         : { year: v.year, month: m };
     });
   };
+
+  // ---- Detail view: replaces the calendar grid ----
+  if (selectedIso) {
+    const log = logByDate.get(selectedIso);
+    const tasks = taskCache?.byDate?.[selectedIso] ?? [];
+    const minutes = logMinutes(log);
+    const done = tasks.filter((t) => t.status === "completed").length;
+
+    return (
+      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setSelectedIso(null)}
+            className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#4A4A4A] cursor-pointer"
+          >
+            ← Back to calendar
+          </button>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-black)]/50">
+            {formatLongDate(selectedIso)}
+          </p>
+        </div>
+
+        {/* Summary chips */}
+        <div className="flex flex-wrap gap-2 text-xs font-semibold mb-6">
+          {log && minutes > 0 && (
+            <span className="px-3 py-1.5 bg-[var(--color-warm-gray)]/40 text-[var(--color-black)] rounded-full">
+              {formatHoursMinutes(minutes)} logged
+            </span>
+          )}
+          {log?.videoUrl && (
+            <a
+              href={log.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 bg-[var(--color-yellow)] text-[var(--color-black)] rounded-full hover:opacity-90"
+            >
+              Watch video →
+            </a>
+          )}
+          {hasTaskData && tasks.length > 0 && (
+            <span className="px-3 py-1.5 bg-[var(--color-black)] text-[var(--color-off-white)] rounded-full">
+              {done}/{tasks.length} tasks done
+            </span>
+          )}
+          {!log && tasks.length === 0 && (
+            <span className="px-3 py-1.5 bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]/60 rounded-full italic">
+              Nothing logged this day
+            </span>
+          )}
+        </div>
+
+        {/* Tasks */}
+        <div className="space-y-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-3">
+              Tasks
+            </p>
+            {!hasTaskData ? (
+              <p className="text-sm text-[var(--color-black)]/60 italic">
+                Google Tasks not connected yet. Once the OAuth refresh token is
+                set in GitHub Secrets, daily task lists will appear here
+                automatically.
+              </p>
+            ) : tasks.length === 0 ? (
+              <p className="text-sm text-[var(--color-black)]/60 italic">
+                No tasks recorded for this day.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {tasks.map((t) => (
+                  <li
+                    key={`${t.listId}-${t.id}`}
+                    className="flex items-start gap-3 text-sm"
+                  >
+                    <span
+                      className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center ${
+                        t.status === "completed"
+                          ? "bg-[var(--color-lime)] border-[var(--color-lime)] text-[var(--color-black)]"
+                          : "border-[var(--color-warm-gray)] bg-transparent"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {t.status === "completed" ? "✓" : ""}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={
+                          t.status === "completed"
+                            ? "line-through text-[var(--color-black)]/50"
+                            : "text-[var(--color-black)]"
+                        }
+                      >
+                        {t.title}
+                      </p>
+                      {t.notes && (
+                        <p className="mt-0.5 text-xs text-[var(--color-black)]/60 whitespace-pre-line">
+                          {t.notes}
+                        </p>
+                      )}
+                      <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--color-black)]/40">
+                        {t.listTitle}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Notes */}
+          {log?.notesHtml && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-3">
+                Daily log
+              </p>
+              <div
+                className="prose prose-sm max-w-none text-[var(--color-black)]/80"
+                dangerouslySetInnerHTML={{ __html: log.notesHtml }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
@@ -379,16 +370,6 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
           Click any day to see tasks + notes.
         </span>
       </div>
-
-      {selectedIso && (
-        <DayPanel
-          iso={selectedIso}
-          log={logByDate.get(selectedIso)}
-          tasks={taskCache?.byDate?.[selectedIso] ?? []}
-          hasTaskData={hasTaskData}
-          onClose={() => setSelectedIso(null)}
-        />
-      )}
     </div>
   );
 }
