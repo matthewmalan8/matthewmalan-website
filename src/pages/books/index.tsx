@@ -26,11 +26,17 @@ function StarRow({ rating }: { rating: number }) {
   return <StarRating rating={rating} />;
 }
 
+// A book has a review if at least one reading has non-empty notes.
+function hasReview(b: BookMeta): boolean {
+  return b.readings.some((r) => r.hasNotes);
+}
+
 export default function BooksPage({ books }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<BookSort>("recent");
   const [view, setView] = useState<ViewMode>("grid");
+  const [reviewsOnly, setReviewsOnly] = useState(false);
 
   const activeTag: string | null = (() => {
     const t = router.query.tag;
@@ -47,6 +53,11 @@ export default function BooksPage({ books }: Props) {
     );
   };
 
+  const reviewCount = useMemo(
+    () => books.filter(hasReview).length,
+    [books]
+  );
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const matched = books.filter((b) => {
@@ -55,10 +66,11 @@ export default function BooksPage({ books }: Props) {
         b.title.toLowerCase().includes(q) ||
         b.author.toLowerCase().includes(q);
       const matchesTag = !activeTag || b.tags.includes(activeTag);
-      return matchesSearch && matchesTag;
+      const matchesReview = !reviewsOnly || hasReview(b);
+      return matchesSearch && matchesTag && matchesReview;
     });
     return sortBooks(matched, sort);
-  }, [books, search, sort, activeTag]);
+  }, [books, search, sort, activeTag, reviewsOnly]);
 
   return (
     <Layout
@@ -74,7 +86,7 @@ export default function BooksPage({ books }: Props) {
         </p>
         <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl tracking-tight max-w-4xl leading-[1.05]">
           Matthew&apos;s{" "}
-          <span className="bg-[var(--color-yellow)] px-2">Book Reviews</span>
+          <span className="bg-[var(--color-yellow)] px-2">Book Ratings</span>
         </h1>
       </section>
 
@@ -131,6 +143,38 @@ export default function BooksPage({ books }: Props) {
             <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-black)] pointer-events-none" />
           </div>
 
+          {reviewCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setReviewsOnly((v) => !v)}
+              aria-pressed={reviewsOnly}
+              title={
+                reviewsOnly
+                  ? "Showing only books I left review notes on"
+                  : "Show only books I left review notes on"
+              }
+              className={`inline-flex items-center gap-2 px-5 py-3 rounded-full border-2 border-[var(--color-black)] text-sm font-semibold transition-colors cursor-pointer ${
+                reviewsOnly
+                  ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+                  : "bg-[var(--color-off-white)] text-[var(--color-black)] hover:bg-[var(--color-warm-gray)]/30"
+              }`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <span>Books with reviews ({reviewCount})</span>
+            </button>
+          )}
+
           <div
             role="group"
             aria-label="View mode"
@@ -184,7 +228,7 @@ export default function BooksPage({ books }: Props) {
               <li key={b.slug} className="group">
                 <Link href={`/books/${b.slug}/`} className="block">
                   {b.coverImage && (
-                    <div className="aspect-[2/3] overflow-hidden rounded-lg bg-[var(--color-warm-gray)] shadow-md">
+                    <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-[var(--color-warm-gray)] shadow-md">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={b.coverImage}
@@ -192,6 +236,26 @@ export default function BooksPage({ books }: Props) {
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
                       />
+                      {hasReview(b) && (
+                        <span
+                          className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[var(--color-black)] text-[var(--color-yellow)] text-[10px] font-bold uppercase tracking-wider shadow-md"
+                          title="Matthew left review notes on this book"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                          </svg>
+                          Reviewed
+                        </span>
+                      )}
                     </div>
                   )}
                   <h2 className="mt-3 text-base sm:text-lg tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-2">
@@ -253,6 +317,26 @@ export default function BooksPage({ books }: Props) {
                   <Link href={`/books/${b.slug}/`} className="block">
                     <h2 className="text-base sm:text-lg font-semibold tracking-tight leading-snug group-hover:underline decoration-[var(--color-yellow)] decoration-2 underline-offset-2 line-clamp-1">
                       {b.title}
+                      {hasReview(b) && (
+                        <span
+                          className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-black)] text-[var(--color-yellow)] text-[10px] font-bold uppercase tracking-wider align-middle"
+                          title="Matthew left review notes on this book"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="w-2.5 h-2.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                          </svg>
+                          Reviewed
+                        </span>
+                      )}
                     </h2>
                   </Link>
                   <div className="text-sm text-[var(--color-black)]/70 line-clamp-1">

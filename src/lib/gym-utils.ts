@@ -89,24 +89,116 @@ export function formatShortDate(date: string): string {
 
 // ---- Streak ---------------------------------------------------------------
 
-export function getCurrentGymStreak(workouts: GymWorkout[]): number {
-  if (workouts.length === 0) return 0;
-  const days = new Set(workouts.map((w) => w.date));
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  let cursor = new Date(today);
-  // Grace day: if no workout today, start the count from yesterday.
-  if (!days.has(isoDate(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
+// Collapse multiple workouts on the same day into one bucket per ISO date,
+// summing duration. Used by every streak helper below.
+function daysWithTotalSeconds(workouts: GymWorkout[]): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const w of workouts) {
+    if (!w.date) continue;
+    map.set(w.date, (map.get(w.date) ?? 0) + (w.durationSeconds || 0));
   }
+  return map;
+}
 
+// Pure ISO-date math — no timezone surprises (everything stays at midnight).
+function shiftDays(iso: string, delta: number): string {
+  const [y, m, d] = iso.split("-").map((p) => parseInt(p, 10));
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + delta);
+  return dt.toISOString().slice(0, 10);
+}
+
+function todayIso(): string {
+  return isoDate(new Date());
+}
+
+// Current streak ending today (with one-day grace if no workout today yet).
+// `predicate` decides which days count.
+function currentStreakWith(
+  workouts: GymWorkout[],
+  predicate: (totalSeconds: number) => boolean
+): number {
+  if (workouts.length === 0) return 0;
+  const dayTotals = daysWithTotalSeconds(workouts);
+  const qualifyingDays = new Set<string>();
+  for (const [day, secs] of dayTotals.entries()) {
+    if (predicate(secs)) qualifyingDays.add(day);
+  }
+  if (qualifyingDays.size === 0) return 0;
+
+  let cursor = todayIso();
+  // Grace day: if no qualifying workout today, start from yesterday.
+  if (!qualifyingDays.has(cursor)) {
+    cursor = shiftDays(cursor, -1);
+  }
   let streak = 0;
-  while (days.has(isoDate(cursor))) {
+  while (qualifyingDays.has(cursor)) {
     streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = shiftDays(cursor, -1);
   }
   return streak;
+}
+
+export type StreakRecord = { length: number; lastDay: string };
+
+function longestStreakWith(
+  workouts: GymWorkout[],
+  predicate: (totalSeconds: number) => boolean
+): StreakRecord {
+  const dayTotals = daysWithTotalSeconds(workouts);
+  const qualifying = Array.from(dayTotals.entries())
+    .filter(([, secs]) => predicate(secs))
+    .map(([day]) => day)
+    .sort();
+  if (qualifying.length === 0) return { length: 0, lastDay: "" };
+
+  let bestLength = 1;
+  let bestEnd = qualifying[0];
+  let runLength = 1;
+  let runEnd = qualifying[0];
+
+  for (let i = 1; i < qualifying.length; i++) {
+    if (qualifying[i] === shiftDays(qualifying[i - 1], 1)) {
+      runLength += 1;
+      runEnd = qualifying[i];
+    } else {
+      if (runLength > bestLength) {
+        bestLength = runLength;
+        bestEnd = runEnd;
+      }
+      runLength = 1;
+      runEnd = qualifying[i];
+    }
+  }
+  // Final run.
+  if (runLength > bestLength) {
+    bestLength = runLength;
+    bestEnd = runEnd;
+  }
+  return { length: bestLength, lastDay: bestEnd };
+}
+
+// "Worked out at all" — any duration > 0.
+export function getCurrentGymStreak(workouts: GymWorkout[]): number {
+  return currentStreakWith(workouts, (secs) => secs > 0);
+}
+
+export function getLongestGymStreak(workouts: GymWorkout[]): StreakRecord {
+  return longestStreakWith(workouts, (secs) => secs > 0);
+}
+
+// "Worked out for at least an hour that day" — sums duration across all
+// workouts on the same date, so 30m + 45m on the same day qualifies.
+export const ONE_HOUR_SECONDS = 3600;
+
+export function getCurrentHourPlusStreak(workouts: GymWorkout[]): number {
+  return currentStreakWith(workouts, (secs) => secs >= ONE_HOUR_SECONDS);
+}
+
+export function getLongestHourPlusStreak(
+  workouts: GymWorkout[]
+): StreakRecord {
+  return longestStreakWith(workouts, (secs) => secs >= ONE_HOUR_SECONDS);
 }
 
 // ---- Time totals ----------------------------------------------------------

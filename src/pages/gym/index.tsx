@@ -15,9 +15,13 @@ import {
   EXERCISE_SORTS,
   format1Rm,
   formatDuration,
+  formatLongDate,
   formatShortDate,
   getCurrentGymStreak,
+  getCurrentHourPlusStreak,
   getExerciseStats,
+  getLongestGymStreak,
+  getLongestHourPlusStreak,
   getMuscleGroups,
   getPrDates,
   getWorkoutPrInfo,
@@ -99,6 +103,18 @@ export default function GymPage({
 
   const currentStreak = useMemo(
     () => getCurrentGymStreak(workouts),
+    [workouts]
+  );
+  const longestStreak = useMemo(
+    () => getLongestGymStreak(workouts),
+    [workouts]
+  );
+  const currentHourPlusStreak = useMemo(
+    () => getCurrentHourPlusStreak(workouts),
+    [workouts]
+  );
+  const longestHourPlusStreak = useMemo(
+    () => getLongestHourPlusStreak(workouts),
     [workouts]
   );
   const totalSecondsInRange = useMemo(
@@ -211,17 +227,67 @@ export default function GymPage({
           {/* Stats */}
           <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Streak */}
-              <div className="bg-[var(--color-yellow)] text-[var(--color-black)] rounded-2xl p-6 lg:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
-                  Current gym streak
-                </p>
-                <p className="mt-4 font-[family-name:var(--font-display)] text-5xl lg:text-6xl tracking-tight">
-                  {currentStreak}{" "}
-                  <span className="text-2xl font-normal text-[var(--color-black)]/70">
-                    {currentStreak === 1 ? "day" : "days"}
-                  </span>
-                </p>
+              {/* Streaks (any-workout + 1+ hr) */}
+              <div className="bg-[var(--color-yellow)] text-[var(--color-black)] rounded-2xl p-6 lg:p-8 flex flex-col gap-5">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
+                    Gym streak
+                  </p>
+                  <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+                    <p className="font-[family-name:var(--font-display)] text-4xl lg:text-5xl tracking-tight leading-none">
+                      {currentStreak}{" "}
+                      <span className="text-xl font-normal text-[var(--color-black)]/70">
+                        {currentStreak === 1 ? "day" : "days"}
+                      </span>
+                    </p>
+                  </div>
+                  {longestStreak.length > 0 && (
+                    <p className="mt-1.5 text-xs text-[var(--color-black)]/65">
+                      Longest: <strong>{longestStreak.length}</strong>{" "}
+                      {longestStreak.length === 1 ? "day" : "days"}
+                      {longestStreak.lastDay && (
+                        <>
+                          {" "}
+                          <span className="text-[var(--color-black)]/50">
+                            (last achieved {formatLongDate(longestStreak.lastDay)})
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t border-[var(--color-black)]/15">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
+                    1+ hr streak
+                  </p>
+                  <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+                    <p className="font-[family-name:var(--font-display)] text-4xl lg:text-5xl tracking-tight leading-none">
+                      {currentHourPlusStreak}{" "}
+                      <span className="text-xl font-normal text-[var(--color-black)]/70">
+                        {currentHourPlusStreak === 1 ? "day" : "days"}
+                      </span>
+                    </p>
+                  </div>
+                  {longestHourPlusStreak.length > 0 ? (
+                    <p className="mt-1.5 text-xs text-[var(--color-black)]/65">
+                      Longest: <strong>{longestHourPlusStreak.length}</strong>{" "}
+                      {longestHourPlusStreak.length === 1 ? "day" : "days"}
+                      {longestHourPlusStreak.lastDay && (
+                        <>
+                          {" "}
+                          <span className="text-[var(--color-black)]/50">
+                            (last achieved {formatLongDate(longestHourPlusStreak.lastDay)})
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  ) : (
+                    <p className="mt-1.5 text-xs text-[var(--color-black)]/50 italic">
+                      No 1+ hour days logged yet.
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Time logged with range filter */}
