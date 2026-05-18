@@ -1,6 +1,7 @@
 ---
 title: You Were Born Rich
 author: Bob Proctor
+authorPhoto: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnkxGWCA86zEW0SMYNc-OymDbGdQHBj82xQUzDyBxsjAeTsSQ81Xm8uYHwAAcGKLkh_tTkyza6LKJae515XqllGWRD7zbaKqs9GZ8T7Q&s=10
 coverImage: https://m.media-amazon.com/images/I/710cIeql55L._AC_UF1000,1000_QL80_.jpg
 rating: 5
 amazonLink: https://amzn.to/4ukqw9t
