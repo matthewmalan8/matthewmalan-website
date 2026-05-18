@@ -97,7 +97,7 @@ function NormalCard({ speech }: { speech: Speech }) {
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-[family-name:var(--font-display)] text-base tracking-tight leading-tight text-[var(--color-black)] line-clamp-2 min-h-[2.5rem]">
+        <h3 className="font-[family-name:var(--font-display)] text-base tracking-tight leading-tight text-[var(--color-black)] line-clamp-2">
           {speech.title}
         </h3>
       </div>
@@ -128,11 +128,6 @@ function CompactRow({ speech }: { speech: Speech }) {
             <PlayIcon small />
           </span>
         </div>
-        {speech.videoPublishedAt && (
-          <span className="absolute bottom-1 right-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider px-1 py-0.5 rounded bg-[var(--color-black)]/80 text-[var(--color-off-white)] leading-none">
-            {formatDate(speech.videoPublishedAt)}
-          </span>
-        )}
       </div>
       <div className="min-w-0 flex-1 flex items-center pr-3">
         <h3 className="font-[family-name:var(--font-display)] text-sm sm:text-base tracking-tight leading-snug text-[var(--color-black)] line-clamp-2">
@@ -228,15 +223,19 @@ export default function SpeechesSection({ speeches }: { speeches: Speech[] }) {
         </div>
 
         {mode === "compact" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-w-5xl">
             {speeches.map((s) => (
               <CompactRow key={s.videoId} speech={s} />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          // CSS columns give a masonry-style flow so short-title cards
+          // get short cards instead of being stretched to row height.
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 [column-fill:_balance]">
             {speeches.map((s) => (
-              <NormalCard key={s.videoId} speech={s} />
+              <div key={s.videoId} className="mb-6 break-inside-avoid">
+                <NormalCard speech={s} />
+              </div>
             ))}
           </div>
         )}
