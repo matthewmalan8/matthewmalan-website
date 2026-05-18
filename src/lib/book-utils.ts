@@ -119,3 +119,92 @@ export function getAllBookTags(books: BookMeta[]): string[] {
   for (const b of books) for (const t of b.tags) set.add(t);
   return Array.from(set).sort();
 }
+
+export type AuthorSummary = {
+  name: string;
+  slug: string;
+  photo: string;
+  photoAlt: string;
+  bookCount: number;
+  // Authors we've read sorted descending by score (shared tags).
+  sharedTags: string[];
+};
+
+// For the author page: find other authors whose books share tags with
+// the current author's books. Score = number of distinct shared tags
+// between any of their books and any of ours. Tiebreak by how many of
+// their books I've read (more = more confident recommendation).
+export function getRelatedAuthors(
+  currentAuthor: string,
+  allBooks: BookMeta[],
+  limit = 4
+): AuthorSummary[] {
+  const currentSlug = authorSlug(currentAuthor);
+  if (!currentSlug) return [];
+
+  // Collect tags from this author's books.
+  const currentTags = new Set<string>();
+  for (const b of allBooks) {
+    if (authorSlug(b.author) !== currentSlug) continue;
+    for (const t of b.tags) currentTags.add(t);
+  }
+  if (currentTags.size === 0) return [];
+
+  // Group every OTHER author's books and compute their tag union.
+  type Bucket = {
+    name: string;
+    slug: string;
+    photo: string;
+    photoAlt: string;
+    books: BookMeta[];
+    tags: Set<string>;
+  };
+  const buckets = new Map<string, Bucket>();
+  for (const b of allBooks) {
+    const slug = authorSlug(b.author);
+    if (!slug || slug === currentSlug) continue;
+    let bucket = buckets.get(slug);
+    if (!bucket) {
+      bucket = {
+        name: b.author,
+        slug,
+        photo: "",
+        photoAlt: "",
+        books: [],
+        tags: new Set(),
+      };
+      buckets.set(slug, bucket);
+    }
+    bucket.books.push(b);
+    if (!bucket.photo && b.authorPhoto) {
+      bucket.photo = b.authorPhoto;
+      bucket.photoAlt = b.authorPhotoAlt;
+    }
+    for (const t of b.tags) bucket.tags.add(t);
+  }
+
+  const scored = Array.from(buckets.values())
+    .map((bucket) => {
+      const shared: string[] = [];
+      for (const t of bucket.tags) {
+        if (currentTags.has(t)) shared.push(t);
+      }
+      return { bucket, shared };
+    })
+    .filter((x) => x.shared.length > 0)
+    .sort((a, b) => {
+      if (b.shared.length !== a.shared.length) {
+        return b.shared.length - a.shared.length;
+      }
+      return b.bucket.books.length - a.bucket.books.length;
+    });
+
+  return scored.slice(0, limit).map(({ bucket, shared }) => ({
+    name: bucket.name,
+    slug: bucket.slug,
+    photo: bucket.photo,
+    photoAlt: bucket.photoAlt,
+    bookCount: bucket.books.length,
+    sharedTags: shared,
+  }));
+}
