@@ -30,6 +30,43 @@ function PlayIcon({ small = false }: { small?: boolean }) {
   );
 }
 
+function GridIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-4 h-4"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" />
+      <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" />
+    </svg>
+  );
+}
+
+function ListIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="5" cy="6" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="5" cy="18" r="1.5" fill="currentColor" stroke="none" />
+      <line x1="10" y1="6" x2="21" y2="6" />
+      <line x1="10" y1="12" x2="21" y2="12" />
+      <line x1="10" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+
 function NormalCard({ speech }: { speech: Speech }) {
   return (
     <a
@@ -152,27 +189,31 @@ export default function SpeechesSection({ speeches }: { speeches: Speech[] }) {
                 type="button"
                 role="tab"
                 aria-selected={mode === "normal"}
+                aria-label="Grid view"
+                title="Grid view"
                 onClick={() => setModeExplicit("normal")}
-                className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full transition-colors cursor-pointer ${
+                className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
                   mode === "normal"
                     ? "bg-[var(--color-yellow)] text-[var(--color-black)]"
                     : "text-[var(--color-off-white)]/70 hover:text-[var(--color-off-white)]"
                 }`}
               >
-                Grid
+                <GridIcon />
               </button>
               <button
                 type="button"
                 role="tab"
                 aria-selected={mode === "compact"}
+                aria-label="Compact list view"
+                title="Compact list view"
                 onClick={() => setModeExplicit("compact")}
-                className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full transition-colors cursor-pointer ${
+                className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
                   mode === "compact"
                     ? "bg-[var(--color-yellow)] text-[var(--color-black)]"
                     : "text-[var(--color-off-white)]/70 hover:text-[var(--color-off-white)]"
                 }`}
               >
-                Compact
+                <ListIcon />
               </button>
             </div>
             <a
