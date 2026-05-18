@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   formatHoursMinutes,
   formatHoursMinutesShort,
@@ -92,7 +92,17 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
     });
   };
 
-  // ---- Detail panel (rendered above the calendar when a day is selected) ----
+  // Escape key closes the popup.
+  useEffect(() => {
+    if (!selectedIso) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedIso(null);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedIso]);
+
+  // ---- Detail popup (renders as an overlay on top of the calendar) ----
   let detailPanel: ReactNode = null;
   if (selectedIso) {
     const log = logByDate.get(selectedIso);
@@ -101,8 +111,18 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
     const done = tasks.filter((t) => t.status === "completed").length;
 
     detailPanel = (
-      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-black)] rounded-2xl p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center justify-between gap-3 mb-6">
+      <div
+        className="absolute inset-0 z-10 flex items-center justify-center p-3 sm:p-6 bg-[var(--color-black)]/40 rounded-2xl"
+        onClick={() => setSelectedIso(null)}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Details for ${formatLongDate(selectedIso)}`}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-[var(--color-off-white)] rounded-xl shadow-2xl w-full max-w-md max-h-full overflow-hidden flex flex-col"
+        >
+        <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-3 border-b border-[var(--color-warm-gray)]/50">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
             {formatLongDate(selectedIso)}
           </p>
@@ -110,11 +130,12 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
             type="button"
             onClick={() => setSelectedIso(null)}
             aria-label="Close day view"
-            className="text-[var(--color-black)]/60 hover:text-[var(--color-black)] text-2xl leading-none cursor-pointer"
+            className="text-[var(--color-black)]/50 hover:text-[var(--color-black)] text-2xl leading-none cursor-pointer -mr-1"
           >
             ×
           </button>
         </div>
+        <div className="flex-1 overflow-y-auto px-5 py-4">
 
         {/* Summary chips */}
         <div className="flex flex-wrap gap-2 text-xs font-semibold mb-6">
@@ -244,14 +265,14 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
             </div>
           )}
         </div>
+        </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {detailPanel}
-      <div className="bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
+    <div className="relative bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <button
           type="button"
@@ -339,12 +360,34 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
             </p>
           );
 
-          const taskDot = hasTasks && inMonth && (
+          const dayDone = dayTasks.filter(
+            (t) => t.status === "completed"
+          ).length;
+          const dayTotal = dayTasks.length;
+          const dayPct =
+            dayTotal > 0 ? Math.round((dayDone / dayTotal) * 100) : 0;
+          // Color the badge by completion: green when all done, amber when
+          // partial, gray when nothing done yet.
+          const badgeColors =
+            dayTotal === 0
+              ? ""
+              : dayDone === dayTotal
+                ? "bg-[var(--color-lime)] text-[var(--color-black)] border-[var(--color-black)]/40"
+                : dayDone === 0
+                  ? "bg-[var(--color-off-white)] text-[var(--color-black)]/70 border-[var(--color-warm-gray)]"
+                  : "bg-[var(--color-yellow)] text-[var(--color-black)] border-[var(--color-black)]/40";
+          const taskBadge = hasTasks && inMonth && (
             <span
-              aria-hidden="true"
-              className="absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--color-lime)] ring-1 ring-[var(--color-black)]/30"
-              title={`${dayTasks.length} task${dayTasks.length === 1 ? "" : "s"}`}
-            />
+              className={`absolute bottom-1 right-1 text-[9px] sm:text-[10px] font-bold tabular-nums leading-none px-1 py-0.5 rounded border ${badgeColors}`}
+              title={`${dayDone}/${dayTotal} tasks done (${dayPct}%)`}
+            >
+              <span className="sm:hidden">
+                {dayDone}/{dayTotal}
+              </span>
+              <span className="hidden sm:inline">
+                {dayDone}/{dayTotal} ({dayPct}%)
+              </span>
+            </span>
           );
 
           if (!inMonth) {
@@ -371,7 +414,7 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
             >
               {header}
               {body}
-              {taskDot}
+              {taskBadge}
             </button>
           );
         })}
@@ -391,8 +434,10 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
           Hours logged
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-lime)] ring-1 ring-[var(--color-black)]/30" />
-          Has tasks
+          <span className="inline-flex items-center justify-center text-[9px] font-bold tabular-nums px-1 py-0.5 rounded bg-[var(--color-off-white)] text-[var(--color-black)] border border-[var(--color-warm-gray)]">
+            2/4
+          </span>
+          Tasks done / total
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded ring-2 ring-[var(--color-black)] ring-inset" />
@@ -402,7 +447,7 @@ export default function DropshippingCalendar({ logs, taskCache }: Props) {
           Click any day to see tasks + notes.
         </span>
       </div>
-      </div>
+      {detailPanel}
     </div>
   );
 }
