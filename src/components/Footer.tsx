@@ -55,7 +55,6 @@ export default function Footer() {
               <li><Link href="/podcast/" className="hover:text-[var(--color-yellow)] transition-colors">Podcast</Link></li>
               <li><Link href="/about/" className="hover:text-[var(--color-yellow)] transition-colors">About</Link></li>
               <li><Link href="/contact/" className="hover:text-[var(--color-yellow)] transition-colors">Contact</Link></li>
-              <li><a href="/rss.xml" className="hover:text-[var(--color-yellow)] transition-colors">RSS Feed</a></li>
             </ul>
           </div>
 
