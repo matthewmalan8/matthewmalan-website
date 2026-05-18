@@ -229,13 +229,14 @@ export default function SpeechesSection({ speeches }: { speeches: Speech[] }) {
             ))}
           </div>
         ) : (
-          // CSS columns give a masonry-style flow so short-title cards
-          // get short cards instead of being stretched to row height.
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 [column-fill:_balance]">
+          // Row-by-row left-to-right ordering. items-start lets each card
+          // size to its content (short titles -> short cards), with the
+          // dark section background showing through where a card is
+          // shorter than its rowmates. Leftover space ends up at the
+          // bottom-right of the last row.
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {speeches.map((s) => (
-              <div key={s.videoId} className="mb-6 break-inside-avoid">
-                <NormalCard speech={s} />
-              </div>
+              <NormalCard key={s.videoId} speech={s} />
             ))}
           </div>
         )}
