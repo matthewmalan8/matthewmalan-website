@@ -37,6 +37,21 @@ guestSocials:
 youtube: https://www.youtube.com/watch?v=1nrv4vDfPbc
 spotify: https://open.spotify.com/episode/5oHmBG0dnfDHaYrcbkVvEv?si=w29Ue3GqRWCRwveda5HQ8A
 applePodcasts: https://podcasts.apple.com/us/podcast/why-hiding-your-secrets-is-blocking-your-true-potential/id1883421904?i=1000768815084
+clips:
+  - title: Finding Hope after Failure
+    videoUrl: https://youtube.com/shorts/OaupwaZHBPw
+  - title: God's Blueprint for Your Life
+    videoUrl: https://youtube.com/shorts/uiMHer9lYJQ
+    scheduledFor: 2026-06-01
+  - title: Christ Like Leadership
+    videoUrl: https://youtube.com/shorts/Gr3OcrZ_56c
+    scheduledFor: 2026-06-04
+  - title: Prayer A Two Way Conversation
+    videoUrl: https://youtube.com/shorts/ChTl4nkkNVc
+    scheduledFor: 2026-06-07
+  - title: Recovery Never Done, Always Working
+    videoUrl: https://youtube.com/shorts/y4ModAFatV8
+    scheduledFor: 2026-06-10
 book:
   link: https://amzn.to/4nBJMwk
   image: https://m.media-amazon.com/images/I/71v73Ck7l7L._SY466_.jpg
