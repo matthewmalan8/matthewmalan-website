@@ -56,24 +56,6 @@ export type DropshippingGoal = {
   lastUpdated: string;
 };
 
-export type GoogleTask = {
-  id: string;
-  listId: string;
-  listTitle: string;
-  title: string;
-  notes: string;
-  status: "needsAction" | "completed";
-  completed: string | null;
-  due: string | null;
-  updated: string;
-};
-
-export type GoogleTaskCache = {
-  generatedAt: string;
-  lists?: Array<{ id: string; title: string }>;
-  byDate: Record<string, GoogleTask[]>;
-};
-
 export type GoalFilter =
   | "recent"
   | "oldest"

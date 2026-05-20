@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Fetches Google Tasks from every task list owned by the authed user and
-// caches them grouped by completion date in content/dropshipping/cache/tasks.json.
+// caches them grouped by due date in content/goals/cache/tasks.json.
+// (Powers the /goals/ Success calendar.)
 //
 // Required env vars (set as GitHub Actions secrets):
 //   GOOGLE_CLIENT_ID
@@ -15,7 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const cacheDir = path.join(process.cwd(), "content", "dropshipping", "cache");
+const cacheDir = path.join(process.cwd(), "content", "goals", "cache");
 const outPath = path.join(cacheDir, "tasks.json");
 
 function writeEmpty(reason) {
