@@ -244,6 +244,24 @@ export default function DropshippingCalendar({ logs }: Props) {
             );
           }
 
+          // If the day has a video, jump straight to it (no popup). Days
+          // without a video open the notes popup as before.
+          if (hasVideo && log?.videoUrl) {
+            return (
+              <a
+                key={iso}
+                href={log.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${iso}${minutes > 0 ? ` — ${formatHoursMinutes(minutes)}` : ""} · open video`}
+                className={`${baseClasses} ${stateClasses} ${ringClasses}`}
+              >
+                {header}
+                {body}
+              </a>
+            );
+          }
+
           return (
             <button
               type="button"
@@ -251,7 +269,7 @@ export default function DropshippingCalendar({ logs }: Props) {
               onClick={() =>
                 setSelectedIso((cur) => (cur === iso ? null : iso))
               }
-              title={`${iso}${minutes > 0 ? ` — ${formatHoursMinutes(minutes)}` : ""}${hasVideo ? " · video posted" : ""}`}
+              title={`${iso}${minutes > 0 ? ` — ${formatHoursMinutes(minutes)}` : ""}`}
               className={`${baseClasses} ${stateClasses} ${ringClasses}`}
             >
               {header}

@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
 import DropshippingCalendar from "@/components/DropshippingCalendar";
+import { SingleGoalCard } from "@/components/GoalCard";
 import {
-  ChevronDownIcon,
   GridIcon,
   ListIcon,
   LockIcon,
@@ -11,18 +11,11 @@ import {
   YouTubeIcon,
 } from "@/components/Icons";
 import {
-  getAllGoals,
   getDailyLogs,
   getFailures,
-  getPinnedGoal,
-  getPledges,
   getScreenshots,
 } from "@/lib/dropshipping";
 import {
-  daysUntil,
-  filterAndSortGoals,
-  formatDate,
-  formatGoalValue,
   formatHoursMinutes,
   formatMoney,
   formatShortDate,
@@ -30,38 +23,37 @@ import {
   getLongestStreak,
   getTotalMinutes,
   getTotalVideos,
-  goalProgressPct,
-  GOAL_FILTERS,
   hasVideoPredicate,
   hoursAtLeast,
   type DailyLog,
-  type DropshippingGoal,
   type Failure,
-  type GoalFilter,
-  type Pledge,
   type Screenshot,
   type Streak,
 } from "@/lib/dropshipping-utils";
+import { getAllGoals } from "@/lib/goals-data";
+import type { Goal } from "@/lib/goals-data-types";
 
 type Props = {
   logs: DailyLog[];
-  pledges: Pledge[];
   screenshots: Screenshot[];
   failures: Failure[];
-  goals: DropshippingGoal[];
-  pinnedGoal: DropshippingGoal | null;
+  sharedGoals: Goal[];
+  pinnedGoal: Goal | null;
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const goals = getAllGoals();
+  const all = getAllGoals();
+  const shared = all.filter(
+    (g) => g.shareTo === "dropshipping" && g.status !== "archived"
+  );
+  const pinned = shared.find((g) => g.pinned) ?? null;
   return {
     props: {
       logs: await getDailyLogs(),
-      pledges: getPledges(),
       screenshots: getScreenshots(),
       failures: await getFailures(),
-      goals,
-      pinnedGoal: getPinnedGoal(goals),
+      sharedGoals: shared.filter((g) => g !== pinned),
+      pinnedGoal: pinned,
     },
   };
 };
@@ -180,19 +172,14 @@ function ViewToggle({
 
 export default function DropshippingPage({
   logs,
-  pledges,
   screenshots,
   failures,
-  goals,
+  sharedGoals,
   pinnedGoal,
 }: Props) {
-  const [pledgesView, setPledgesView] = useState<ViewMode>("grid");
   const [screenshotsView, setScreenshotsView] = useState<ViewMode>("grid");
   const [failuresView, setFailuresView] = useState<ViewMode>("grid");
-  const [goalsFilter, setGoalsFilter] = useState<GoalFilter>("recent");
 
-  const otherGoals = goals.filter((g) => !pinnedGoal || g.slug !== pinnedGoal.slug);
-  const visibleGoals = filterAndSortGoals(otherGoals, goalsFilter);
   const totalVideos = getTotalVideos(logs);
   const totalMinutes = getTotalMinutes(logs);
 
@@ -208,9 +195,6 @@ export default function DropshippingPage({
   const longestEightHour = getLongestStreak(logs, (l) =>
     hoursAtLeast(8)(l)
   );
-
-  const pinnedPct = pinnedGoal ? goalProgressPct(pinnedGoal) : 0;
-  const pinnedRemaining = pinnedGoal ? daysUntil(pinnedGoal.deadline) : 0;
 
   return (
     <Layout
@@ -255,48 +239,10 @@ export default function DropshippingPage({
         </div>
       </section>
 
-      {/* Pinned Goal */}
+      {/* Pinned Goal — surfaced from /goals-admin/ when shareTo=dropshipping & pinned */}
       {pinnedGoal && (
         <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
-          <div className="bg-[var(--color-yellow)] text-[var(--color-black)] rounded-2xl p-8 lg:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/70">
-              The Goal
-            </p>
-            <p className="mt-3 font-[family-name:var(--font-display)] text-3xl sm:text-4xl tracking-tight">
-              By {formatDate(pinnedGoal.deadline)} — {pinnedGoal.title}.
-            </p>
-            {pinnedGoal.description && (
-              <p className="mt-3 text-base sm:text-lg text-[var(--color-black)]/80 max-w-3xl">
-                {pinnedGoal.description}
-              </p>
-            )}
-
-            <div className="mt-8">
-              <div className="flex items-end justify-between gap-4 flex-wrap">
-                <p className="text-2xl sm:text-3xl font-bold">
-                  {formatGoalValue(pinnedGoal.current, pinnedGoal.unit)}{" "}
-                  <span className="text-base font-normal text-[var(--color-black)]/70">
-                    / {formatGoalValue(pinnedGoal.target, pinnedGoal.unit)} (
-                    {pinnedPct}%)
-                  </span>
-                </p>
-                <p className="text-sm text-[var(--color-black)]/70">
-                  {pinnedRemaining} days remaining
-                </p>
-              </div>
-              <div className="mt-3 h-4 bg-[var(--color-black)]/15 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[var(--color-black)] transition-all"
-                  style={{ width: `${pinnedPct}%` }}
-                />
-              </div>
-              {pinnedGoal.lastUpdated && (
-                <p className="mt-3 text-xs text-[var(--color-black)]/60">
-                  Last updated: {formatShortDate(pinnedGoal.lastUpdated)}
-                </p>
-              )}
-            </div>
-          </div>
+          <SingleGoalCard goal={pinnedGoal} featured />
         </section>
       )}
 
@@ -346,277 +292,29 @@ export default function DropshippingPage({
 
       {/* Goals */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
-            <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-              Every milestone I&apos;m chasing. Public, dated, scored.
-            </p>
-          </div>
-          {otherGoals.length > 0 && (
-            <div className="relative">
-              <label htmlFor="goals-filter" className="sr-only">
-                Filter goals
-              </label>
-              <select
-                id="goals-filter"
-                value={goalsFilter}
-                onChange={(e) =>
-                  setGoalsFilter(e.target.value as GoalFilter)
-                }
-                className="appearance-none pl-5 pr-11 py-2.5 rounded-full border-2 border-[var(--color-black)] bg-[var(--color-off-white)] text-sm font-semibold focus:outline-none cursor-pointer"
-              >
-                {GOAL_FILTERS.map((f) => (
-                  <option key={f.value} value={f.value}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-black)] pointer-events-none" />
-            </div>
-          )}
+        <div>
+          <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
+          <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
+            Finance goals I&apos;m chasing this quarter and year. Edit in{" "}
+            <a className="underline" href="/goals-admin/">
+              /goals-admin/
+            </a>
+            .
+          </p>
         </div>
 
-        {goals.length === 0 ? (
+        {sharedGoals.length === 0 ? (
           <p className="mt-8 text-[var(--color-black)]/60">
-            No goals yet — add some in /dropshipping-admin/.
-          </p>
-        ) : otherGoals.length === 0 ? (
-          <p className="mt-8 text-[var(--color-black)]/60">
-            Only the pinned goal exists right now. Add more in
-            /dropshipping-admin/.
-          </p>
-        ) : visibleGoals.length === 0 ? (
-          <p className="mt-8 text-[var(--color-black)]/60">
-            No goals match that filter.
+            No shared finance goals yet — toggle <em>Share to page →
+            dropshipping</em> on a Finance goal to surface it here.
           </p>
         ) : (
           <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {visibleGoals.map((g) => {
-              const pct = goalProgressPct(g);
-              const remaining = daysUntil(g.deadline);
-              const statusStyles =
-                g.status === "successful"
-                  ? "bg-[var(--color-lime)] text-[var(--color-black)]"
-                  : g.status === "failed"
-                    ? "bg-[#D64545] text-[var(--color-off-white)]"
-                    : "bg-[var(--color-yellow)] text-[var(--color-black)]";
-              const statusLabel =
-                g.status === "successful"
-                  ? "Successful ✓"
-                  : g.status === "failed"
-                    ? "Failed"
-                    : "Active";
-              return (
-                <li
-                  key={g.slug}
-                  className="border-2 border-[var(--color-warm-gray)] rounded-2xl p-6 flex flex-col"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-xl tracking-tight">{g.title}</h3>
-                    <span
-                      className={`flex-shrink-0 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full ${statusStyles}`}
-                    >
-                      {statusLabel}
-                    </span>
-                  </div>
-                  {g.description && (
-                    <p className="mt-3 text-[var(--color-black)]/75">
-                      {g.description}
-                    </p>
-                  )}
-                  <div className="mt-5">
-                    <p className="text-lg font-bold">
-                      {formatGoalValue(g.current, g.unit)}{" "}
-                      <span className="text-sm font-normal text-[var(--color-black)]/60">
-                        / {formatGoalValue(g.target, g.unit)} ({pct}%)
-                      </span>
-                    </p>
-                    <div className="mt-2 h-2.5 bg-[var(--color-warm-gray)]/40 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all ${
-                          g.status === "successful"
-                            ? "bg-[var(--color-lime)]"
-                            : g.status === "failed"
-                              ? "bg-[#D64545]"
-                              : "bg-[var(--color-black)]"
-                        }`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                  <dl className="mt-5 space-y-1.5 text-sm">
-                    {g.deadline && (
-                      <div className="flex justify-between">
-                        <dt className="text-[var(--color-black)]/60">
-                          Deadline
-                        </dt>
-                        <dd className="font-semibold">
-                          {formatShortDate(g.deadline)}
-                          {g.status === "active" && remaining > 0 && (
-                            <span className="ml-2 text-[var(--color-black)]/50 font-normal">
-                              ({remaining}d)
-                            </span>
-                          )}
-                        </dd>
-                      </div>
-                    )}
-                    {g.lastUpdated && (
-                      <div className="flex justify-between text-xs text-[var(--color-black)]/50">
-                        <dt>Last updated</dt>
-                        <dd>{formatShortDate(g.lastUpdated)}</dd>
-                      </div>
-                    )}
-                  </dl>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-
-      {/* Pledges */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <h2 className="text-3xl sm:text-4xl tracking-tight">Pledges</h2>
-            <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-              Putting real money on the line. If I don&apos;t hit these by their
-              deadline, I pay up.
-            </p>
-          </div>
-          {pledges.length > 0 && (
-            <ViewToggle
-              value={pledgesView}
-              onChange={setPledgesView}
-              label="Pledges"
-            />
-          )}
-        </div>
-        {pledges.length === 0 ? (
-          <p className="mt-8 text-[var(--color-black)]/60">
-            No pledges yet.
-          </p>
-        ) : pledgesView === "grid" ? (
-          <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {pledges.map((p) => {
-              const statusStyles =
-                p.status === "completed"
-                  ? "bg-[var(--color-lime)] text-[var(--color-black)]"
-                  : p.status === "failed"
-                    ? "bg-[var(--color-black)] text-[var(--color-off-white)]"
-                    : "bg-[var(--color-yellow)] text-[var(--color-black)]";
-              const statusLabel =
-                p.status === "completed"
-                  ? "Completed ✓"
-                  : p.status === "failed"
-                    ? "Paid up"
-                    : "Active";
-              return (
-                <li
-                  key={p.slug}
-                  className="border-2 border-[var(--color-warm-gray)] rounded-2xl p-6 flex flex-col"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-xl tracking-tight">{p.title}</h3>
-                    <span
-                      className={`flex-shrink-0 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full ${statusStyles}`}
-                    >
-                      {statusLabel}
-                    </span>
-                  </div>
-                  {p.description && (
-                    <p className="mt-3 text-[var(--color-black)]/75">
-                      {p.description}
-                    </p>
-                  )}
-                  <dl className="mt-5 space-y-2 text-sm">
-                    {p.amount > 0 && (
-                      <div className="flex justify-between">
-                        <dt className="text-[var(--color-black)]/60">
-                          On the line
-                        </dt>
-                        <dd className="font-semibold">
-                          {formatMoney(p.amount)}
-                          {p.recipient ? ` to ${p.recipient}` : ""}
-                        </dd>
-                      </div>
-                    )}
-                    {p.deadline && (
-                      <div className="flex justify-between">
-                        <dt className="text-[var(--color-black)]/60">
-                          Deadline
-                        </dt>
-                        <dd className="font-semibold">
-                          {formatShortDate(p.deadline)}
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
-                  {p.videoUrl && (
-                    <a
-                      href={p.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-5 inline-flex items-center text-sm font-semibold hover:text-[#4A4A4A] transition-colors self-start"
-                    >
-                      Watch the challenge →
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <ul className="mt-8 divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
-            {pledges.map((p) => {
-              const dotColor =
-                p.status === "completed"
-                  ? "bg-[var(--color-lime)]"
-                  : p.status === "failed"
-                    ? "bg-[var(--color-black)]"
-                    : "bg-[var(--color-yellow)]";
-              const statusLabel =
-                p.status === "completed"
-                  ? "Completed"
-                  : p.status === "failed"
-                    ? "Paid up"
-                    : "Active";
-              return (
-                <li
-                  key={p.slug}
-                  className="py-4 flex items-center justify-between gap-4 flex-wrap"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span
-                      className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${dotColor}`}
-                      title={statusLabel}
-                    />
-                    <div className="min-w-0">
-                      <p className="font-semibold tracking-tight truncate">
-                        {p.title}
-                      </p>
-                      <p className="text-xs text-[var(--color-black)]/60 mt-0.5">
-                        {p.amount > 0
-                          ? `${formatMoney(p.amount)}${p.recipient ? ` to ${p.recipient}` : ""}`
-                          : statusLabel}
-                        {p.deadline ? ` · ${formatShortDate(p.deadline)}` : ""}
-                      </p>
-                    </div>
-                  </div>
-                  {p.videoUrl && (
-                    <a
-                      href={p.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-semibold hover:text-[#4A4A4A] transition-colors flex-shrink-0"
-                    >
-                      Watch →
-                    </a>
-                  )}
-                </li>
-              );
-            })}
+            {sharedGoals.map((g) => (
+              <li key={g.slug}>
+                <SingleGoalCard goal={g} />
+              </li>
+            ))}
           </ul>
         )}
       </section>
