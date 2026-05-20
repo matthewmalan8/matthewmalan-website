@@ -1,0 +1,406 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/goals"
+public_folder: "/images/goals"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/goals/
+logo_url: https://matthewmalan.com/favicon.svg
+
+# Shared field templates ----------------------------------------------------
+# Decap doesn't support YAML anchors well in production, so the common
+# fields are duplicated across the 4 category collections. Keep them in
+# sync by hand.
+
+collections:
+  # ---- Family -----------------------------------------------------------
+  - name: "family"
+    label: "Family Goals"
+    label_singular: "Family Goal"
+    folder: "content/goals/family"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{timeframe | upper}} · {{title}} ({{status}})"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string", required: false }
+      - {
+          label: "Category",
+          name: "category",
+          widget: "hidden",
+          default: "Family",
+        }
+      - {
+          label: "Timeframe",
+          name: "timeframe",
+          widget: "select",
+          required: false,
+          options: ["week", "quarter", "year", "custom"],
+          default: "week",
+        }
+      - {
+          label: "Group key (optional)",
+          name: "group",
+          widget: "string",
+          required: false,
+          hint: "Goals in the same category + timeframe + group key are surfaced together as one rolled-up KPI on /goals/. Leave blank for standalone goals.",
+        }
+      - {
+          label: "Target",
+          name: "target",
+          widget: "number",
+          value_type: "float",
+          required: false,
+          default: 1,
+        }
+      - {
+          label: "Current",
+          name: "current",
+          widget: "number",
+          value_type: "float",
+          required: false,
+          default: 0,
+        }
+      - {
+          label: "Unit",
+          name: "unit",
+          widget: "string",
+          required: false,
+          hint: "e.g. visits, times, sessions",
+        }
+      - {
+          label: "Start date",
+          name: "startDate",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+          hint: "For weekly goals, use the Sunday that starts the week.",
+        }
+      - {
+          label: "Deadline",
+          name: "deadline",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+          hint: "Weeks: that Saturday. Quarters: last day of the quarter. Year: Dec 31.",
+        }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["active", "successful", "failed", "archived"],
+          default: "active",
+          hint: "Use 'archived' to hide a goal from the active board while keeping the file.",
+        }
+      - {
+          label: "Pinned",
+          name: "pinned",
+          widget: "boolean",
+          required: false,
+          default: false,
+          hint: "Family goals are never shared to /dropshipping/ or /gym/. Pin is a no-op here but kept for schema parity.",
+        }
+      - {
+          label: "Share to page",
+          name: "shareTo",
+          widget: "hidden",
+          default: "none",
+        }
+      - {
+          label: "Accountability buddy",
+          name: "accountabilityBuddy",
+          widget: "relation",
+          collection: "buddies",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+          hint: "Pick a saved buddy to ping if this goal fails.",
+        }
+      - {
+          label: "Notify buddy on failure",
+          name: "notifyOnFailure",
+          widget: "boolean",
+          required: false,
+          default: false,
+        }
+      - {
+          label: "Is pledge",
+          name: "isPledge",
+          widget: "hidden",
+          default: false,
+        }
+      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
+      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
+      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
+      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
+      - {
+          label: "Last updated",
+          name: "lastUpdated",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - { label: "Notes", name: "body", widget: "markdown", required: false }
+
+  # ---- Fundamentals -----------------------------------------------------
+  - name: "fundamentals"
+    label: "Fundamentals Goals"
+    label_singular: "Fundamentals Goal"
+    folder: "content/goals/fundamentals"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{timeframe | upper}} · {{title}} ({{status}})"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string", required: false }
+      - { label: "Category", name: "category", widget: "hidden", default: "Fundamentals" }
+      - {
+          label: "Timeframe",
+          name: "timeframe",
+          widget: "select",
+          required: false,
+          options: ["week", "quarter", "year", "custom"],
+          default: "week",
+        }
+      - { label: "Group key (optional)", name: "group", widget: "string", required: false }
+      - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
+      - { label: "Current", name: "current", widget: "number", value_type: "float", required: false, default: 0 }
+      - { label: "Unit", name: "unit", widget: "string", required: false }
+      - { label: "Start date", name: "startDate", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Deadline", name: "deadline", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["active", "successful", "failed", "archived"],
+          default: "active",
+        }
+      - { label: "Pinned", name: "pinned", widget: "boolean", required: false, default: false }
+      - { label: "Share to page", name: "shareTo", widget: "hidden", default: "none" }
+      - {
+          label: "Accountability buddy",
+          name: "accountabilityBuddy",
+          widget: "relation",
+          collection: "buddies",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+        }
+      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
+      - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
+      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
+      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
+      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
+      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
+      - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Notes", name: "body", widget: "markdown", required: false }
+
+  # ---- Finance ----------------------------------------------------------
+  - name: "finance"
+    label: "Finance Goals"
+    label_singular: "Finance Goal"
+    folder: "content/goals/finance"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{timeframe | upper}} · {{title}} ({{status}})"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string", required: false }
+      - { label: "Category", name: "category", widget: "hidden", default: "Finance" }
+      - {
+          label: "Timeframe",
+          name: "timeframe",
+          widget: "select",
+          required: false,
+          options: ["week", "quarter", "year", "custom"],
+          default: "week",
+        }
+      - { label: "Group key (optional)", name: "group", widget: "string", required: false }
+      - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
+      - { label: "Current", name: "current", widget: "number", value_type: "float", required: false, default: 0 }
+      - { label: "Unit", name: "unit", widget: "string", required: false }
+      - { label: "Start date", name: "startDate", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Deadline", name: "deadline", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["active", "successful", "failed", "archived"],
+          default: "active",
+        }
+      - {
+          label: "Pin to top",
+          name: "pinned",
+          widget: "boolean",
+          required: false,
+          default: false,
+          hint: "Pinned goal is the big featured card at the top of /goals/ (and /dropshipping/ if shared).",
+        }
+      - {
+          label: "Share to page",
+          name: "shareTo",
+          widget: "select",
+          required: false,
+          options: ["none", "dropshipping"],
+          default: "none",
+          hint: "Pick 'dropshipping' to surface this goal in the Goals section on /dropshipping/.",
+        }
+      - {
+          label: "Accountability buddy",
+          name: "accountabilityBuddy",
+          widget: "relation",
+          collection: "buddies",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+        }
+      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
+      - {
+          label: "Is pledge",
+          name: "isPledge",
+          widget: "boolean",
+          required: false,
+          default: false,
+          hint: "Turn on to track this goal as a pledge — money you owe (and to whom) if you fail.",
+        }
+      - { label: "Pledge amount ($)", name: "pledgeAmount", widget: "number", value_type: "float", required: false, default: 0 }
+      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "string", required: false }
+      - {
+          label: "Pledge challenge video URL",
+          name: "pledgeVideoUrl",
+          widget: "string",
+          required: false,
+          hint: "Optional — TikTok / YouTube URL of you announcing the challenge.",
+        }
+      - {
+          label: "Pledge proof image",
+          name: "pledgeProofImage",
+          widget: "image",
+          required: false,
+          hint: "If you failed and paid the pledge, drop the screenshot here.",
+        }
+      - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Notes", name: "body", widget: "markdown", required: false }
+
+  # ---- Fitness ----------------------------------------------------------
+  - name: "fitness"
+    label: "Fitness Goals"
+    label_singular: "Fitness Goal"
+    folder: "content/goals/fitness"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{timeframe | upper}} · {{title}} ({{status}})"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string", required: false }
+      - { label: "Category", name: "category", widget: "hidden", default: "Fitness" }
+      - {
+          label: "Timeframe",
+          name: "timeframe",
+          widget: "select",
+          required: false,
+          options: ["week", "quarter", "year", "custom"],
+          default: "week",
+        }
+      - { label: "Group key (optional)", name: "group", widget: "string", required: false }
+      - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
+      - { label: "Current", name: "current", widget: "number", value_type: "float", required: false, default: 0 }
+      - { label: "Unit", name: "unit", widget: "string", required: false }
+      - { label: "Start date", name: "startDate", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Deadline", name: "deadline", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["active", "successful", "failed", "archived"],
+          default: "active",
+        }
+      - {
+          label: "Pin to top",
+          name: "pinned",
+          widget: "boolean",
+          required: false,
+          default: false,
+        }
+      - {
+          label: "Share to page",
+          name: "shareTo",
+          widget: "select",
+          required: false,
+          options: ["none", "gym"],
+          default: "none",
+          hint: "Pick 'gym' to surface this goal in the Goals section on /gym/.",
+        }
+      - {
+          label: "Accountability buddy",
+          name: "accountabilityBuddy",
+          widget: "relation",
+          collection: "buddies",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+        }
+      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
+      - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
+      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
+      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
+      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
+      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
+      - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Notes", name: "body", widget: "markdown", required: false }
+
+  # ---- Accountability Buddies -------------------------------------------
+  - name: "buddies"
+    label: "Accountability Buddies"
+    label_singular: "Buddy"
+    folder: "content/goals/buddies"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{name}} ({{email}})"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - {
+          label: "Email",
+          name: "email",
+          widget: "string",
+          required: false,
+          hint: "Used by the daily failure-check workflow to notify this person.",
+        }
+      - {
+          label: "Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Anything else — phone, preferred format, etc.",
+        }
