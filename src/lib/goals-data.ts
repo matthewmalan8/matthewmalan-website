@@ -331,6 +331,7 @@ export function getAllGoals(): Goal[] {
           shareTo: normalizeShare(fm.shareTo),
           metricSlug,
           beeminderSlug: asString(fm.beeminderSlug),
+          beeminderPledge: asNumber(fm.beeminderPledge),
           lastUpdated: normalizeDate(fm.lastUpdated),
         });
       } catch (err) {

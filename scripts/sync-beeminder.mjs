@@ -219,6 +219,7 @@ for (const cat of CATEGORIES) {
       title: asString(fm.title) || slug,
       category: cat,
       beeminderSlug,
+      beeminderPledge: asNumber(fm.beeminderPledge),
       target: asNumber(fm.target),
       current,
       unit: asString(fm.unit) || "things",
@@ -311,6 +312,8 @@ async function beeminderCreate(goal) {
   };
   if (goaldate) params.goaldate = goaldate;
   if (goal.target > 0) params.goalval = goal.target;
+  // Beeminder starting pledge (USD). Only applied at create time.
+  if (goal.beeminderPledge > 0) params.pledge = goal.beeminderPledge;
 
   const body = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) body.set(k, String(v));
@@ -327,8 +330,10 @@ async function beeminderCreate(goal) {
           timeStyle: "short",
         })
       : "(no deadline)";
+    const pledgeStr =
+      goal.beeminderPledge > 0 ? `, pledge=$${goal.beeminderPledge}` : "";
     console.log(
-      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, beeminder enforces 23:59 MST on ${enforcement})`
+      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}${pledgeStr}, beeminder enforces 23:59 MST on ${enforcement})`
     );
     return true;
   }

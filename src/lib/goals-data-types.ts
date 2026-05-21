@@ -33,6 +33,10 @@ export type Goal = {
   // datapoint to https://www.beeminder.com/{username}/{slug}/ with the
   // goal's current value. Leave empty to skip Beeminder for that goal.
   beeminderSlug: string;
+  // Optional starting pledge ($) to set when auto-creating the Beeminder
+  // goal. Only applied at create time — Beeminder manages escalation
+  // from there (you can also bump it manually on Beeminder).
+  beeminderPledge: number;
   lastUpdated: string;
 };
 
