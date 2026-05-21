@@ -293,6 +293,7 @@ export function getAllGoals(): Goal[] {
           pledgeVideoUrl: asString(fm.pledgeVideoUrl),
           pledgeProofImage: asString(fm.pledgeProofImage),
           metricSlug,
+          beeminderSlug: asString(fm.beeminderSlug),
           lastUpdated: normalizeDate(fm.lastUpdated),
         });
       } catch (err) {

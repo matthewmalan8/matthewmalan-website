@@ -90,6 +90,14 @@ export function SingleGoalCard({
           : "bg-[var(--color-off-white)] border-2 border-[var(--color-warm-gray)] rounded-2xl p-5 lg:p-6"
       }
     >
+      {isFeatured && (
+        <p
+          className="text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--color-yellow)] mb-3"
+          aria-label="Pinned goal"
+        >
+          ★ Pinned goal
+        </p>
+      )}
       <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           {!publicView && (
