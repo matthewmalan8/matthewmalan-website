@@ -11,6 +11,8 @@ import type {
   GoalShare,
   GoalStatus,
   GoalTimeframe,
+  Metric,
+  MetricEntry,
 } from "./goals-data-types";
 import { CATEGORIES } from "./goals-data-types";
 
@@ -53,8 +55,77 @@ function normalizeShare(v: unknown): GoalShare {
   return "none";
 }
 
+export function getAllMetrics(): Metric[] {
+  const dir = path.join(baseDir, "metrics");
+  if (!fs.existsSync(dir)) return [];
+  const out: Metric[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const slug = file.replace(/\.md$/, "");
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data, content } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      out.push({
+        slug,
+        name: asString(fm.name) || slug,
+        unit: asString(fm.unit),
+        description: content.trim(),
+      });
+    } catch (err) {
+      console.warn(`[metrics] Failed to parse ${file}:`, err);
+    }
+  }
+  return out;
+}
+
+export function getAllMetricEntries(): MetricEntry[] {
+  const dir = path.join(baseDir, "metric-entries");
+  if (!fs.existsSync(dir)) return [];
+  const out: MetricEntry[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const slug = file.replace(/\.md$/, "");
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data, content } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      out.push({
+        slug,
+        metricSlug: asString(fm.metric),
+        date: normalizeDate(fm.date),
+        value: asNumber(fm.value),
+        note: content.trim(),
+      });
+    } catch (err) {
+      console.warn(`[metric-entries] Failed to parse ${file}:`, err);
+    }
+  }
+  return out;
+}
+
+// Sum the matching metric entries within [startDate, deadline] inclusive.
+// Empty bounds default to "include everything".
+function sumEntries(
+  entries: MetricEntry[],
+  metricSlug: string,
+  startDate: string,
+  deadline: string
+): number {
+  if (!metricSlug) return 0;
+  let total = 0;
+  for (const e of entries) {
+    if (e.metricSlug !== metricSlug) continue;
+    if (startDate && e.date < startDate) continue;
+    if (deadline && e.date > deadline) continue;
+    total += e.value;
+  }
+  return total;
+}
+
 export function getAllGoals(): Goal[] {
   if (!fs.existsSync(baseDir)) return [];
+  const entries = getAllMetricEntries();
   const goals: Goal[] = [];
   for (const category of CATEGORIES) {
     const dir = path.join(baseDir, category.toLowerCase());
@@ -66,6 +137,16 @@ export function getAllGoals(): Goal[] {
         const raw = fs.readFileSync(path.join(dir, file), "utf8");
         const { data, content } = matter(raw);
         const fm = data as Record<string, unknown>;
+        const startDate = normalizeDate(fm.startDate);
+        const deadline = normalizeDate(fm.deadline);
+        const metricSlug = asString(fm.metricSlug);
+        const manualCurrent = asNumber(fm.current);
+        const computedFromMetric = metricSlug
+          ? sumEntries(entries, metricSlug, startDate, deadline)
+          : 0;
+        // If a metric is linked, prefer the computed sum; otherwise the
+        // hand-entered `current` value.
+        const current = metricSlug ? computedFromMetric : manualCurrent;
         goals.push({
           slug,
           title: asString(fm.title),
@@ -74,10 +155,10 @@ export function getAllGoals(): Goal[] {
           timeframe: normalizeTimeframe(fm.timeframe),
           group: asString(fm.group),
           target: asNumber(fm.target),
-          current: asNumber(fm.current),
+          current,
           unit: asString(fm.unit),
-          startDate: normalizeDate(fm.startDate),
-          deadline: normalizeDate(fm.deadline),
+          startDate,
+          deadline,
           status: normalizeStatus(fm.status),
           pinned: asBool(fm.pinned),
           shareTo: normalizeShare(fm.shareTo),
@@ -88,6 +169,7 @@ export function getAllGoals(): Goal[] {
           pledgeRecipient: asString(fm.pledgeRecipient),
           pledgeVideoUrl: asString(fm.pledgeVideoUrl),
           pledgeProofImage: asString(fm.pledgeProofImage),
+          metricSlug,
           lastUpdated: normalizeDate(fm.lastUpdated),
         });
       } catch (err) {

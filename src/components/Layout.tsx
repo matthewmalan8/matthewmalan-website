@@ -8,6 +8,7 @@ import { buildSeo, PageSeo } from "@/lib/seoConfig";
 type LayoutProps = PageSeo & {
   children: ReactNode;
   jsonLd?: object;
+  noIndex?: boolean;
 };
 
 export default function Layout({
@@ -19,6 +20,7 @@ export default function Layout({
   ogImageAlt,
   ogType,
   jsonLd,
+  noIndex = false,
 }: LayoutProps) {
   const seo = buildSeo({
     title,
@@ -31,9 +33,12 @@ export default function Layout({
 
   return (
     <>
-      <NextSeo {...seo} />
+      <NextSeo {...seo} noindex={noIndex} nofollow={noIndex} />
       <Head>
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="robots"
+          content={noIndex ? "noindex, nofollow" : "index, follow"}
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {jsonLd && (
           <script

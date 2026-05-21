@@ -1,0 +1,42 @@
+name: Check failed goals
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 6 AM UTC daily = 11 PM Mesa, AZ the night before (UTC-7, no DST).
+    # Adjust the cron if you'd rather have it fire later in the morning.
+    - cron: "0 6 * * *"
+
+concurrency:
+  group: check-failed-goals
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install gray-matter only (no full install needed)
+        run: pnpm install --frozen-lockfile --prod=false
+
+      - name: Run failure check + email accountability buddies
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
+          GOAL_NOTIFY_DRY_RUN: ${{ vars.GOAL_NOTIFY_DRY_RUN }}
+        run: node scripts/check-failed-goals.mjs
