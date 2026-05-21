@@ -240,17 +240,33 @@ function daystamp() {
   return `${y}${m}${day}`;
 }
 
-// Beeminder wants deadlines as Unix timestamps. We push the actual goal
-// deadline + 1 day so the website's morning sync has time to push final
-// data before Beeminder evaluates failure.
+// Beeminder timezone — Matthew is in Mesa, AZ which is UTC-7 year-round
+// (Arizona doesn't observe DST). Pinning this per-goal so Beeminder
+// can't fall back to an account default that drifts.
+const BEEMINDER_TIMEZONE = "America/Phoenix";
+
+// The contract:
+//   Website deadline "YYYY-MM-DD" means 23:59 MST that day.
+//   Beeminder must enforce ONE FULL DAY later, at 23:59 MST.
+// Example:
+//   Website: 2026-05-22  →  Beeminder: 2026-05-23 23:59 MST
+//   2026-05-23 23:59 MST = 2026-05-24 06:59 UTC
+//
+// We do this in two parts:
+//   1. `goaldate` is set to noon MST on (deadline + 1 day). That puts
+//      the timestamp squarely inside the calendar day Beeminder should
+//      enforce on, regardless of how the API rounds it. Noon MST = 19:00
+//      UTC, so Date.UTC(y, m-1, d+1, 19, 0).
+//   2. The goal's `deadline` field is set to -60 (see beeminderCreate
+//      below), which tells Beeminder to evaluate at 23:59:00 of that
+//      day in the goal's tz — exactly 60s before midnight.
+// Together those two values mean Beeminder charges at precisely
+// 23:59 MST on (websiteDeadline + 1 day).
 function beeminderGoaldate(websiteDeadline) {
   if (!websiteDeadline) return null;
   const [y, m, d] = websiteDeadline.split("-").map((p) => parseInt(p, 10));
   if (!y || !m || !d) return null;
-  // Use UTC noon to avoid timezone edge cases.
-  const dt = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-  dt.setUTCDate(dt.getUTCDate() + 1); // +1 day buffer
-  return Math.floor(dt.getTime() / 1000);
+  return Math.floor(Date.UTC(y, m - 1, d + 1, 19, 0, 0) / 1000);
 }
 
 async function beeminderGet(slug) {
@@ -282,9 +298,16 @@ async function beeminderCreate(goal) {
     // initval is the starting value at goal creation time.
     initval: goal.current,
     secret: "true", // private to you on Beeminder; flip on UI if you want public
+    // Pin the timezone so Beeminder evaluates day boundaries in MST,
+    // not whatever account-wide default might be set.
+    timezone: BEEMINDER_TIMEZONE,
+    // Daily deadline: 60 seconds BEFORE midnight = 23:59:00 of the
+    // goaldate's local day. Combined with the +1 day offset baked into
+    // beeminderGoaldate(), this means Beeminder charges at exactly
+    // 23:59 MST on (websiteDeadline + 1 day).
+    deadline: "-60",
     // Exactly two of goaldate/goalval/rate are required. We provide
-    // goaldate (deadline+1) + goalval (target) and let Beeminder
-    // compute the required rate.
+    // goaldate + goalval; Beeminder computes the required rate.
   };
   if (goaldate) params.goaldate = goaldate;
   if (goal.target > 0) params.goalval = goal.target;
@@ -297,8 +320,15 @@ async function beeminderCreate(goal) {
   )}/goals.json`;
 
   if (dryRun) {
+    const enforcement = goaldate
+      ? new Date(goaldate * 1000).toLocaleString("en-US", {
+          timeZone: BEEMINDER_TIMEZONE,
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : "(no deadline)";
     console.log(
-      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, deadline=${goal.deadline}+1d)`
+      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, website-deadline=${goal.deadline}, beeminder enforces ~23:59 MST on ${enforcement})`
     );
     return true;
   }

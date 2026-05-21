@@ -45,14 +45,22 @@ next sync (every deploy + 6 AM UTC daily), the script does this:
      metric we have. Change on Beeminder's UI later if you want a
      different road shape.
    - **goalval** = website goal's `target`
-   - **goaldate** = website goal's `deadline` **+ 1 day**. The +1
-     buffer is intentional: the website rebuilds at 6 AM UTC and pushes
-     final data; the +1 day on Beeminder ensures Beeminder doesn't
-     evaluate failure before that data lands.
+   - **goaldate** = website goal's `deadline` **+ 1 day**, anchored at
+     noon MST so the timestamp lands squarely on the correct calendar
+     day.
+   - **deadline** = `-60` (Beeminder's per-goal field that controls
+     the precise time of day for evaluation). -60 = 60 seconds before
+     midnight = **23:59:00 of the goaldate's local day**.
+   - **timezone** = `America/Phoenix` (MST, no DST) pinned per-goal so
+     the day boundary can't drift even if your Beeminder account
+     timezone is something else.
    - **gunits** = website goal's `unit`
    - **initval** = the goal's current value at create time
    - **secret** = `true` (private by default; you can flip it to
      public on Beeminder's UI)
+
+   **Net effect**: if the website goal's deadline is `2026-05-22`,
+   Beeminder charges at exactly **`2026-05-23 23:59 MST`**.
 3. **Pushes a datapoint** for today with the current value.
 
 You can also create the goal manually on Beeminder first if you want
