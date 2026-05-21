@@ -5,7 +5,6 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import type {
-  AccountabilityBuddy,
   Goal,
   GoalCategory,
   GoalShare,
@@ -162,8 +161,6 @@ export function getAllGoals(): Goal[] {
           status: normalizeStatus(fm.status),
           pinned: asBool(fm.pinned),
           shareTo: normalizeShare(fm.shareTo),
-          accountabilityBuddy: asString(fm.accountabilityBuddy),
-          notifyOnFailure: asBool(fm.notifyOnFailure),
           isPledge: asBool(fm.isPledge),
           pledgeAmount: asNumber(fm.pledgeAmount),
           pledgeRecipient: asString(fm.pledgeRecipient),
@@ -180,26 +177,3 @@ export function getAllGoals(): Goal[] {
   return goals;
 }
 
-export function getAccountabilityBuddies(): AccountabilityBuddy[] {
-  const dir = path.join(baseDir, "buddies");
-  if (!fs.existsSync(dir)) return [];
-  const buddies: AccountabilityBuddy[] = [];
-  for (const file of fs.readdirSync(dir)) {
-    if (!file.endsWith(".md")) continue;
-    const slug = file.replace(/\.md$/, "");
-    try {
-      const raw = fs.readFileSync(path.join(dir, file), "utf8");
-      const { data, content } = matter(raw);
-      const fm = data as Record<string, unknown>;
-      buddies.push({
-        slug,
-        name: asString(fm.name),
-        email: asString(fm.email),
-        notes: content.trim(),
-      });
-    } catch (err) {
-      console.warn(`[buddies] Failed to parse ${file}:`, err);
-    }
-  }
-  return buddies;
-}

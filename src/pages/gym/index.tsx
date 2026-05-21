@@ -205,7 +205,7 @@ export default function GymPage({
           {/* Pinned fitness goal */}
           {pinnedGoal && (
             <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
-              <SingleGoalCard goal={pinnedGoal} featured />
+              <SingleGoalCard goal={pinnedGoal} featured publicView />
             </section>
           )}
 
@@ -254,7 +254,7 @@ export default function GymPage({
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {sharedGoals.map((g) => (
                   <li key={g.slug}>
-                    <SingleGoalCard goal={g} />
+                    <SingleGoalCard goal={g} publicView />
                   </li>
                 ))}
               </ul>

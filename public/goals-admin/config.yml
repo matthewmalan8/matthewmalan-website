@@ -122,24 +122,6 @@ collections:
           default: "none",
         }
       - {
-          label: "Accountability buddy",
-          name: "accountabilityBuddy",
-          widget: "relation",
-          collection: "buddies",
-          search_fields: ["name"],
-          value_field: "{{slug}}",
-          display_fields: ["name"],
-          required: false,
-          hint: "Pick a saved buddy to ping if this goal fails.",
-        }
-      - {
-          label: "Notify buddy on failure",
-          name: "notifyOnFailure",
-          widget: "boolean",
-          required: false,
-          default: false,
-        }
-      - {
           label: "Is pledge",
           name: "isPledge",
           widget: "hidden",
@@ -199,17 +181,6 @@ collections:
         }
       - { label: "Pinned", name: "pinned", widget: "boolean", required: false, default: false }
       - { label: "Share to page", name: "shareTo", widget: "hidden", default: "none" }
-      - {
-          label: "Accountability buddy",
-          name: "accountabilityBuddy",
-          widget: "relation",
-          collection: "buddies",
-          search_fields: ["name"],
-          value_field: "{{slug}}",
-          display_fields: ["name"],
-          required: false,
-        }
-      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
       - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
       - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
       - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
@@ -283,17 +254,6 @@ collections:
           default: "none",
           hint: "Pick 'dropshipping' to surface this goal in the Goals section on /dropshipping/.",
         }
-      - {
-          label: "Accountability buddy",
-          name: "accountabilityBuddy",
-          widget: "relation",
-          collection: "buddies",
-          search_fields: ["name"],
-          value_field: "{{slug}}",
-          display_fields: ["name"],
-          required: false,
-        }
-      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
       - {
           label: "Is pledge",
           name: "isPledge",
@@ -385,17 +345,6 @@ collections:
           default: "none",
           hint: "Pick 'gym' to surface this goal in the Goals section on /gym/.",
         }
-      - {
-          label: "Accountability buddy",
-          name: "accountabilityBuddy",
-          widget: "relation",
-          collection: "buddies",
-          search_fields: ["name"],
-          value_field: "{{slug}}",
-          display_fields: ["name"],
-          required: false,
-        }
-      - { label: "Notify buddy on failure", name: "notifyOnFailure", widget: "boolean", required: false, default: false }
       - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
       - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
       - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
@@ -414,33 +363,6 @@ collections:
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
-
-  # ---- Accountability Buddies -------------------------------------------
-  - name: "buddies"
-    label: "Accountability Buddies"
-    label_singular: "Buddy"
-    folder: "content/goals/buddies"
-    create: true
-    slug: "{{slug}}"
-    extension: "md"
-    format: "frontmatter"
-    summary: "{{name}} ({{email}})"
-    fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - {
-          label: "Email",
-          name: "email",
-          widget: "string",
-          required: false,
-          hint: "Used by the daily failure-check workflow to notify this person.",
-        }
-      - {
-          label: "Notes",
-          name: "body",
-          widget: "markdown",
-          required: false,
-          hint: "Anything else — phone, preferred format, etc.",
-        }
 
   # ---- Metrics (definitions) --------------------------------------------
   # A metric is anything you want to count over time — sales, gym visits,

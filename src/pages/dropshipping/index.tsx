@@ -242,7 +242,7 @@ export default function DropshippingPage({
       {/* Pinned Goal — surfaced from /goals-admin/ when shareTo=dropshipping & pinned */}
       {pinnedGoal && (
         <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
-          <SingleGoalCard goal={pinnedGoal} featured />
+          <SingleGoalCard goal={pinnedGoal} featured publicView />
         </section>
       )}
 
@@ -292,27 +292,13 @@ export default function DropshippingPage({
 
       {/* Goals */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-        <div>
-          <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
-          <p className="mt-2 text-[var(--color-black)]/70 max-w-2xl">
-            Finance goals I&apos;m chasing this quarter and year. Edit in{" "}
-            <a className="underline" href="/goals-admin/">
-              /goals-admin/
-            </a>
-            .
-          </p>
-        </div>
+        <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
 
-        {sharedGoals.length === 0 ? (
-          <p className="mt-8 text-[var(--color-black)]/60">
-            No shared finance goals yet — toggle <em>Share to page →
-            dropshipping</em> on a Finance goal to surface it here.
-          </p>
-        ) : (
+        {sharedGoals.length > 0 && (
           <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
             {sharedGoals.map((g) => (
               <li key={g.slug}>
-                <SingleGoalCard goal={g} />
+                <SingleGoalCard goal={g} publicView />
               </li>
             ))}
           </ul>

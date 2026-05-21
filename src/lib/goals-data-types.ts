@@ -26,9 +26,6 @@ export type Goal = {
   status: GoalStatus;
   pinned: boolean;
   shareTo: GoalShare;
-  // Accountability buddy slug (matches a file in content/goals/buddies/)
-  accountabilityBuddy: string;
-  notifyOnFailure: boolean;
   // Pledge fields (Finance only)
   isPledge: boolean;
   pledgeAmount: number;
@@ -54,13 +51,6 @@ export type MetricEntry = {
   date: string; // YYYY-MM-DD
   value: number;
   note: string;
-};
-
-export type AccountabilityBuddy = {
-  slug: string;
-  name: string;
-  email: string;
-  notes: string;
 };
 
 export const CATEGORIES: GoalCategory[] = [
