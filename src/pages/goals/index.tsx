@@ -12,10 +12,11 @@ import {
   type SuccessSummary,
 } from "@/lib/goals";
 import { getGoalsCache } from "@/lib/goals-server";
-import { getAllGoals } from "@/lib/goals-data";
+import { getAllGoals, getBeeminderGoalSnapshots } from "@/lib/goals-data";
 import {
   CATEGORIES,
   groupGoals,
+  type BeeminderGoalSnapshot,
   type Goal,
   type GoalCategory,
 } from "@/lib/goals-data-types";
@@ -26,6 +27,7 @@ type Props = {
   currentStreak: number;
   longestStreak: StreakRecord;
   goals: Goal[];
+  beeminderSnapshots: BeeminderGoalSnapshot[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -37,6 +39,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       currentStreak: computeCurrentSuccessStreak(cache),
       longestStreak: computeLongestSuccessStreak(cache),
       goals: getAllGoals(),
+      beeminderSnapshots: getBeeminderGoalSnapshots(),
     },
   };
 };
@@ -107,18 +110,71 @@ function CategorySection({
   );
 }
 
+function formatRunits(r: string): string {
+  switch (r) {
+    case "d":
+      return "day";
+    case "w":
+      return "week";
+    case "m":
+      return "month";
+    case "y":
+      return "year";
+    default:
+      return r || "period";
+  }
+}
+
+function formatPledge(p: number): string {
+  if (!p) return "$0";
+  return `$${p}`;
+}
+
+function deriveBeeminderStatus(s: BeeminderGoalSnapshot): {
+  label: string;
+  tone: "ok" | "warn" | "danger";
+} {
+  if (s.safebuf <= 0) {
+    return { label: "DERAILS TODAY", tone: "danger" };
+  }
+  if (s.safebuf === 1) {
+    return { label: "1 day buffer", tone: "warn" };
+  }
+  if (s.safebuf <= 3) {
+    return { label: `${s.safebuf} days buffer`, tone: "warn" };
+  }
+  return { label: `${s.safebuf} days buffer`, tone: "ok" };
+}
+
+function loseDateText(unix: number): string {
+  if (!unix) return "";
+  const d = new Date(unix * 1000);
+  return d.toLocaleString("en-US", {
+    timeZone: "America/Phoenix",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function GoalsPage({
   cache,
   summary,
   currentStreak,
   longestStreak,
   goals,
+  beeminderSnapshots,
 }: Props) {
   const connected = !!cache.generatedAt;
   const archived = goals.filter((g) => g.status === "archived");
-  const beeminderGoals = goals.filter(
-    (g) => g.beeminderSlug && g.status === "active"
-  );
+  // Dashboard order: most urgent first (lowest safebuf), tie-break by
+  // bigger pledge.
+  const orderedSnapshots = [...beeminderSnapshots].sort((a, b) => {
+    if (a.safebuf !== b.safebuf) return a.safebuf - b.safebuf;
+    return b.pledge - a.pledge;
+  });
 
   return (
     <Layout
@@ -151,58 +207,98 @@ export default function GoalsPage({
         </div>
       </section>
 
-      {/* Money on the line — Beeminder-attached goals. Bright red so
-          there's no mistaking that real cash is at stake. */}
-      {beeminderGoals.length > 0 && (
+      {/* Money on the line — live Beeminder dashboard. Pulled from
+          /users/{me}/goals.json at the 23:45 MST sync. Sorted by
+          urgency (least buffer first). */}
+      {orderedSnapshots.length > 0 && (
         <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-8">
           <div className="bg-[#D64545] text-[var(--color-off-white)] rounded-2xl p-6 lg:p-10 ring-2 ring-[#A92A2A]">
             <p className="text-[10px] font-bold uppercase tracking-[0.25em]">
               💸 Money on the line
             </p>
             <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl sm:text-4xl tracking-tight">
-              Beeminder is watching {beeminderGoals.length}{" "}
-              {beeminderGoals.length === 1 ? "goal" : "goals"}.
+              Beeminder is watching {orderedSnapshots.length}{" "}
+              {orderedSnapshots.length === 1 ? "goal" : "goals"}.
             </h2>
             <p className="mt-2 text-sm text-[var(--color-off-white)]/80">
-              Miss the deadline → Beeminder charges your card.
+              Live from Beeminder · last pulled at the 23:45 MST sync.
             </p>
-            <ul className="mt-6 divide-y divide-[var(--color-off-white)]/20">
-              {beeminderGoals.map((g) => {
-                const pct = g.target
-                  ? Math.max(
-                      0,
-                      Math.min(100, Math.round((g.current / g.target) * 100))
-                    )
-                  : 0;
+            <ul className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {orderedSnapshots.map((s) => {
+                const status = deriveBeeminderStatus(s);
+                const pct =
+                  s.goalval && s.goalval > 0
+                    ? Math.max(
+                        0,
+                        Math.min(100, Math.round((s.curval / s.goalval) * 100))
+                      )
+                    : null;
+                const rateText =
+                  s.rate != null
+                    ? `${Number.isInteger(s.rate) ? s.rate : s.rate.toFixed(1)} ${s.gunits || ""}/${formatRunits(s.runits)}`.trim()
+                    : "";
                 return (
                   <li
-                    key={g.slug}
-                    className="py-3 flex flex-wrap items-center justify-between gap-3"
+                    key={s.slug}
+                    className="bg-[var(--color-black)]/20 rounded-xl p-5 flex flex-col gap-3 ring-1 ring-[var(--color-off-white)]/20"
                   >
-                    <div className="min-w-0 flex-1">
-                      <p className="font-[family-name:var(--font-display)] text-lg tracking-tight">
-                        {g.title}
-                      </p>
-                      <p className="text-xs uppercase tracking-wider text-[var(--color-off-white)]/75 mt-0.5">
-                        {g.category} · {g.timeframe}
-                        {g.deadline && ` · deadline ${formatLongDate(g.deadline)}`}
-                      </p>
+                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-[family-name:var(--font-display)] text-xl tracking-tight">
+                          {s.title}
+                        </p>
+                        {rateText && (
+                          <p className="text-xs uppercase tracking-wider text-[var(--color-off-white)]/75 mt-0.5">
+                            {rateText} · pledge {formatPledge(s.pledge)}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                          status.tone === "danger"
+                            ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+                            : status.tone === "warn"
+                              ? "bg-[var(--color-yellow)] text-[var(--color-black)]"
+                              : "bg-[var(--color-off-white)]/15 text-[var(--color-off-white)]"
+                        }`}
+                      >
+                        {status.label}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-4 flex-shrink-0">
-                      <p className="text-sm tabular-nums">
-                        {g.current}/{g.target}{" "}
-                        <span className="text-[var(--color-off-white)]/70">
-                          ({pct}%)
-                        </span>
-                      </p>
+
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className="font-[family-name:var(--font-display)] text-3xl tracking-tight tabular-nums">
+                        {Number.isInteger(s.curval)
+                          ? s.curval
+                          : s.curval.toFixed(2)}
+                      </span>
+                      <span className="text-sm text-[var(--color-off-white)]/70">
+                        {s.gunits}
+                        {s.goalval != null
+                          ? ` / ${s.goalval} target`
+                          : ""}
+                        {pct != null ? ` · ${pct}%` : ""}
+                      </span>
+                    </div>
+
+                    {s.goalval != null && s.goalval > 0 && (
+                      <div className="w-full h-1.5 rounded-full bg-[var(--color-off-white)]/15 overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--color-yellow)]"
+                          style={{ width: `${pct ?? 0}%` }}
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-3 flex-wrap text-xs text-[var(--color-off-white)]/75">
+                      {s.losedate > 0 && (
+                        <span>Next derail: {loseDateText(s.losedate)}</span>
+                      )}
                       <a
-                        href={`https://www.beeminder.com/${encodeURIComponent(
-                          process.env.NEXT_PUBLIC_BEEMINDER_USERNAME ||
-                            "matthewmalan"
-                        )}/${encodeURIComponent(g.beeminderSlug)}/`}
+                        href={s.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-semibold uppercase tracking-wider underline decoration-[var(--color-off-white)]/40 hover:decoration-[var(--color-off-white)]"
+                        className="font-semibold uppercase tracking-wider underline decoration-[var(--color-off-white)]/40 hover:decoration-[var(--color-off-white)]"
                       >
                         Beeminder →
                       </a>
