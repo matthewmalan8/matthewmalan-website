@@ -110,6 +110,36 @@ export function SingleGoalCard({
             </span>
           )}
           <StatusPill status={goal.status} />
+          {!publicView && goal.shareTo !== "none" && (
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                isFeatured
+                  ? "bg-[var(--color-yellow)]/15 text-[var(--color-yellow)] ring-1 ring-[var(--color-yellow)]/30"
+                  : "bg-[var(--color-warm-gray)]/30 text-[var(--color-black)]/70 ring-1 ring-[var(--color-warm-gray)]"
+              }`}
+              title={`Shared publicly on /${goal.shareTo}/`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+              <span>
+                Shared on /{goal.shareTo}/
+              </span>
+            </span>
+          )}
         </div>
         {left.text && (
           <span

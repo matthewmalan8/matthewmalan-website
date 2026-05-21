@@ -200,10 +200,6 @@ export default function GoalsPage({
               />
             </span>
           </h1>
-          <p className="mt-8 text-xl lg:text-2xl max-w-3xl text-[var(--color-black)]/70 leading-relaxed">
-            Family. Fundamentals. Finance. Fitness. Where I am vs. where I said
-            I&apos;d be.
-          </p>
         </div>
       </section>
 
