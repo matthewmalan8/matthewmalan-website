@@ -11,8 +11,6 @@ deadline: 2026-07-04
 status: active
 pinned: false
 shareTo: dropshipping
-accountabilityBuddy: ""
-notifyOnFailure: false
 isPledge: false
 pledgeAmount: 0
 pledgeRecipient: ""

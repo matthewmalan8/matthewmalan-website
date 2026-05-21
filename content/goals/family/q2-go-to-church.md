@@ -11,8 +11,6 @@ deadline: 2026-06-30
 status: active
 pinned: false
 shareTo: none
-accountabilityBuddy: ""
-notifyOnFailure: false
 isPledge: false
 pledgeAmount: 0
 pledgeRecipient: ""

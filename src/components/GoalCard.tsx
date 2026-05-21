@@ -23,7 +23,8 @@ function StatusPill({ status }: { status: Goal["status"] }) {
   const map: Record<Goal["status"], { label: string; classes: string }> = {
     active: {
       label: "Active",
-      classes: "bg-[var(--color-warm-gray)]/40 text-[var(--color-black)]",
+      // Yellow + black so it's readable on both yellow and black cards.
+      classes: "bg-[var(--color-yellow)] text-[var(--color-black)]",
     },
     successful: {
       label: "Successful",
@@ -69,9 +70,13 @@ function ProgressBar({ pct, status }: { pct: number; status: Goal["status"] }) {
 export function SingleGoalCard({
   goal,
   featured = false,
+  publicView = false,
 }: {
   goal: Goal;
   featured?: boolean;
+  // When true (used on /dropshipping/ + /gym/), hide the timeframe pill —
+  // public visitors don't need to see "Year/Quarter/Week" labels.
+  publicView?: boolean;
 }) {
   const pct = progressPct(goal);
   const left = daysLeft(goal.deadline);
@@ -87,13 +92,15 @@ export function SingleGoalCard({
     >
       <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${
-              isFeatured ? "text-[var(--color-yellow)]" : "text-[var(--color-black)]/60"
-            }`}
-          >
-            {goal.timeframe}
-          </span>
+          {!publicView && (
+            <span
+              className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${
+                isFeatured ? "text-[var(--color-yellow)]" : "text-[var(--color-black)]/60"
+              }`}
+            >
+              {goal.timeframe}
+            </span>
+          )}
           <StatusPill status={goal.status} />
           {goal.isPledge && (
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--color-yellow)] text-[var(--color-black)]">
