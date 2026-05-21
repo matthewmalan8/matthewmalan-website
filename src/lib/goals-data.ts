@@ -122,9 +122,135 @@ function sumEntries(
   return total;
 }
 
+// ----- Auto-source metric entries ---------------------------------------
+// Certain metrics are computed from data the site already has (Hevy
+// workouts, dropshipping daily logs, podcast episode markdown). The
+// loader synthesizes MetricEntry[] from those sources and concatenates
+// them with the manually-logged entries before summing.
+
+function fmDate(value: unknown): string {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === "string") {
+    // Episodes use full ISO datetimes; daily logs use YYYY-MM-DD.
+    return value.slice(0, 10);
+  }
+  return "";
+}
+
+function fmNumber(value: unknown): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Dropshipping hours — sum hoursWorked + minutesWorked/60 per daily log.
+function autoEntriesDropshippingHours(): MetricEntry[] {
+  const dir = path.join(process.cwd(), "content", "dropshipping", "daily");
+  if (!fs.existsSync(dir)) return [];
+  const out: MetricEntry[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      const date = fmDate(fm.date);
+      if (!date) continue;
+      const hours = fmNumber(fm.hoursWorked) + fmNumber(fm.minutesWorked) / 60;
+      if (hours <= 0) continue;
+      out.push({
+        slug: `auto-dropshipping-hours-${date}`,
+        metricSlug: "dropshipping-hours",
+        date,
+        value: hours,
+        note: "",
+      });
+    } catch {
+      // skip
+    }
+  }
+  return out;
+}
+
+// Gym visits — one entry per unique workout date in the Hevy cache.
+// Multiple sessions on the same day still count as one visit.
+function autoEntriesGymVisits(): MetricEntry[] {
+  const cachePath = path.join(
+    process.cwd(),
+    "content",
+    "gym",
+    "cache",
+    "workouts.json"
+  );
+  if (!fs.existsSync(cachePath)) return [];
+  let workouts: Array<{ start_time?: string; date?: string }>;
+  try {
+    workouts = JSON.parse(fs.readFileSync(cachePath, "utf8"));
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(workouts)) return [];
+  const uniqueDates = new Set<string>();
+  for (const w of workouts) {
+    const start = typeof w.start_time === "string" ? w.start_time : "";
+    if (start) {
+      const d = new Date(start);
+      if (!Number.isNaN(d.getTime())) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        uniqueDates.add(`${y}-${m}-${day}`);
+        continue;
+      }
+    }
+    if (typeof w.date === "string" && w.date) uniqueDates.add(w.date.slice(0, 10));
+  }
+  return Array.from(uniqueDates).map((date) => ({
+    slug: `auto-gym-visits-${date}`,
+    metricSlug: "gym-visits",
+    date,
+    value: 1,
+    note: "",
+  }));
+}
+
+// Podcast episodes uploaded — one entry per episode markdown file.
+function autoEntriesPodcastEpisodes(): MetricEntry[] {
+  const dir = path.join(process.cwd(), "content", "episodes");
+  if (!fs.existsSync(dir)) return [];
+  const out: MetricEntry[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      const date = fmDate(fm.date);
+      if (!date) continue;
+      out.push({
+        slug: `auto-podcast-${file.replace(/\.md$/, "")}`,
+        metricSlug: "podcast-episodes-uploaded",
+        date,
+        value: 1,
+        note: "",
+      });
+    } catch {
+      // skip
+    }
+  }
+  return out;
+}
+
+function getAutoEntries(): MetricEntry[] {
+  return [
+    ...autoEntriesDropshippingHours(),
+    ...autoEntriesGymVisits(),
+    ...autoEntriesPodcastEpisodes(),
+  ];
+}
+
 export function getAllGoals(): Goal[] {
   if (!fs.existsSync(baseDir)) return [];
-  const entries = getAllMetricEntries();
+  const entries = [...getAllMetricEntries(), ...getAutoEntries()];
   const goals: Goal[] = [];
   for (const category of CATEGORIES) {
     const dir = path.join(baseDir, category.toLowerCase());
