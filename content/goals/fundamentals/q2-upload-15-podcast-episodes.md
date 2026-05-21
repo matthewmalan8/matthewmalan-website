@@ -16,5 +16,6 @@ pledgeAmount: 0
 pledgeRecipient: ""
 pledgeVideoUrl: ""
 pledgeProofImage: ""
+metricSlug: podcast-episodes-uploaded
 lastUpdated: 2026-05-20
 ---

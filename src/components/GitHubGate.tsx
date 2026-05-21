@@ -90,14 +90,37 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // OAuth popup listener — same protocol Decap CMS uses.
+  // OAuth popup listener — Decap CMS protocol:
+  //   popup → parent: "authorizing:github"           (handshake)
+  //   parent → popup: "authorizing:github"           (echo back)
+  //   popup → parent: "authorization:github:success:{json}"
+  //   popup → parent: "authorization:github:error:..."  (if rejected)
   useEffect(() => {
     function onMessage(ev: MessageEvent) {
       const data = ev.data;
       if (typeof data !== "string") return;
-      // Decap worker emits: "authorizing:github" then
-      // "authorization:github:success:{json}" or
-      // "authorization:github:error:{json}".
+
+      // Step 1: popup pings for handshake. Echo it back so the popup
+      // proceeds to post the token.
+      if (data === "authorizing:github") {
+        try {
+          // Reply to whatever window sent us this message, using its
+          // origin for safety (falls back to "*" if the source is gone).
+          if (ev.source && "postMessage" in ev.source) {
+            (ev.source as Window).postMessage(
+              "authorizing:github",
+              ev.origin || "*"
+            );
+          } else if (popupRef.current) {
+            popupRef.current.postMessage("authorizing:github", "*");
+          }
+        } catch {
+          // ignore
+        }
+        return;
+      }
+
+      // Step 2: popup returns the token.
       if (data.startsWith("authorization:github:success:")) {
         const payload = data.slice("authorization:github:success:".length);
         try {
@@ -120,6 +143,7 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
                 // ignore
               }
               setState({ kind: "signed-in", login });
+              popupRef.current?.close();
             } else {
               clearStored();
               setState({
@@ -136,7 +160,10 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
             error: `Auth response parse error: ${(err as Error).message}`,
           });
         }
-      } else if (data.startsWith("authorization:github:error:")) {
+        return;
+      }
+
+      if (data.startsWith("authorization:github:error:")) {
         setState({
           kind: "signed-out",
           error: "GitHub denied the sign-in.",
@@ -152,23 +179,14 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
     const h = 720;
     const left = window.screen.width / 2 - w / 2;
     const top = window.screen.height / 2 - h / 2;
+    // We DON'T proactively send authorizing:github to the popup. The
+    // popup will ping us first — the handshake handler above echoes
+    // it back. This matches the Decap CMS protocol exactly.
     popupRef.current = window.open(
       `${OAUTH_URL}?provider=github&scope=read:user`,
       "github-oauth",
       `width=${w},height=${h},left=${left},top=${top}`
     );
-    // The popup needs the parent's origin to send messages.
-    setTimeout(() => {
-      try {
-        popupRef.current?.postMessage(
-          "authorizing:github",
-          window.location.origin
-        );
-      } catch {
-        // ignore — the popup may not be open yet, the OAuth flow
-        // will still work because the worker accepts any opener.
-      }
-    }, 1000);
   }, []);
 
   const signOut = useCallback(() => {

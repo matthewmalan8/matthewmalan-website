@@ -16,5 +16,6 @@ pledgeAmount: 0
 pledgeRecipient: ""
 pledgeVideoUrl: ""
 pledgeProofImage: ""
+metricSlug: gym-visits
 lastUpdated: 2026-05-20
 ---
