@@ -122,16 +122,6 @@ collections:
           default: "none",
         }
       - {
-          label: "Is pledge",
-          name: "isPledge",
-          widget: "hidden",
-          default: false,
-        }
-      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
-      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
-      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
-      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
-      - {
           label: "Linked metric (optional)",
           name: "metricSlug",
           widget: "relation",
@@ -199,11 +189,6 @@ collections:
         }
       - { label: "Pinned", name: "pinned", widget: "boolean", required: false, default: false }
       - { label: "Share to page", name: "shareTo", widget: "hidden", default: "none" }
-      - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
-      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
-      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
-      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
-      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
       - {
           label: "Linked metric (optional)",
           name: "metricSlug",
@@ -280,30 +265,6 @@ collections:
           hint: "Pick 'dropshipping' to surface this goal in the Goals section on /dropshipping/.",
         }
       - {
-          label: "Is pledge",
-          name: "isPledge",
-          widget: "boolean",
-          required: false,
-          default: false,
-          hint: "Turn on to track this goal as a pledge — money you owe (and to whom) if you fail.",
-        }
-      - { label: "Pledge amount ($)", name: "pledgeAmount", widget: "number", value_type: "float", required: false, default: 0 }
-      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "string", required: false }
-      - {
-          label: "Pledge challenge video URL",
-          name: "pledgeVideoUrl",
-          widget: "string",
-          required: false,
-          hint: "Optional — TikTok / YouTube URL of you announcing the challenge.",
-        }
-      - {
-          label: "Pledge proof image",
-          name: "pledgeProofImage",
-          widget: "image",
-          required: false,
-          hint: "If you failed and paid the pledge, drop the screenshot here.",
-        }
-      - {
           label: "Linked metric (optional)",
           name: "metricSlug",
           widget: "relation",
@@ -377,11 +338,6 @@ collections:
           default: "none",
           hint: "Pick 'gym' to surface this goal in the Goals section on /gym/.",
         }
-      - { label: "Is pledge", name: "isPledge", widget: "hidden", default: false }
-      - { label: "Pledge amount", name: "pledgeAmount", widget: "hidden", default: 0 }
-      - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
-      - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
-      - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
       - {
           label: "Linked metric (optional)",
           name: "metricSlug",

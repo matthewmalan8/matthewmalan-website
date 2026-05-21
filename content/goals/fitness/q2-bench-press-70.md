@@ -11,10 +11,5 @@ deadline: 2026-06-30
 status: active
 pinned: true
 shareTo: gym
-isPledge: false
-pledgeAmount: 0
-pledgeRecipient: ""
-pledgeVideoUrl: ""
-pledgeProofImage: ""
 lastUpdated: 2026-05-20
 ---

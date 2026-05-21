@@ -11,11 +11,6 @@ deadline: 2026-06-30
 status: active
 pinned: false
 shareTo: none
-isPledge: false
-pledgeAmount: 0
-pledgeRecipient: ""
-pledgeVideoUrl: ""
-pledgeProofImage: ""
 metricSlug: dropshipping-hours
 lastUpdated: 2026-05-20
 ---

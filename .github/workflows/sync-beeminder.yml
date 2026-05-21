@@ -3,9 +3,11 @@ name: Sync Beeminder
 on:
   workflow_dispatch:
   schedule:
-    # 6 AM UTC daily — same window as the deploy + Hevy + Google Tasks
-    # refresh, so Beeminder gets the freshest numbers.
-    - cron: "0 6 * * *"
+    # 06:45 UTC daily = 23:45 MST (Phoenix) the previous day.
+    # That's 14 minutes before the 23:59 MST enforcement moment, giving
+    # Beeminder plenty of time to register the final datapoint before
+    # it evaluates and (potentially) charges.
+    - cron: "45 6 * * *"
 
 concurrency:
   group: sync-beeminder

@@ -11,11 +11,6 @@ deadline: 2026-05-23
 status: active
 pinned: false
 shareTo: none
-isPledge: false
-pledgeAmount: 0
-pledgeRecipient: ""
-pledgeVideoUrl: ""
-pledgeProofImage: ""
 metricSlug: swing-dancing-times
 lastUpdated: 2026-05-20
 ---

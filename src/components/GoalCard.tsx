@@ -110,11 +110,6 @@ export function SingleGoalCard({
             </span>
           )}
           <StatusPill status={goal.status} />
-          {goal.isPledge && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--color-yellow)] text-[var(--color-black)]">
-              Pledge ${goal.pledgeAmount}
-            </span>
-          )}
         </div>
         {left.text && (
           <span
@@ -175,21 +170,6 @@ export function SingleGoalCard({
       <div className="mt-3">
         <ProgressBar pct={pct} status={goal.status} />
       </div>
-
-      {goal.isPledge && goal.pledgeProofImage && (
-        <div className="mt-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-black)]/60 mb-2">
-            Pledge proof
-          </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={goal.pledgeProofImage}
-            alt="Pledge payment proof"
-            className="max-h-40 rounded-lg border border-[var(--color-warm-gray)]"
-            loading="lazy"
-          />
-        </div>
-      )}
 
       {goal.description && (
         <p
