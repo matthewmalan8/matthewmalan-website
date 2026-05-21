@@ -41,6 +41,11 @@ export type Metric = {
   name: string;
   unit: string;
   description: string;
+  // Optional: pull this metric's entries from a Beeminder goal's
+  // datapoints. Lets us mirror data that lives on Beeminder (e.g.
+  // FocusMate sessions via FocusMate's built-in Beeminder integration)
+  // into website goals without needing the upstream service's API.
+  beeminderSource: string;
 };
 
 export type MetricEntry = {

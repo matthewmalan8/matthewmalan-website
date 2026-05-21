@@ -70,6 +70,7 @@ export function getAllMetrics(): Metric[] {
         name: asString(fm.name) || slug,
         unit: asString(fm.unit),
         description: content.trim(),
+        beeminderSource: asString(fm.beeminderSource),
       });
     } catch (err) {
       console.warn(`[metrics] Failed to parse ${file}:`, err);
@@ -240,11 +241,52 @@ function autoEntriesPodcastEpisodes(): MetricEntry[] {
   return out;
 }
 
+// Beeminder-sourced metrics — datapoints fetched from the Beeminder API
+// by scripts/fetch-beeminder-metrics.mjs and cached locally. This lets
+// us mirror data that lives on Beeminder (e.g. FocusMate sessions, since
+// FocusMate has a native Beeminder integration but no public per-user
+// API) into website metric counts.
+function autoEntriesBeeminderSourced(): MetricEntry[] {
+  const cachePath = path.join(
+    process.cwd(),
+    "content",
+    "goals",
+    "cache",
+    "beeminder-metrics.json"
+  );
+  if (!fs.existsSync(cachePath)) return [];
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(cachePath, "utf8"));
+  } catch {
+    return [];
+  }
+  if (!data || typeof data !== "object") return [];
+  const out: MetricEntry[] = [];
+  for (const [metricSlug, datapoints] of Object.entries(data.byMetric ?? {})) {
+    if (!Array.isArray(datapoints)) continue;
+    for (const dp of datapoints) {
+      const date = typeof dp?.date === "string" ? dp.date : "";
+      const value = Number(dp?.value);
+      if (!date || !Number.isFinite(value)) continue;
+      out.push({
+        slug: `auto-bm-${metricSlug}-${dp.id ?? `${date}-${value}`}`,
+        metricSlug,
+        date,
+        value,
+        note: "",
+      });
+    }
+  }
+  return out;
+}
+
 function getAutoEntries(): MetricEntry[] {
   return [
     ...autoEntriesDropshippingHours(),
     ...autoEntriesGymVisits(),
     ...autoEntriesPodcastEpisodes(),
+    ...autoEntriesBeeminderSourced(),
   ];
 }
 
