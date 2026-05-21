@@ -31,29 +31,33 @@ Optional — for testing without writing real datapoints, add an Actions
 script logs what it *would* push but doesn't send anything. Delete the
 variable when you're ready to go live.
 
-## Per-goal setup
+## Per-goal setup — Beeminder goals auto-create
 
-### Pick the right deadline
+You don't have to create the Beeminder goal yourself. Just type any
+slug you want into the **Beeminder slug** field in `/goals-admin/`
+(lowercase + dashes — e.g. `dropship-hours-w21`, `gym-q2`). On the
+next sync (every deploy + 6 AM UTC daily), the script does this:
 
-Because the website syncs at 6 AM UTC daily, set the **Beeminder goal's
-deadline to one day AFTER your website goal's deadline**. Otherwise
-Beeminder might enforce failure for a goal the website was about to
-mark complete a few hours later.
+1. **Checks** if a goal with that slug already exists on Beeminder.
+2. **If missing** → creates it using the website goal's data:
+   - **title** = website goal's title
+   - **goal_type** = `hustler` (Do More by date) — works for every
+     metric we have. Change on Beeminder's UI later if you want a
+     different road shape.
+   - **goalval** = website goal's `target`
+   - **goaldate** = website goal's `deadline` **+ 1 day**. The +1
+     buffer is intentional: the website rebuilds at 6 AM UTC and pushes
+     final data; the +1 day on Beeminder ensures Beeminder doesn't
+     evaluate failure before that data lands.
+   - **gunits** = website goal's `unit`
+   - **initval** = the goal's current value at create time
+   - **secret** = `true` (private by default; you can flip it to
+     public on Beeminder's UI)
+3. **Pushes a datapoint** for today with the current value.
 
-Example: website goal says "20 hours of dropshipping by Saturday 5/23."
-Set the Beeminder goal to deadline **Sunday 5/24** so the sync has
-time to push Saturday's final hours before Beeminder evaluates.
-
-### Wire a goal to Beeminder
-
-1. Open https://www.beeminder.com and create the goal there first.
-   Pick the right goal type (Do More, Odometer, etc.) and set the
-   deadline as described above. Copy the slug (the URL piece after
-   `/yourname/`).
-2. Open https://matthewmalan.com/goals-admin/ → edit the matching
-   website goal → paste the slug into the **Beeminder slug** field.
-3. Save. On the next site build (or the next 6 AM UTC tick), the
-   value flows to Beeminder.
+You can also create the goal manually on Beeminder first if you want
+custom settings (different road shape, public visibility, etc.) — the
+sync will see it already exists and just keep pushing datapoints.
 
 ## How the sync works
 

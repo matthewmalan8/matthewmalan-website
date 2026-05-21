@@ -147,7 +147,7 @@ collections:
           name: "beeminderSlug",
           widget: "string",
           required: false,
-          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+          hint: "Type whatever Beeminder slug you want — lowercase + dashes only (e.g. dropship-hours-week-21). If the goal doesn't exist on Beeminder yet, the daily sync will auto-create it using this goal's title, target, unit, and deadline+1d. After that, the sync just pushes today's value as a datapoint. Leave blank to skip Beeminder for this goal.",
         }
       - {
           label: "Last updated",
@@ -220,7 +220,7 @@ collections:
           name: "beeminderSlug",
           widget: "string",
           required: false,
-          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+          hint: "Type whatever Beeminder slug you want — lowercase + dashes only (e.g. dropship-hours-week-21). If the goal doesn't exist on Beeminder yet, the daily sync will auto-create it using this goal's title, target, unit, and deadline+1d. After that, the sync just pushes today's value as a datapoint. Leave blank to skip Beeminder for this goal.",
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
@@ -319,7 +319,7 @@ collections:
           name: "beeminderSlug",
           widget: "string",
           required: false,
-          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+          hint: "Type whatever Beeminder slug you want — lowercase + dashes only (e.g. dropship-hours-week-21). If the goal doesn't exist on Beeminder yet, the daily sync will auto-create it using this goal's title, target, unit, and deadline+1d. After that, the sync just pushes today's value as a datapoint. Leave blank to skip Beeminder for this goal.",
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
@@ -398,7 +398,7 @@ collections:
           name: "beeminderSlug",
           widget: "string",
           required: false,
-          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+          hint: "Type whatever Beeminder slug you want — lowercase + dashes only (e.g. dropship-hours-week-21). If the goal doesn't exist on Beeminder yet, the daily sync will auto-create it using this goal's title, target, unit, and deadline+1d. After that, the sync just pushes today's value as a datapoint. Leave blank to skip Beeminder for this goal.",
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
