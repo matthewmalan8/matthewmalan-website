@@ -198,7 +198,8 @@ function sumEntries(metricSlug, startDate, deadline) {
   return total;
 }
 
-// Gather active Beeminder-linked goals.
+// Gather active Beeminder-linked goals (all fields we might need for
+// auto-create + datapoint sync).
 const targets = [];
 for (const cat of CATEGORIES) {
   const dir = path.join(baseDir, cat);
@@ -216,8 +217,12 @@ for (const cat of CATEGORIES) {
     targets.push({
       goalSlug: slug,
       title: asString(fm.title) || slug,
+      category: cat,
       beeminderSlug,
+      target: asNumber(fm.target),
       current,
+      unit: asString(fm.unit) || "things",
+      deadline,
     });
   }
 }
@@ -235,7 +240,96 @@ function daystamp() {
   return `${y}${m}${day}`;
 }
 
-async function sync(goal) {
+// Beeminder wants deadlines as Unix timestamps. We push the actual goal
+// deadline + 1 day so the website's morning sync has time to push final
+// data before Beeminder evaluates failure.
+function beeminderGoaldate(websiteDeadline) {
+  if (!websiteDeadline) return null;
+  const [y, m, d] = websiteDeadline.split("-").map((p) => parseInt(p, 10));
+  if (!y || !m || !d) return null;
+  // Use UTC noon to avoid timezone edge cases.
+  const dt = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+  dt.setUTCDate(dt.getUTCDate() + 1); // +1 day buffer
+  return Math.floor(dt.getTime() / 1000);
+}
+
+async function beeminderGet(slug) {
+  const url = `https://www.beeminder.com/api/v1/users/${encodeURIComponent(
+    username
+  )}/goals/${encodeURIComponent(slug)}.json?auth_token=${encodeURIComponent(
+    authToken
+  )}`;
+  const res = await fetch(url);
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Beeminder GET ${slug}: ${res.status} ${txt}`);
+  }
+  return res.json();
+}
+
+async function beeminderCreate(goal) {
+  // "hustler" = Do More by date. Works for every kind of goal we have
+  // (sessions, hours, episodes, $). User can change goal type on
+  // Beeminder's UI after creation if they want a different road shape.
+  const goaldate = beeminderGoaldate(goal.deadline);
+  const params = {
+    auth_token: authToken,
+    slug: goal.beeminderSlug,
+    title: goal.title,
+    goal_type: "hustler",
+    gunits: goal.unit.slice(0, 64),
+    // initval is the starting value at goal creation time.
+    initval: goal.current,
+    secret: "true", // private to you on Beeminder; flip on UI if you want public
+    // Exactly two of goaldate/goalval/rate are required. We provide
+    // goaldate (deadline+1) + goalval (target) and let Beeminder
+    // compute the required rate.
+  };
+  if (goaldate) params.goaldate = goaldate;
+  if (goal.target > 0) params.goalval = goal.target;
+
+  const body = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) body.set(k, String(v));
+
+  const url = `https://www.beeminder.com/api/v1/users/${encodeURIComponent(
+    username
+  )}/goals.json`;
+
+  if (dryRun) {
+    console.log(
+      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, deadline=${goal.deadline}+1d)`
+    );
+    return true;
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  if (res.ok) {
+    console.log(
+      `[beeminder] Created goal ${goal.beeminderSlug} — title="${goal.title}", target=${goal.target} ${goal.unit}, goaldate=${goal.deadline}+1d.`
+    );
+    return true;
+  }
+  const txt = await res.text();
+  // 422 + "Slug has already been taken" can happen if the goal was
+  // created in a previous run and our GET cache missed it. Treat as
+  // "already exists" and proceed to sync datapoint.
+  if (res.status === 422 && /taken|exist/i.test(txt)) {
+    console.log(
+      `[beeminder] Goal ${goal.beeminderSlug} already existed (422) — continuing to datapoint sync.`
+    );
+    return true;
+  }
+  throw new Error(
+    `Beeminder CREATE ${goal.beeminderSlug}: ${res.status} ${txt}`
+  );
+}
+
+async function beeminderPushDatapoint(goal) {
   const url = `https://www.beeminder.com/api/v1/users/${encodeURIComponent(
     username
   )}/goals/${encodeURIComponent(goal.beeminderSlug)}/datapoints.json`;
@@ -244,7 +338,6 @@ async function sync(goal) {
     daystamp: daystamp(),
     value: String(goal.current),
     comment: `matthewmalan.com sync · ${goal.title} (${goal.goalSlug})`,
-    // requestid keeps re-runs idempotent: same id → upsert today's point.
     requestid: `mm-${goal.goalSlug}-${daystamp()}`,
   });
   if (dryRun) {
@@ -267,10 +360,32 @@ async function sync(goal) {
   );
 }
 
+async function processGoal(goal) {
+  // Step 1: Does the Beeminder goal exist?
+  let existing = null;
+  if (!dryRun) {
+    try {
+      existing = await beeminderGet(goal.beeminderSlug);
+    } catch (err) {
+      console.error(
+        `[beeminder] GET check for ${goal.beeminderSlug} failed (${err.message}) — assuming missing and trying create.`
+      );
+    }
+  }
+
+  // Step 2: Create if missing.
+  if (!existing) {
+    await beeminderCreate(goal);
+  }
+
+  // Step 3: Push today's datapoint regardless.
+  await beeminderPushDatapoint(goal);
+}
+
 let failures = 0;
 for (const goal of targets) {
   try {
-    await sync(goal);
+    await processGoal(goal);
   } catch (err) {
     failures += 1;
     console.error(`[beeminder] ${err.message}`);
@@ -278,7 +393,7 @@ for (const goal of targets) {
 }
 
 if (failures > 0) {
-  // Don't fail the build over a Beeminder hiccup; we'll retry next day.
+  // Non-fatal — we'll retry on the next run.
   console.error(
     `[beeminder] ${failures} sync error(s) — non-fatal, will retry on next run.`
   );
