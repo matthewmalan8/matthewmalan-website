@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3400",
-    "prebuild": "node scripts/update-cms-default.mjs && node scripts/fetch-hevy.mjs && node scripts/fetch-google-tasks.mjs && node scripts/fetch-youtube-playlist.mjs && node scripts/update-gym-pinned-options.mjs && node scripts/inject-goals-admin-hints.mjs && node scripts/generate-og-images.mjs && node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/update-cms-default.mjs && node scripts/fetch-hevy.mjs && node scripts/fetch-google-tasks.mjs && node scripts/fetch-youtube-playlist.mjs && node scripts/fetch-beeminder-metrics.mjs && node scripts/update-gym-pinned-options.mjs && node scripts/inject-goals-admin-hints.mjs && node scripts/generate-og-images.mjs && node scripts/generate-sitemap.mjs",
     "build": "next build",
     "postbuild": "pagefind --site out --output-subdir pagefind",
     "start": "next start -p 3400",

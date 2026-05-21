@@ -116,6 +116,9 @@ export default function GoalsPage({
 }: Props) {
   const connected = !!cache.generatedAt;
   const archived = goals.filter((g) => g.status === "archived");
+  const beeminderGoals = goals.filter(
+    (g) => g.beeminderSlug && g.status === "active"
+  );
 
   return (
     <Layout
@@ -147,6 +150,70 @@ export default function GoalsPage({
           </p>
         </div>
       </section>
+
+      {/* Money on the line — Beeminder-attached goals. Bright red so
+          there's no mistaking that real cash is at stake. */}
+      {beeminderGoals.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-8">
+          <div className="bg-[#D64545] text-[var(--color-off-white)] rounded-2xl p-6 lg:p-10 ring-2 ring-[#A92A2A]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em]">
+              💸 Money on the line
+            </p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl sm:text-4xl tracking-tight">
+              Beeminder is watching {beeminderGoals.length}{" "}
+              {beeminderGoals.length === 1 ? "goal" : "goals"}.
+            </h2>
+            <p className="mt-2 text-sm text-[var(--color-off-white)]/80">
+              Miss the deadline → Beeminder charges your card.
+            </p>
+            <ul className="mt-6 divide-y divide-[var(--color-off-white)]/20">
+              {beeminderGoals.map((g) => {
+                const pct = g.target
+                  ? Math.max(
+                      0,
+                      Math.min(100, Math.round((g.current / g.target) * 100))
+                    )
+                  : 0;
+                return (
+                  <li
+                    key={g.slug}
+                    className="py-3 flex flex-wrap items-center justify-between gap-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-[family-name:var(--font-display)] text-lg tracking-tight">
+                        {g.title}
+                      </p>
+                      <p className="text-xs uppercase tracking-wider text-[var(--color-off-white)]/75 mt-0.5">
+                        {g.category} · {g.timeframe}
+                        {g.deadline && ` · deadline ${formatLongDate(g.deadline)}`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <p className="text-sm tabular-nums">
+                        {g.current}/{g.target}{" "}
+                        <span className="text-[var(--color-off-white)]/70">
+                          ({pct}%)
+                        </span>
+                      </p>
+                      <a
+                        href={`https://www.beeminder.com/${encodeURIComponent(
+                          process.env.NEXT_PUBLIC_BEEMINDER_USERNAME ||
+                            "matthewmalan"
+                        )}/${encodeURIComponent(g.beeminderSlug)}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold uppercase tracking-wider underline decoration-[var(--color-off-white)]/40 hover:decoration-[var(--color-off-white)]"
+                      >
+                        Beeminder →
+                      </a>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* Category boards */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10">

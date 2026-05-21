@@ -388,6 +388,13 @@ collections:
           hint: "Optional — display label like 'visits', 'sales', '$', 'hours'.",
         }
       - {
+          label: "Beeminder source (optional)",
+          name: "beeminderSource",
+          widget: "string",
+          required: false,
+          hint: "Slug of a Beeminder goal whose datapoints become this metric's entries. Useful when an upstream service (e.g. FocusMate) already pushes data into a Beeminder goal — the website mirrors that data automatically. Leave blank unless you're piggybacking on a Beeminder integration.",
+        }
+      - {
           label: "Notes",
           name: "body",
           widget: "markdown",
