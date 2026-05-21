@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import type {
+  BeeminderGoalSnapshot,
   Goal,
   GoalCategory,
   GoalShare,
@@ -288,6 +289,28 @@ function getAutoEntries(): MetricEntry[] {
     ...autoEntriesPodcastEpisodes(),
     ...autoEntriesBeeminderSourced(),
   ];
+}
+
+// Returns every Beeminder goal snapshot from the latest fetch cache.
+// Used by /goals/ to render the "Money on the line" dashboard with
+// live Beeminder data (current value, pledge, next derail, rate).
+export function getBeeminderGoalSnapshots(): BeeminderGoalSnapshot[] {
+  const cachePath = path.join(
+    process.cwd(),
+    "content",
+    "goals",
+    "cache",
+    "beeminder-metrics.json"
+  );
+  if (!fs.existsSync(cachePath)) return [];
+  try {
+    const data = JSON.parse(fs.readFileSync(cachePath, "utf8"));
+    const byGoal = data?.byBeeminderGoal;
+    if (!byGoal || typeof byGoal !== "object") return [];
+    return Object.values(byGoal) as BeeminderGoalSnapshot[];
+  } catch {
+    return [];
+  }
 }
 
 export function getAllGoals(): Goal[] {

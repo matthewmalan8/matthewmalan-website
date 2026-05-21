@@ -52,6 +52,30 @@ export type Metric = {
   beeminderSource: string;
 };
 
+// Snapshot of a Beeminder goal pulled directly from the API at sync
+// time. Powers the "Money on the line" dashboard so it reflects real
+// Beeminder state regardless of website-side goal markdown.
+export type BeeminderGoalSnapshot = {
+  slug: string;
+  title: string;
+  goalval: number | null;
+  curval: number;
+  pledge: number;
+  // Unix timestamp of the next derail (when money gets charged if
+  // you're below the road).
+  losedate: number;
+  // Days of "buffer" before the goal derails. 0 = derails today.
+  safebuf: number;
+  // Required rate (e.g. 6 for "6/day"). May be null for some goal types.
+  rate: number | null;
+  // Rate units: "d" = day, "w" = week, "m" = month, "y" = year.
+  runits: string;
+  // Goal units (e.g. "hours", "sessions", "$").
+  gunits: string;
+  goalType: string;
+  url: string;
+};
+
 export type MetricEntry = {
   slug: string;
   metricSlug: string;

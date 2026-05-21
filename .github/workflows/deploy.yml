@@ -5,9 +5,14 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # Daily at 7 AM UTC = midnight Mesa, Arizona (UTC-7, no DST).
-    # Rebuilds the site so scheduled episode clips auto-flip to playable
-    # the morning of their release date even without a code/content push.
+    # 06:45 UTC = 23:45 MST the previous day. The deploy:aws script does
+    # `prebuild → build → sync-beeminder.mjs → S3 sync`, so this fires
+    # right before Beeminder's 23:59 MST evaluation window — pulling
+    # FocusMate's session data from Beeminder, rebuilding /goals/ with
+    # fresh numbers, and pushing the website's view back to Beeminder.
+    - cron: "45 6 * * *"
+    # 07:00 UTC = midnight Mesa, Arizona — kept so scheduled episodes
+    # auto-flip to playable the moment their release date starts in MST.
     - cron: "0 7 * * *"
 
 concurrency:
