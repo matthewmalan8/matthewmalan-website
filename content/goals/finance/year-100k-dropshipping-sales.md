@@ -11,11 +11,6 @@ deadline: 2026-12-31
 status: active
 pinned: true
 shareTo: dropshipping
-isPledge: false
-pledgeAmount: 0
-pledgeRecipient: ""
-pledgeVideoUrl: ""
-pledgeProofImage: ""
 metricSlug: dropshipping-sales-dollars
 lastUpdated: 2026-05-20
 ---

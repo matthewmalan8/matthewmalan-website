@@ -26,12 +26,6 @@ export type Goal = {
   status: GoalStatus;
   pinned: boolean;
   shareTo: GoalShare;
-  // Pledge fields (Finance only)
-  isPledge: boolean;
-  pledgeAmount: number;
-  pledgeRecipient: string;
-  pledgeVideoUrl: string;
-  pledgeProofImage: string;
   // Optional metric link — when set, progress is summed from metric
   // entries within [startDate, deadline].
   metricSlug: string;

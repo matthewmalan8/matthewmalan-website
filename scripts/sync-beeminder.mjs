@@ -247,26 +247,26 @@ const BEEMINDER_TIMEZONE = "America/Phoenix";
 
 // The contract:
 //   Website deadline "YYYY-MM-DD" means 23:59 MST that day.
-//   Beeminder must enforce ONE FULL DAY later, at 23:59 MST.
+//   Beeminder must enforce at THE SAME MOMENT — 23:59 MST that same day.
+//   (The nightly sync runs at 23:45 MST so all data is in Beeminder
+//    14 minutes before the enforcement moment.)
 // Example:
-//   Website: 2026-05-22  →  Beeminder: 2026-05-23 23:59 MST
-//   2026-05-23 23:59 MST = 2026-05-24 06:59 UTC
+//   Website: 2026-05-22  →  Beeminder: 2026-05-22 23:59 MST
 //
-// We do this in two parts:
-//   1. `goaldate` is set to noon MST on (deadline + 1 day). That puts
-//      the timestamp squarely inside the calendar day Beeminder should
-//      enforce on, regardless of how the API rounds it. Noon MST = 19:00
-//      UTC, so Date.UTC(y, m-1, d+1, 19, 0).
+// Two parts:
+//   1. `goaldate` is set to noon MST on the website deadline day. That
+//      puts the timestamp squarely inside the right calendar day in
+//      MST (Date.UTC(y, m-1, d, 19, 0) = noon MST).
 //   2. The goal's `deadline` field is set to -60 (see beeminderCreate
-//      below), which tells Beeminder to evaluate at 23:59:00 of that
-//      day in the goal's tz — exactly 60s before midnight.
-// Together those two values mean Beeminder charges at precisely
-// 23:59 MST on (websiteDeadline + 1 day).
+//      below), which makes Beeminder evaluate at 23:59:00 of that
+//      day in the goal's timezone.
+// Together: Beeminder charges at precisely 23:59 MST on the website
+// deadline date — no buffer.
 function beeminderGoaldate(websiteDeadline) {
   if (!websiteDeadline) return null;
   const [y, m, d] = websiteDeadline.split("-").map((p) => parseInt(p, 10));
   if (!y || !m || !d) return null;
-  return Math.floor(Date.UTC(y, m - 1, d + 1, 19, 0, 0) / 1000);
+  return Math.floor(Date.UTC(y, m - 1, d, 19, 0, 0) / 1000);
 }
 
 async function beeminderGet(slug) {
@@ -328,7 +328,7 @@ async function beeminderCreate(goal) {
         })
       : "(no deadline)";
     console.log(
-      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, website-deadline=${goal.deadline}, beeminder enforces ~23:59 MST on ${enforcement})`
+      `[beeminder dry-run] Would CREATE ${goal.beeminderSlug} (title="${goal.title}", target=${goal.target} ${goal.unit}, beeminder enforces 23:59 MST on ${enforcement})`
     );
     return true;
   }
