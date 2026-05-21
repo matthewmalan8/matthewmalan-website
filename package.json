@@ -9,7 +9,7 @@
     "postbuild": "pagefind --site out --output-subdir pagefind",
     "start": "next start -p 3400",
     "lint": "next lint",
-    "deploy:aws": "pnpm build && aws s3 sync out/ s3://matthewmalan.com --delete && aws cloudfront create-invalidation --distribution-id E2RKBCXIJZTCSR --paths \"/*\""
+    "deploy:aws": "pnpm build && node scripts/sync-beeminder.mjs && aws s3 sync out/ s3://matthewmalan.com --delete && aws cloudfront create-invalidation --distribution-id E2RKBCXIJZTCSR --paths \"/*\""
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

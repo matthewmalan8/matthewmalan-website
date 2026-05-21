@@ -132,6 +132,24 @@ collections:
       - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
       - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
       - {
+          label: "Linked metric (optional)",
+          name: "metricSlug",
+          widget: "relation",
+          collection: "metrics",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+          hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
+      - {
+          label: "Beeminder slug (optional)",
+          name: "beeminderSlug",
+          widget: "string",
+          required: false,
+          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+        }
+      - {
           label: "Last updated",
           name: "lastUpdated",
           widget: "datetime",
@@ -196,6 +214,13 @@ collections:
           display_fields: ["name"],
           required: false,
           hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
+      - {
+          label: "Beeminder slug (optional)",
+          name: "beeminderSlug",
+          widget: "string",
+          required: false,
+          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
@@ -289,6 +314,13 @@ collections:
           required: false,
           hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
         }
+      - {
+          label: "Beeminder slug (optional)",
+          name: "beeminderSlug",
+          widget: "string",
+          required: false,
+          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
+        }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
 
@@ -360,6 +392,13 @@ collections:
           display_fields: ["name"],
           required: false,
           hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
+      - {
+          label: "Beeminder slug (optional)",
+          name: "beeminderSlug",
+          widget: "string",
+          required: false,
+          hint: "Slug of the Beeminder goal that mirrors this one. Daily sync pushes the current value as a datapoint. Tip: set the Beeminder goal's deadline to ONE DAY AFTER this goal's deadline so the 6 AM website rebuild has time to sync before Beeminder enforces.",
         }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }

@@ -35,6 +35,10 @@ export type Goal = {
   // Optional metric link — when set, progress is summed from metric
   // entries within [startDate, deadline].
   metricSlug: string;
+  // Optional Beeminder slug. When set, the daily sync workflow pushes a
+  // datapoint to https://www.beeminder.com/{username}/{slug}/ with the
+  // goal's current value. Leave empty to skip Beeminder for that goal.
+  beeminderSlug: string;
   lastUpdated: string;
 };
 
