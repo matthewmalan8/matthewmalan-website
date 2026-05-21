@@ -1,5 +1,6 @@
 import type { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import GitHubGate from "@/components/GitHubGate";
 import GoalsCalendar from "@/components/GoalsCalendar";
 import { GroupedGoalCard, SingleGoalCard } from "@/components/GoalCard";
 import {
@@ -119,10 +120,12 @@ export default function GoalsPage({
   return (
     <Layout
       title="Goals"
-      description="Family, Fundamentals, Finance, Fitness — every active goal with progress, plus the daily Success calendar."
+      description="Private goals dashboard."
       path="/goals/"
       ogImage="/og/home.png"
+      noIndex
     >
+      <GitHubGate>
       {/* Hero */}
       <section className="bg-[var(--color-off-white)] text-[var(--color-black)]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-12 lg:pt-28 lg:pb-16">
@@ -242,6 +245,7 @@ export default function GoalsPage({
       )}
 
       <div className="pb-16" />
+      </GitHubGate>
     </Layout>
   );
 }

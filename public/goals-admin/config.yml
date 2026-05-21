@@ -46,6 +46,7 @@ collections:
           required: false,
           options: ["week", "quarter", "year", "custom"],
           default: "week",
+          hint: "Current week: Week 20 of 2026 (May 17–May 23 · 2026-05-17 → 2026-05-23). Current quarter: Q2 2026 (Apr 1–Jun 30 · 2026-04-01 → 2026-06-30). Current year: Year 2026 (2026-01-01 → 2026-12-31).", # AUTO-TIMEFRAME-HINT
         }
       - {
           label: "Group key (optional)",
@@ -180,6 +181,7 @@ collections:
           required: false,
           options: ["week", "quarter", "year", "custom"],
           default: "week",
+          hint: "Current week: Week 20 of 2026 (May 17–May 23 · 2026-05-17 → 2026-05-23). Current quarter: Q2 2026 (Apr 1–Jun 30 · 2026-04-01 → 2026-06-30). Current year: Year 2026 (2026-01-01 → 2026-12-31).", # AUTO-TIMEFRAME-HINT
         }
       - { label: "Group key (optional)", name: "group", widget: "string", required: false }
       - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
@@ -213,6 +215,17 @@ collections:
       - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
       - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
       - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
+      - {
+          label: "Linked metric (optional)",
+          name: "metricSlug",
+          widget: "relation",
+          collection: "metrics",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+          hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
 
@@ -237,6 +250,7 @@ collections:
           required: false,
           options: ["week", "quarter", "year", "custom"],
           default: "week",
+          hint: "Current week: Week 20 of 2026 (May 17–May 23 · 2026-05-17 → 2026-05-23). Current quarter: Q2 2026 (Apr 1–Jun 30 · 2026-04-01 → 2026-06-30). Current year: Year 2026 (2026-01-01 → 2026-12-31).", # AUTO-TIMEFRAME-HINT
         }
       - { label: "Group key (optional)", name: "group", widget: "string", required: false }
       - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
@@ -304,6 +318,17 @@ collections:
           required: false,
           hint: "If you failed and paid the pledge, drop the screenshot here.",
         }
+      - {
+          label: "Linked metric (optional)",
+          name: "metricSlug",
+          widget: "relation",
+          collection: "metrics",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+          hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
 
@@ -328,6 +353,7 @@ collections:
           required: false,
           options: ["week", "quarter", "year", "custom"],
           default: "week",
+          hint: "Current week: Week 20 of 2026 (May 17–May 23 · 2026-05-17 → 2026-05-23). Current quarter: Q2 2026 (Apr 1–Jun 30 · 2026-04-01 → 2026-06-30). Current year: Year 2026 (2026-01-01 → 2026-12-31).", # AUTO-TIMEFRAME-HINT
         }
       - { label: "Group key (optional)", name: "group", widget: "string", required: false }
       - { label: "Target", name: "target", widget: "number", value_type: "float", required: false, default: 1 }
@@ -375,6 +401,17 @@ collections:
       - { label: "Pledge recipient", name: "pledgeRecipient", widget: "hidden", default: "" }
       - { label: "Pledge video URL", name: "pledgeVideoUrl", widget: "hidden", default: "" }
       - { label: "Pledge proof image", name: "pledgeProofImage", widget: "hidden", default: "" }
+      - {
+          label: "Linked metric (optional)",
+          name: "metricSlug",
+          widget: "relation",
+          collection: "metrics",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+          hint: "Link to a metric to auto-compute progress from logged entries. Leave blank to enter Current manually.",
+        }
       - { label: "Last updated", name: "lastUpdated", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - { label: "Notes", name: "body", widget: "markdown", required: false }
 
@@ -403,4 +440,90 @@ collections:
           widget: "markdown",
           required: false,
           hint: "Anything else — phone, preferred format, etc.",
+        }
+
+  # ---- Metrics (definitions) --------------------------------------------
+  # A metric is anything you want to count over time — sales, gym visits,
+  # church attendance, sign-ups, hours, podcast uploads, anything. You
+  # define one here, then link goals to it on the goal form and log
+  # entries in the "Metric Entries" collection.
+  - name: "metrics"
+    label: "Metrics"
+    label_singular: "Metric"
+    folder: "content/goals/metrics"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{name}} ({{unit}})"
+    fields:
+      - {
+          label: "Name",
+          name: "name",
+          widget: "string",
+          hint: "Whatever you want to call it — 'Gym visits', 'Sales made', 'Church attendance', etc.",
+        }
+      - {
+          label: "Unit",
+          name: "unit",
+          widget: "string",
+          required: false,
+          hint: "Optional — display label like 'visits', 'sales', '$', 'hours'.",
+        }
+      - {
+          label: "Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Anything that helps you remember what counts toward this metric.",
+        }
+
+  # ---- Metric Entries (data points) ------------------------------------
+  # Log a single occurrence here. Pick the metric and the value (e.g.
+  # 1 gym visit, 250 in sales). Every active goal linked to the same
+  # metric whose date range includes this entry auto-updates its
+  # progress on the next site build.
+  - name: "metric-entries"
+    label: "Metric Entries"
+    label_singular: "Entry"
+    folder: "content/goals/metric-entries"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{metric}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} · {{metric}} +{{value}}"
+    sortable_fields: ["date", "metric"]
+    fields:
+      - {
+          label: "Metric",
+          name: "metric",
+          widget: "relation",
+          collection: "metrics",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          hint: "Which metric does this entry count toward?",
+        }
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - {
+          label: "Value",
+          name: "value",
+          widget: "number",
+          value_type: "float",
+          default: 1,
+          hint: "Amount to add. Use 1 for a single occurrence (gym visit, podcast upload), or a number for measurable metrics ($250 in sales).",
+        }
+      - {
+          label: "Note",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Optional — context for this entry.",
         }

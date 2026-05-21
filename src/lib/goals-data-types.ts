@@ -16,6 +16,9 @@ export type Goal = {
   // are surfaced together on the /goals/ page as a single grouped KPI.
   group: string;
   target: number;
+  // `current` is the manually entered fallback. If `metricSlug` is set and
+  // entries exist within [startDate, deadline], the computed metric total
+  // overrides this value at load time.
   current: number;
   unit: string;
   startDate: string;
@@ -32,7 +35,25 @@ export type Goal = {
   pledgeRecipient: string;
   pledgeVideoUrl: string;
   pledgeProofImage: string;
+  // Optional metric link — when set, progress is summed from metric
+  // entries within [startDate, deadline].
+  metricSlug: string;
   lastUpdated: string;
+};
+
+export type Metric = {
+  slug: string;
+  name: string;
+  unit: string;
+  description: string;
+};
+
+export type MetricEntry = {
+  slug: string;
+  metricSlug: string;
+  date: string; // YYYY-MM-DD
+  value: number;
+  note: string;
 };
 
 export type AccountabilityBuddy = {
