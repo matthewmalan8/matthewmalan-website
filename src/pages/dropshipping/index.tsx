@@ -30,8 +30,17 @@ import {
   type Screenshot,
   type Streak,
 } from "@/lib/dropshipping-utils";
-import { getAllGoals } from "@/lib/goals-data";
-import type { Goal } from "@/lib/goals-data-types";
+import {
+  getAllGoals,
+  getAllPledgeProofs,
+  getPledgeHistory,
+} from "@/lib/goals-data";
+import type {
+  Goal,
+  PledgeEvaluation,
+  PledgeProof,
+} from "@/lib/goals-data-types";
+import SharedPledgeSection from "@/components/SharedPledgeSection";
 
 type Props = {
   logs: DailyLog[];
@@ -39,6 +48,8 @@ type Props = {
   failures: Failure[];
   sharedGoals: Goal[];
   pinnedGoal: Goal | null;
+  pledgeHistory: PledgeEvaluation[];
+  pledgeProofs: PledgeProof[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -54,6 +65,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       failures: await getFailures(),
       sharedGoals: shared.filter((g) => g !== pinned),
       pinnedGoal: pinned,
+      pledgeHistory: getPledgeHistory(),
+      pledgeProofs: getAllPledgeProofs(),
     },
   };
 };
@@ -176,6 +189,8 @@ export default function DropshippingPage({
   failures,
   sharedGoals,
   pinnedGoal,
+  pledgeHistory,
+  pledgeProofs,
 }: Props) {
   const [screenshotsView, setScreenshotsView] = useState<ViewMode>("grid");
   const [failuresView, setFailuresView] = useState<ViewMode>("grid");
@@ -238,6 +253,13 @@ export default function DropshippingPage({
           </div>
         </div>
       </section>
+
+      {/* Public pledge section — active rules + receipts + TikTok proof */}
+      <SharedPledgeSection
+        goals={pinnedGoal ? [pinnedGoal, ...sharedGoals] : sharedGoals}
+        history={pledgeHistory}
+        proofs={pledgeProofs}
+      />
 
       {/* Pinned Goal — surfaced from /goals-admin/ when shareTo=dropshipping & pinned */}
       {pinnedGoal && (

@@ -1,4 +1,67 @@
+import { useState } from "react";
 import { progressPct, type Goal, type GoalGroup } from "@/lib/goals-data-types";
+
+// "(i)" icon that opens a popup with the sub-description. Click to open,
+// click outside or the × to close.
+export function InfoPopup({
+  content,
+  inverted = false,
+}: {
+  content: string;
+  inverted?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  if (!content) return null;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="More info"
+        title="More info"
+        className={`inline-flex items-center justify-center w-5 h-5 rounded-full border text-[11px] font-bold cursor-pointer transition-colors flex-shrink-0 ${
+          inverted
+            ? "border-[var(--color-yellow)] text-[var(--color-yellow)] hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)]"
+            : "border-[var(--color-black)]/40 text-[var(--color-black)]/70 hover:border-[var(--color-black)] hover:text-[var(--color-black)]"
+        }`}
+      >
+        i
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-[var(--color-black)]/60"
+          onClick={() => setOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[var(--color-off-white)] text-[var(--color-black)] rounded-2xl max-w-md w-full p-6 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+                Details
+              </p>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="text-[var(--color-black)]/50 hover:text-[var(--color-black)] text-2xl leading-none cursor-pointer -mr-1 -mt-1"
+              >
+                ×
+              </button>
+            </div>
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--color-black)]/80">
+              {content}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 function formatNumber(n: number, unit: string): string {
   const isMoney = unit === "$" || unit === "USD";
@@ -161,11 +224,26 @@ export function SingleGoalCard({
       </div>
 
       <h3
-        className={`font-[family-name:var(--font-display)] tracking-tight ${
+        className={`font-[family-name:var(--font-display)] tracking-tight inline-flex items-center gap-2 flex-wrap ${
           isFeatured ? "text-3xl lg:text-5xl" : "text-xl lg:text-2xl"
         }`}
       >
-        {goal.title}
+        <span>{goal.title}</span>
+        {goal.subDescription && (
+          <InfoPopup content={goal.subDescription} inverted={isFeatured} />
+        )}
+        {goal.pledgeAmount > 0 && (
+          <span
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+              isFeatured
+                ? "bg-[#D64545] text-[var(--color-off-white)]"
+                : "bg-[#D64545]/15 text-[#D64545] ring-1 ring-[#D64545]/40"
+            }`}
+            title={`$${goal.pledgeAmount} pledge to ${goal.pledgeRecipient === "tiktok" ? "a random TikToker" : "charity"} if I miss this`}
+          >
+            ${goal.pledgeAmount} {goal.pledgeRecipient === "tiktok" ? "→ stranger" : "→ charity"}
+          </span>
+        )}
       </h3>
 
       <div className="mt-4 flex items-baseline gap-2 flex-wrap">

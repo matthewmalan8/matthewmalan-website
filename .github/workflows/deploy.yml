@@ -5,11 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # 06:45 UTC = 23:45 MST the previous day. The deploy:aws script does
-    # `prebuild → build → sync-beeminder.mjs → S3 sync`, so this fires
-    # right before Beeminder's 23:59 MST evaluation window — pulling
-    # FocusMate's session data from Beeminder, rebuilding /goals/ with
-    # fresh numbers, and pushing the website's view back to Beeminder.
+    # 06:45 UTC = 23:45 MST the previous day. Deploys right before
+    # midnight Mesa time so the pledge evaluator captures the day's
+    # state (counter logs + Google Tasks) and the website reflects
+    # pass/fail by 23:59 MST.
     - cron: "45 6 * * *"
     # 07:00 UTC = midnight Mesa, Arizona — kept so scheduled episodes
     # auto-flip to playable the moment their release date starts in MST.
@@ -56,6 +55,4 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_TASKS_REFRESH_TOKEN: ${{ secrets.GOOGLE_TASKS_REFRESH_TOKEN }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          BEEMINDER_USERNAME: ${{ secrets.BEEMINDER_USERNAME }}
-          BEEMINDER_AUTH_TOKEN: ${{ secrets.BEEMINDER_AUTH_TOKEN }}
         run: pnpm run deploy:aws
