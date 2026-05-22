@@ -1,11 +1,12 @@
 // Server-only loader for the categorized Goals system. Reads markdown
-// files from content/goals/<category>/*.md.
+// files from content/goals/*.
 
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import type {
-  BeeminderGoalSnapshot,
+  CounterLog,
+  DailySource,
   Goal,
   GoalCategory,
   GoalShare,
@@ -13,6 +14,9 @@ import type {
   GoalTimeframe,
   Metric,
   MetricEntry,
+  PledgeEvaluation,
+  PledgeProof,
+  PledgeRecipient,
 } from "./goals-data-types";
 import { CATEGORIES } from "./goals-data-types";
 
@@ -30,7 +34,7 @@ function asBool(v: unknown): boolean {
 }
 function normalizeDate(v: unknown): string {
   if (v instanceof Date) return v.toISOString().slice(0, 10);
-  return String(v ?? "");
+  return String(v ?? "").slice(0, 10);
 }
 
 function normalizeStatus(v: unknown): GoalStatus {
@@ -39,9 +43,17 @@ function normalizeStatus(v: unknown): GoalStatus {
   return "active";
 }
 function normalizeTimeframe(v: unknown): GoalTimeframe {
-  const s = String(v ?? "week");
-  if (s === "quarter" || s === "year" || s === "custom") return s;
-  return "week";
+  const s = String(v ?? "daily");
+  if (
+    s === "daily" ||
+    s === "quarter" ||
+    s === "year" ||
+    s === "custom" ||
+    s === "week"
+  ) {
+    return s;
+  }
+  return "daily";
 }
 function normalizeCategory(v: unknown, fallback: GoalCategory): GoalCategory {
   const s = String(v ?? "");
@@ -53,6 +65,21 @@ function normalizeShare(v: unknown): GoalShare {
   const s = String(v ?? "none");
   if (s === "dropshipping" || s === "gym") return s;
   return "none";
+}
+function normalizeRecipient(
+  v: unknown,
+  shareTo: GoalShare
+): PledgeRecipient {
+  // Hard rule: shareTo: dropshipping → tiktok (never charity)
+  if (shareTo === "dropshipping") return "tiktok";
+  const s = String(v ?? "charity");
+  if (s === "tiktok") return "tiktok";
+  return "charity";
+}
+function normalizeDailySource(v: unknown): DailySource {
+  const s = String(v ?? "counter");
+  if (s === "tasks") return "tasks";
+  return "counter";
 }
 
 export function getAllMetrics(): Metric[] {
@@ -71,7 +98,6 @@ export function getAllMetrics(): Metric[] {
         name: asString(fm.name) || slug,
         unit: asString(fm.unit),
         description: content.trim(),
-        beeminderSource: asString(fm.beeminderSource),
       });
     } catch (err) {
       console.warn(`[metrics] Failed to parse ${file}:`, err);
@@ -105,46 +131,75 @@ export function getAllMetricEntries(): MetricEntry[] {
   return out;
 }
 
-// Sum the matching metric entries within [startDate, deadline] inclusive.
-// Empty bounds default to "include everything".
-function sumEntries(
-  entries: MetricEntry[],
-  metricSlug: string,
-  startDate: string,
-  deadline: string
-): number {
-  if (!metricSlug) return 0;
-  let total = 0;
-  for (const e of entries) {
-    if (e.metricSlug !== metricSlug) continue;
-    if (startDate && e.date < startDate) continue;
-    if (deadline && e.date > deadline) continue;
-    total += e.value;
+// ----- Counter logs (manual ticks for pledge evaluation) ----------------
+
+export function getAllCounterLogs(): CounterLog[] {
+  const dir = path.join(baseDir, "counter-logs");
+  if (!fs.existsSync(dir)) return [];
+  const out: CounterLog[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const slug = file.replace(/\.md$/, "");
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data, content } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      out.push({
+        slug,
+        date: normalizeDate(fm.date),
+        counter: asString(fm.counter),
+        value: asNumber(fm.value) || 1,
+        note: content.trim(),
+      });
+    } catch (err) {
+      console.warn(`[counter-logs] Failed to parse ${file}:`, err);
+    }
   }
-  return total;
+  return out;
 }
 
-// ----- Auto-source metric entries ---------------------------------------
-// Certain metrics are computed from data the site already has (Hevy
-// workouts, dropshipping daily logs, podcast episode markdown). The
-// loader synthesizes MetricEntry[] from those sources and concatenates
-// them with the manually-logged entries before summing.
+// ----- Pledge proofs ---------------------------------------------------
+
+export function getAllPledgeProofs(): PledgeProof[] {
+  const dir = path.join(baseDir, "pledge-proofs");
+  if (!fs.existsSync(dir)) return [];
+  const out: PledgeProof[] = [];
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".md")) continue;
+    const slug = file.replace(/\.md$/, "");
+    try {
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data, content } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      out.push({
+        slug,
+        date: normalizeDate(fm.date),
+        goalSlug: asString(fm.goalSlug),
+        tiktokUsername: asString(fm.tiktokUsername),
+        tiktokAvatar: asString(fm.tiktokAvatar),
+        tiktokProfileUrl: asString(fm.tiktokProfileUrl),
+        screenshot: asString(fm.screenshot),
+        note: content.trim(),
+      });
+    } catch (err) {
+      console.warn(`[pledge-proofs] Failed to parse ${file}:`, err);
+    }
+  }
+  return out;
+}
+
+// ----- Auto-source metric entries (existing) ----------------------------
 
 function fmDate(value: unknown): string {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
-  if (typeof value === "string") {
-    // Episodes use full ISO datetimes; daily logs use YYYY-MM-DD.
-    return value.slice(0, 10);
-  }
+  if (typeof value === "string") return value.slice(0, 10);
   return "";
 }
-
 function fmNumber(value: unknown): number {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
 }
 
-// Dropshipping hours — sum hoursWorked + minutesWorked/60 per daily log.
 function autoEntriesDropshippingHours(): MetricEntry[] {
   const dir = path.join(process.cwd(), "content", "dropshipping", "daily");
   if (!fs.existsSync(dir)) return [];
@@ -173,8 +228,6 @@ function autoEntriesDropshippingHours(): MetricEntry[] {
   return out;
 }
 
-// Gym visits — one entry per unique workout date in the Hevy cache.
-// Multiple sessions on the same day still count as one visit.
 function autoEntriesGymVisits(): MetricEntry[] {
   const cachePath = path.join(
     process.cwd(),
@@ -204,7 +257,8 @@ function autoEntriesGymVisits(): MetricEntry[] {
         continue;
       }
     }
-    if (typeof w.date === "string" && w.date) uniqueDates.add(w.date.slice(0, 10));
+    if (typeof w.date === "string" && w.date)
+      uniqueDates.add(w.date.slice(0, 10));
   }
   return Array.from(uniqueDates).map((date) => ({
     slug: `auto-gym-visits-${date}`,
@@ -215,7 +269,6 @@ function autoEntriesGymVisits(): MetricEntry[] {
   }));
 }
 
-// Podcast episodes uploaded — one entry per episode markdown file.
 function autoEntriesPodcastEpisodes(): MetricEntry[] {
   const dir = path.join(process.cwd(), "content", "episodes");
   if (!fs.existsSync(dir)) return [];
@@ -242,76 +295,32 @@ function autoEntriesPodcastEpisodes(): MetricEntry[] {
   return out;
 }
 
-// Beeminder-sourced metrics — datapoints fetched from the Beeminder API
-// by scripts/fetch-beeminder-metrics.mjs and cached locally. This lets
-// us mirror data that lives on Beeminder (e.g. FocusMate sessions, since
-// FocusMate has a native Beeminder integration but no public per-user
-// API) into website metric counts.
-function autoEntriesBeeminderSourced(): MetricEntry[] {
-  const cachePath = path.join(
-    process.cwd(),
-    "content",
-    "goals",
-    "cache",
-    "beeminder-metrics.json"
-  );
-  if (!fs.existsSync(cachePath)) return [];
-  let data;
-  try {
-    data = JSON.parse(fs.readFileSync(cachePath, "utf8"));
-  } catch {
-    return [];
-  }
-  if (!data || typeof data !== "object") return [];
-  const out: MetricEntry[] = [];
-  for (const [metricSlug, datapoints] of Object.entries(data.byMetric ?? {})) {
-    if (!Array.isArray(datapoints)) continue;
-    for (const dp of datapoints) {
-      const date = typeof dp?.date === "string" ? dp.date : "";
-      const value = Number(dp?.value);
-      if (!date || !Number.isFinite(value)) continue;
-      out.push({
-        slug: `auto-bm-${metricSlug}-${dp.id ?? `${date}-${value}`}`,
-        metricSlug,
-        date,
-        value,
-        note: "",
-      });
-    }
-  }
-  return out;
-}
-
 function getAutoEntries(): MetricEntry[] {
   return [
     ...autoEntriesDropshippingHours(),
     ...autoEntriesGymVisits(),
     ...autoEntriesPodcastEpisodes(),
-    ...autoEntriesBeeminderSourced(),
   ];
 }
 
-// Returns every Beeminder goal snapshot from the latest fetch cache.
-// Used by /goals/ to render the "Money on the line" dashboard with
-// live Beeminder data (current value, pledge, next derail, rate).
-export function getBeeminderGoalSnapshots(): BeeminderGoalSnapshot[] {
-  const cachePath = path.join(
-    process.cwd(),
-    "content",
-    "goals",
-    "cache",
-    "beeminder-metrics.json"
-  );
-  if (!fs.existsSync(cachePath)) return [];
-  try {
-    const data = JSON.parse(fs.readFileSync(cachePath, "utf8"));
-    const byGoal = data?.byBeeminderGoal;
-    if (!byGoal || typeof byGoal !== "object") return [];
-    return Object.values(byGoal) as BeeminderGoalSnapshot[];
-  } catch {
-    return [];
+function sumEntries(
+  entries: MetricEntry[],
+  metricSlug: string,
+  startDate: string,
+  deadline: string
+): number {
+  if (!metricSlug) return 0;
+  let total = 0;
+  for (const e of entries) {
+    if (e.metricSlug !== metricSlug) continue;
+    if (startDate && e.date < startDate) continue;
+    if (deadline && e.date > deadline) continue;
+    total += e.value;
   }
+  return total;
 }
+
+// ----- Goal loader ------------------------------------------------------
 
 export function getAllGoals(): Goal[] {
   if (!fs.existsSync(baseDir)) return [];
@@ -334,13 +343,13 @@ export function getAllGoals(): Goal[] {
         const computedFromMetric = metricSlug
           ? sumEntries(entries, metricSlug, startDate, deadline)
           : 0;
-        // If a metric is linked, prefer the computed sum; otherwise the
-        // hand-entered `current` value.
         const current = metricSlug ? computedFromMetric : manualCurrent;
+        const shareTo = normalizeShare(fm.shareTo);
         goals.push({
           slug,
           title: asString(fm.title),
           description: content.trim(),
+          subDescription: asString(fm.subDescription),
           category: normalizeCategory(fm.category, category),
           timeframe: normalizeTimeframe(fm.timeframe),
           group: asString(fm.group),
@@ -351,10 +360,12 @@ export function getAllGoals(): Goal[] {
           deadline,
           status: normalizeStatus(fm.status),
           pinned: asBool(fm.pinned),
-          shareTo: normalizeShare(fm.shareTo),
+          shareTo,
+          pledgeAmount: asNumber(fm.pledgeAmount),
+          pledgeRecipient: normalizeRecipient(fm.pledgeRecipient, shareTo),
+          dailySource: normalizeDailySource(fm.dailySource),
+          counterSlug: asString(fm.counterSlug),
           metricSlug,
-          beeminderSlug: asString(fm.beeminderSlug),
-          beeminderPledge: asNumber(fm.beeminderPledge),
           lastUpdated: normalizeDate(fm.lastUpdated),
         });
       } catch (err) {
@@ -365,3 +376,16 @@ export function getAllGoals(): Goal[] {
   return goals;
 }
 
+// ----- Pledge history (computed at build time) -------------------------
+
+export function getPledgeHistory(): PledgeEvaluation[] {
+  const cachePath = path.join(baseDir, "cache", "pledge-history.json");
+  if (!fs.existsSync(cachePath)) return [];
+  try {
+    const data = JSON.parse(fs.readFileSync(cachePath, "utf8"));
+    if (!Array.isArray(data?.evaluations)) return [];
+    return data.evaluations as PledgeEvaluation[];
+  } catch {
+    return [];
+  }
+}
