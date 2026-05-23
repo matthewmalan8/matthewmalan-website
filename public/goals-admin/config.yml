@@ -1,0 +1,225 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/goals"
+public_folder: "/images/goals"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/goals/
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  # ---------------------------------------------------------------------
+  # Areas of Life — the top-level categories
+  # ---------------------------------------------------------------------
+  - name: "areas"
+    label: "Areas of Life"
+    label_singular: "Area"
+    folder: "content/goals/areas"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{emoji}} {{name}}"
+    sortable_fields: ["order", "name"]
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "Pick one emoji — shown next to the name everywhere." }
+      - { label: "Display order", name: "order", widget: "number", value_type: "int", default: 0, required: false, hint: "Lower = first in the Goals Progress by Category section." }
+
+  # ---------------------------------------------------------------------
+  # Goals — the things you're working on
+  # ---------------------------------------------------------------------
+  - name: "goals"
+    label: "Goals"
+    label_singular: "Goal"
+    folder: "content/goals/goals"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{emoji}} {{title}} ({{status}})"
+    sortable_fields: ["order", "title", "toCompleteBy", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false }
+      - {
+          label: "Area",
+          name: "area",
+          widget: "relation",
+          collection: "areas",
+          search_fields: ["name"],
+          value_field: "{{slug}}",
+          display_fields: ["name"],
+          required: false,
+        }
+      - {
+          label: "Type",
+          name: "type",
+          widget: "select",
+          required: false,
+          options: ["Finite", "Ongoing"],
+          default: "Finite",
+          hint: "Finite = has a clear endpoint. Ongoing = continuous habit/practice.",
+        }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["active", "completed", "archived"],
+          default: "active",
+        }
+      - { label: "To complete by", name: "toCompleteBy", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - { label: "Completion date", name: "completionDate", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false, hint: "Fill in when marking the goal completed." }
+      - {
+          label: "Vision board items (slugs)",
+          name: "visions",
+          widget: "string",
+          required: false,
+          hint: "Comma-separated vision-board slugs this goal pictures. e.g. my-dream-home, family-vacation",
+        }
+      - { label: "Display order", name: "order", widget: "number", value_type: "int", default: 0, required: false }
+      - {
+          label: "Before / After Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Use ## Before and ## After (or any headings you like) to organize lessons learned, what changed, what's next.",
+        }
+
+  # ---------------------------------------------------------------------
+  # Key Results — measurable sub-targets that roll up to a Goal
+  # ---------------------------------------------------------------------
+  - name: "key-results"
+    label: "Key Results"
+    label_singular: "Key Result"
+    folder: "content/goals/key-results"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{emoji}} {{title}} — {{current}}/{{target}}"
+    sortable_fields: ["toCompleteBy", "title"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false }
+      - {
+          label: "Parent goal",
+          name: "goal",
+          widget: "relation",
+          collection: "goals",
+          search_fields: ["title"],
+          value_field: "{{slug}}",
+          display_fields: ["title"],
+        }
+      - { label: "Target", name: "target", widget: "number", value_type: "float", default: 1 }
+      - { label: "Current", name: "current", widget: "number", value_type: "float", default: 0, hint: "Manually-entered value. Overridden when Toggl mapping below is set." }
+      - { label: "Unit", name: "unit", widget: "string", required: false, hint: "e.g. events, hours, books, songs" }
+      - { label: "To complete by", name: "toCompleteBy", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
+      - {
+          label: "Toggl project ID (optional)",
+          name: "togglProjectId",
+          widget: "number",
+          value_type: "int",
+          default: 0,
+          required: false,
+          hint: "When set, the daily Toggl sync sums entries from this project and uses that as `current`.",
+        }
+      - {
+          label: "Toggl tag (optional)",
+          name: "togglTag",
+          widget: "string",
+          required: false,
+          hint: "Filter by tag. Use with or instead of project ID.",
+        }
+      - {
+          label: "Toggl divisor (seconds → unit)",
+          name: "togglDivisor",
+          widget: "number",
+          value_type: "int",
+          default: 3600,
+          required: false,
+          hint: "3600 = hours (default). 60 = minutes. 1 = seconds. For 'count' goals (10 events), set to 1 and use entry count instead — ask Claude to wire that.",
+        }
+
+  # ---------------------------------------------------------------------
+  # Action Items — discrete to-dos
+  # ---------------------------------------------------------------------
+  - name: "action-items"
+    label: "Action Items"
+    label_singular: "Action Item"
+    folder: "content/goals/action-items"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} ({{status}})"
+    sortable_fields: ["order", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          required: false,
+          options: ["todo", "done"],
+          default: "todo",
+        }
+      - {
+          label: "Parent goal (optional)",
+          name: "goal",
+          widget: "relation",
+          collection: "goals",
+          search_fields: ["title"],
+          value_field: "{{slug}}",
+          display_fields: ["title"],
+          required: false,
+        }
+      - {
+          label: "Parent key result (optional)",
+          name: "keyResult",
+          widget: "relation",
+          collection: "key-results",
+          search_fields: ["title"],
+          value_field: "{{slug}}",
+          display_fields: ["title"],
+          required: false,
+        }
+      - { label: "Display order", name: "order", widget: "number", value_type: "int", default: 0, required: false }
+
+  # ---------------------------------------------------------------------
+  # Vision Board
+  # ---------------------------------------------------------------------
+  - name: "vision-board"
+    label: "Vision Board"
+    label_singular: "Vision Board Item"
+    folder: "content/goals/vision-board"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{emoji}} {{title}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Image alt text", name: "imageAlt", widget: "string", required: false }
+      - {
+          label: "Associated areas (slugs, comma-separated)",
+          name: "associatedAreas",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Associated goals (slugs, comma-separated)",
+          name: "associatedGoals",
+          widget: "string",
+          required: false,
+        }
