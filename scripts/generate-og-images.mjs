@@ -71,12 +71,6 @@ const pages = [
     subtitle: "Live training data straight from the gym floor.",
   },
   {
-    slug: "dropshipping",
-    kicker: "Building in public",
-    title: "$0 → $100k. Daily updates.",
-    subtitle: "Wins, failures, screenshots. No filter.",
-  },
-  {
     slug: "speaking",
     kicker: "Speaking",
     title: "Book Matthew for your next event.",

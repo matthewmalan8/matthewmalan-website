@@ -38,9 +38,6 @@ import {
   type TimeRange,
   type WorkoutPrMap,
 } from "@/lib/gym-utils";
-import { getAllGoals } from "@/lib/goals-data";
-import type { Goal } from "@/lib/goals-data-types";
-import { SingleGoalCard } from "@/components/GoalCard";
 
 type PinnedExercise = {
   template: ExerciseTemplate;
@@ -55,8 +52,6 @@ type Props = {
   pinnedExercises: PinnedExercise[];
   prDates: string[];
   workoutPrInfo: WorkoutPrMap;
-  sharedGoals: Goal[];
-  pinnedGoal: Goal | null;
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -76,11 +71,6 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   });
   const prDates = Array.from(getPrDates(workouts));
   const workoutPrInfo = getWorkoutPrInfo(workouts);
-  const allGoals = getAllGoals();
-  const shared = allGoals.filter(
-    (g) => g.shareTo === "gym" && g.status !== "archived"
-  );
-  const pinnedGoal = shared.find((g) => g.pinned) ?? null;
   return {
     props: {
       workouts,
@@ -88,8 +78,6 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       pinnedExercises,
       prDates,
       workoutPrInfo,
-      sharedGoals: shared.filter((g) => g !== pinnedGoal),
-      pinnedGoal,
     },
   };
 };
@@ -100,8 +88,6 @@ export default function GymPage({
   pinnedExercises,
   prDates,
   workoutPrInfo,
-  sharedGoals,
-  pinnedGoal,
 }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [search, setSearch] = useState("");
@@ -202,13 +188,6 @@ export default function GymPage({
         </section>
       ) : (
         <>
-          {/* Pinned fitness goal */}
-          {pinnedGoal && (
-            <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
-              <SingleGoalCard goal={pinnedGoal} featured publicView />
-            </section>
-          )}
-
           {/* Pinned exercises */}
           {pinnedExercises.length > 0 && (
             <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
@@ -241,22 +220,6 @@ export default function GymPage({
                     </li>
                   )
                 )}
-              </ul>
-            </section>
-          )}
-
-          {/* Shared fitness goals */}
-          {sharedGoals.length > 0 && (
-            <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-12">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60 mb-4">
-                Goals
-              </h2>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {sharedGoals.map((g) => (
-                  <li key={g.slug}>
-                    <SingleGoalCard goal={g} publicView />
-                  </li>
-                ))}
               </ul>
             </section>
           )}

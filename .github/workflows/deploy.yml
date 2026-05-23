@@ -5,13 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # 06:45 UTC = 23:45 MST the previous day. Deploys right before
-    # midnight Mesa time so the pledge evaluator captures the day's
-    # state (counter logs + Google Tasks) and the website reflects
-    # pass/fail by 23:59 MST.
-    - cron: "45 6 * * *"
-    # 07:00 UTC = midnight Mesa, Arizona — kept so scheduled episodes
-    # auto-flip to playable the moment their release date starts in MST.
+    # Daily at 7 AM UTC = midnight Mesa, Arizona (UTC-7, no DST).
+    # Rebuilds the site so scheduled episode clips auto-flip to playable
+    # the morning of their release date even without a code/content push.
     - cron: "0 7 * * *"
 
 concurrency:
@@ -51,8 +47,5 @@ jobs:
       - name: Build + deploy to S3 + invalidate CloudFront
         env:
           HEVY_API_KEY: ${{ secrets.HEVY_API_KEY }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          GOOGLE_TASKS_REFRESH_TOKEN: ${{ secrets.GOOGLE_TASKS_REFRESH_TOKEN }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: pnpm run deploy:aws
