@@ -344,48 +344,78 @@ function VisionBoardSection({
     <section>
       <SectionHeader icon="✨" label="Vision Board" title="Vision Board" />
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {items.map((v) => (
-          <li
-            key={v.slug}
-            className="bg-[var(--color-off-white)] ring-1 ring-[var(--color-warm-gray)]/60 rounded-lg overflow-hidden"
-          >
-            {v.image && (
-              <div className="aspect-[4/3] bg-[var(--color-warm-gray)]/30 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={v.image}
-                  alt={v.imageAlt || v.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+        {items.map((v) => {
+          // First associated goal — if any — becomes the click-through target
+          // so people can jump from the picture to the full goal page.
+          const targetGoalSlug = v.associatedGoals.find((slug) =>
+            goalBySlug.has(slug)
+          );
+          const inner = (
+            <>
+              {v.image && (
+                <div className="aspect-[4/3] bg-[var(--color-warm-gray)]/30 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={v.image}
+                    alt={v.imageAlt || v.title}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="p-4">
+                <p className="font-semibold text-[var(--color-black)] inline-flex items-center gap-2">
+                  <span aria-hidden="true">{v.emoji}</span>
+                  <span>{v.title}</span>
+                </p>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--color-black)]/70">
+                  {v.associatedGoals.map((slug) => {
+                    const g = goalBySlug.get(slug);
+                    return g ? (
+                      <span
+                        key={slug}
+                        className="inline-flex items-center gap-1"
+                      >
+                        <span aria-hidden="true">{g.emoji}</span> {g.title}
+                      </span>
+                    ) : null;
+                  })}
+                  {v.associatedAreas.map((slug) => {
+                    const a = areaBySlug.get(slug);
+                    return a ? (
+                      <span
+                        key={slug}
+                        className="inline-flex items-center gap-1"
+                      >
+                        <span aria-hidden="true">{a.emoji}</span> {a.name}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
               </div>
-            )}
-            <div className="p-4">
-              <p className="font-semibold text-[var(--color-black)] inline-flex items-center gap-2">
-                <span aria-hidden="true">{v.emoji}</span>
-                <span>{v.title}</span>
-              </p>
-              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--color-black)]/70">
-                {v.associatedGoals.map((slug) => {
-                  const g = goalBySlug.get(slug);
-                  return g ? (
-                    <span key={slug} className="inline-flex items-center gap-1">
-                      <span aria-hidden="true">{g.emoji}</span> {g.title}
-                    </span>
-                  ) : null;
-                })}
-                {v.associatedAreas.map((slug) => {
-                  const a = areaBySlug.get(slug);
-                  return a ? (
-                    <span key={slug} className="inline-flex items-center gap-1">
-                      <span aria-hidden="true">{a.emoji}</span> {a.name}
-                    </span>
-                  ) : null;
-                })}
-              </div>
-            </div>
-          </li>
-        ))}
+            </>
+          );
+          return (
+            <li
+              key={v.slug}
+              className="bg-[var(--color-off-white)] ring-1 ring-[var(--color-warm-gray)]/60 rounded-lg overflow-hidden"
+            >
+              {targetGoalSlug ? (
+                <Link
+                  href={`/goals/${targetGoalSlug}/`}
+                  className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-yellow)]"
+                  aria-label={`Open goal: ${
+                    goalBySlug.get(targetGoalSlug)?.title ?? targetGoalSlug
+                  }`}
+                >
+                  {inner}
+                </Link>
+              ) : (
+                inner
+              )}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
