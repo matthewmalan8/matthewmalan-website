@@ -85,11 +85,15 @@ function loadTogglOverlay(): TogglOverlay {
 
 function togglMatchedSeconds(
   overlay: TogglOverlay,
+  projectName: string,
   projectId: number,
   tag: string
 ): number {
-  const key = `proj:${projectId || 0}|tag:${tag || ""}`;
-  return overlay[key] ?? 0;
+  // Project name wins when set (friendlier to maintain).
+  if (projectName) {
+    return overlay[`projName:${projectName}|tag:${tag || ""}`] ?? 0;
+  }
+  return overlay[`proj:${projectId || 0}|tag:${tag || ""}`] ?? 0;
 }
 
 // ---- Areas ------------------------------------------------------------
@@ -112,11 +116,17 @@ export function getAllKeyResults(): KeyResult[] {
   return readMarkdownDir(path.join(baseDir, "key-results")).map(
     ({ slug, data }) => {
       const togglProjectId = asNumber(data.togglProjectId);
+      const togglProjectName = asString(data.togglProjectName);
       const togglTag = asString(data.togglTag);
       const togglDivisor = asNumber(data.togglDivisor) || 3600;
       let current = asNumber(data.current);
-      if (togglProjectId > 0 || togglTag) {
-        const seconds = togglMatchedSeconds(overlay, togglProjectId, togglTag);
+      if (togglProjectId > 0 || togglProjectName || togglTag) {
+        const seconds = togglMatchedSeconds(
+          overlay,
+          togglProjectName,
+          togglProjectId,
+          togglTag
+        );
         if (seconds > 0) {
           current = Math.round((seconds / togglDivisor) * 100) / 100;
         }
@@ -137,6 +147,7 @@ export function getAllKeyResults(): KeyResult[] {
             ? "completed"
             : "in-progress",
         togglProjectId,
+        togglProjectName,
         togglTag,
         togglDivisor,
       };

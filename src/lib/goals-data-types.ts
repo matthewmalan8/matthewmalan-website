@@ -52,9 +52,12 @@ export type KeyResult = {
   unit: string;
   toCompleteBy: string;
   status: "in-progress" | "completed";
-  // Optional Toggl Track mapping. When either is set, the prebuild
+  // Optional Toggl Track mapping. When any is set, the prebuild
   // script pulls matching time entries and overrides `current`.
-  togglProjectId: number; // 0 = unset
+  // Project name is the friendly path — just write "Ecommerce" and
+  // the build resolves it to the right project ID.
+  togglProjectName: string;
+  togglProjectId: number; // 0 = unset; project name preferred when both set
   togglTag: string;
   // Conversion from raw Toggl seconds → unit. Default 3600 (hours).
   togglDivisor: number;

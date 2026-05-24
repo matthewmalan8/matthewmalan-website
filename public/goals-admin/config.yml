@@ -124,20 +124,27 @@ collections:
       - { label: "Unit", name: "unit", widget: "string", required: false, hint: "e.g. events, hours, books, songs" }
       - { label: "To complete by", name: "toCompleteBy", widget: "datetime", required: false, date_format: "YYYY-MM-DD", time_format: false, picker_utc: false }
       - {
+          label: "Toggl project NAME (preferred)",
+          name: "togglProjectName",
+          widget: "string",
+          required: false,
+          hint: "Just type the project name exactly as it appears in Toggl (e.g. 'Ecommerce'). Wins over project ID when both are set.",
+        }
+      - {
           label: "Toggl project ID (optional)",
           name: "togglProjectId",
           widget: "number",
           value_type: "int",
           default: 0,
           required: false,
-          hint: "When set, the daily Toggl sync sums entries from this project and uses that as `current`.",
+          hint: "Numeric Toggl project ID. Only needed if project name isn't unique or you prefer ID-based matching.",
         }
       - {
           label: "Toggl tag (optional)",
           name: "togglTag",
           widget: "string",
           required: false,
-          hint: "Filter by tag. Use with or instead of project ID.",
+          hint: "Filter by tag. Use alone or combined with a project.",
         }
       - {
           label: "Toggl divisor (seconds → unit)",

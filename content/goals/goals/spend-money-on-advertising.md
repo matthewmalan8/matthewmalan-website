@@ -1,11 +1,11 @@
 ---
-title: Get Promotion
-emoji: 📈
+title: Spend money on advertising
+emoji: 📣
 area: career
 type: Finite
 status: active
-toCompleteBy: 2026-12-31
+toCompleteBy: 2026-05-30
 completionDate: ""
 visions: ""
-order: 9
+order: 1
 ---

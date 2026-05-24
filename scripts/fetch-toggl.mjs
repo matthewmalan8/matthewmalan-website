@@ -61,18 +61,33 @@ async function tg(url) {
 }
 
 try {
-  // v9 endpoint: /me/time_entries supports start_date + end_date.
+  // 1. Project list — gives us projectId → projectName so we can also
+  //    bucket entries under their project NAME (the friendly key the
+  //    loader prefers).
+  const projectList = await tg(
+    "https://api.track.toggl.com/api/v9/me/projects"
+  );
+  const projectNameById = new Map();
+  if (Array.isArray(projectList)) {
+    for (const p of projectList) {
+      if (p?.id && p?.name) projectNameById.set(Number(p.id), String(p.name));
+    }
+  }
+
+  // 2. Time entries (last `since` → `until`).
   const url = `https://api.track.toggl.com/api/v9/me/time_entries?start_date=${since}&end_date=${until}`;
   const entries = await tg(url);
   if (!Array.isArray(entries)) {
     throw new Error("Time entries response wasn't an array.");
   }
 
-  // Bucket by (project, tag). One entry contributes to:
-  //   `proj:{project_id}|tag:` (project alone, no tag filter)
-  //   `proj:0|tag:{tagname}` (tag alone, any project)
-  //   `proj:{project_id}|tag:{tagname}` (combined match)
-  // The loader picks whichever combo a KR specifies.
+  // 3. Bucket. A single entry contributes to ALL of these keys so the
+  // loader can pick whichever combo a KR specifies:
+  //   proj:{id}|tag:               (project alone)
+  //   projName:{name}|tag:         (project name alone — friendlier)
+  //   proj:0|tag:{name}            (tag alone, any project)
+  //   proj:{id}|tag:{name}         (project + tag)
+  //   projName:{name}|tag:{name}   (project name + tag)
   const byKey = {};
   function bump(key, seconds) {
     byKey[key] = (byKey[key] ?? 0) + seconds;
@@ -83,18 +98,20 @@ try {
     const seconds = Number(e?.duration);
     if (!Number.isFinite(seconds) || seconds <= 0) continue; // running timer = negative
     const projectId = Number(e?.project_id ?? e?.pid ?? 0) || 0;
+    const projectName = projectId ? projectNameById.get(projectId) || "" : "";
     const tags = Array.isArray(e?.tags) ? e.tags : [];
     total += seconds;
-    // Bucket project alone (no tag).
+
     if (projectId > 0) {
       bump(`proj:${projectId}|tag:`, seconds);
     }
-    // For every tag on the entry, bucket tag-alone + combined.
+    if (projectName) {
+      bump(`projName:${projectName}|tag:`, seconds);
+    }
     for (const tag of tags) {
       bump(`proj:0|tag:${tag}`, seconds);
-      if (projectId > 0) {
-        bump(`proj:${projectId}|tag:${tag}`, seconds);
-      }
+      if (projectId > 0) bump(`proj:${projectId}|tag:${tag}`, seconds);
+      if (projectName) bump(`projName:${projectName}|tag:${tag}`, seconds);
     }
   }
 

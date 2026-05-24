@@ -39,8 +39,14 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   if (!goal) return { notFound: true };
   const areas = getAllAreas();
   const krs = getAllKeyResults().filter((k) => k.goalSlug === slug);
-  const visionItems = getAllVisionBoard().filter((v) =>
-    goal.visionSlugs.includes(v.slug)
+  // Visions associated with this goal come from BOTH directions:
+  //   1. The goal lists the vision slug (legacy `visions:` field), OR
+  //   2. The vision lists THIS goal slug (preferred — set in /goals-admin).
+  // Either side is enough so editors don't have to remember to mirror it.
+  const allVisions = getAllVisionBoard();
+  const visionItems = allVisions.filter(
+    (v) =>
+      goal.visionSlugs.includes(v.slug) || v.associatedGoals.includes(slug)
   );
   return {
     props: {
@@ -174,17 +180,52 @@ export default function GoalDetail({
                 <span className="text-[var(--color-black)]/40">—</span>
               ) : (
                 visions.map((v) => (
-                  <span
+                  <a
                     key={v.slug}
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--color-warm-gray)]/30 text-xs"
+                    href={`#vision-${v.slug}`}
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--color-warm-gray)]/30 hover:bg-[var(--color-warm-gray)]/60 text-xs"
                   >
                     <span aria-hidden="true">{v.emoji}</span>
                     <span>{v.title}</span>
-                  </span>
+                  </a>
                 ))
               )}
             </dd>
           </dl>
+
+          {/* Visuals gallery — pictures associated with this goal */}
+          {visions.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-xl font-semibold mb-4">Visuals</h2>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {visions.map((v) => (
+                  <li
+                    key={v.slug}
+                    id={`vision-${v.slug}`}
+                    className="bg-[var(--color-off-white)] ring-1 ring-[var(--color-warm-gray)]/60 rounded-lg overflow-hidden scroll-mt-20"
+                  >
+                    {v.image && (
+                      <div className="aspect-[4/3] bg-[var(--color-warm-gray)]/30 overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={v.image}
+                          alt={v.imageAlt || v.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="font-semibold text-sm text-[var(--color-black)] inline-flex items-center gap-2">
+                        <span aria-hidden="true">{v.emoji}</span>
+                        <span>{v.title}</span>
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* Key Results detail */}
           {keyResults.length > 0 && (
