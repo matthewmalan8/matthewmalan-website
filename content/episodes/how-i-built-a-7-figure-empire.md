@@ -61,7 +61,7 @@ book:
   title: "The Land Business: Timeless Principles for Building a Scalable Land
     Business"
   description: |-
-    This Book Shows You How to Make More Money From Every Deal
+    This Book Shows You How to Make More Money From Every Deal.
 
     If you have a land business, this will help you close more deals.
 
@@ -73,17 +73,17 @@ book:
 
     You’ll Learn How to…
 
-    Turn one property into multiple offers and more revenue
+    Turn one property into multiple offers and more revenue.
 
-    Make buyers feel safe enough to say yes
+    Make buyers feel safe enough to say yes.
 
-    Sell without being pushy or salesy
+    Sell without being pushy or salesy.
 
-    Increase your customer lifetime value
+    Increase your customer lifetime value.
 
-    Use simple frameworks to close faster and more consistently
+    Use simple frameworks to close faster and more consistently.
 
-    Build goodwill so customers come back and refer others
+    Build goodwill so customers come back and refer others.
 ---
 # **Key takeaways**
 
