@@ -15,10 +15,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-// Both accounts belong to Matt — matthewmalan8 owns the repo,
-// mattmalan6 is the everyday personal account.
-const ALLOWED_LOGINS = ["matthewmalan8", "mattmalan6"] as const;
-const ALLOWED_LIST_DISPLAY = ALLOWED_LOGINS.join(" or ");
+const ALLOWED_LOGIN = "matthewmalan8";
 const OAUTH_URL = "https://decap-oauth.mattasu6.workers.dev/auth";
 const STORAGE_KEY = "matthewmalan-goals-token";
 const LOGIN_KEY = "matthewmalan-goals-login";
@@ -72,14 +69,14 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
     }
     fetchLogin(stored).then((login) => {
       if (cancelled) return;
-      if (login && (ALLOWED_LOGINS as readonly string[]).includes(login)) {
+      if (login && login === ALLOWED_LOGIN) {
         setState({ kind: "signed-in", login });
       } else {
         clearStored();
         setState({
           kind: "signed-out",
           error: login
-            ? `Signed in as ${login}, but this page is restricted to ${ALLOWED_LIST_DISPLAY}.`
+            ? `Signed in as ${login}, but this page is restricted to ${ALLOWED_LOGIN}.`
             : "Saved login expired. Please sign in again.",
         });
       }
@@ -126,7 +123,7 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
             // ignore
           }
           fetchLogin(token).then((login) => {
-            if (login && (ALLOWED_LOGINS as readonly string[]).includes(login)) {
+            if (login && login === ALLOWED_LOGIN) {
               try {
                 localStorage.setItem(LOGIN_KEY, login);
               } catch {
@@ -139,7 +136,7 @@ export default function GitHubGate({ children }: { children: ReactNode }) {
               setState({
                 kind: "signed-out",
                 error: login
-                  ? `Signed in as ${login}, but this page is restricted to ${ALLOWED_LIST_DISPLAY}.`
+                  ? `Signed in as ${login}, but this page is restricted to ${ALLOWED_LOGIN}.`
                   : "Sign-in succeeded but GitHub didn't return a user. Try again.",
               });
             }
