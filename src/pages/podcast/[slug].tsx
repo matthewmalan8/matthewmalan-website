@@ -483,7 +483,7 @@ export default function EpisodePage({ episode, related }: Props) {
                         href={episode.book.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-7 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors"
+                        className="mt-7 inline-flex items-center bg-[var(--color-black)] text-[var(--color-yellow)] px-6 py-3 text-sm font-semibold rounded-full hover:bg-[#3a342b] transition-colors"
                       >
                         Get the book →
                       </a>
