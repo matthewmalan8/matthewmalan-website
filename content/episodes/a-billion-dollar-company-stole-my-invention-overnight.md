@@ -6,7 +6,7 @@ featured: false
 image: /images/episodes/screenshot-2026-06-01-124931.png
 imageAlt: Amanda Sima
 excerpt: "Building a company is hard. Watching a billion-dollar corporation copy
-  it overnight is harder. In this episode, Matthew sits down with Amanda Sima —
+  it overnight is harder. In this episode, Matthew sits down with Amanda Sima -
   a serial entrepreneur who scaled a collegiate apparel brand to tens of
   thousands of SKUs, exited after 12 years, then invented a spill-proof kids'
   cup lid she believed was a billion-dollar idea. Then it got into the wrong
