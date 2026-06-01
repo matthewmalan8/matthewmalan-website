@@ -1,5 +1,5 @@
 ---
-title: 80% of AI Projects Are Failing. Here's Why | Ryan Drumheller
+title: 80% of AI Projects Are Failing. Here's Why
 date: 2026-05-21T14:48:00.000-07:00
 episodeNumber: 10
 featured: false
