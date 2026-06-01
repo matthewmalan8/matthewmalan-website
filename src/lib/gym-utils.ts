@@ -1,3 +1,5 @@
+import { formatLocalDate } from "./date-utils";
+
 export type GymSet = {
   type: string;
   weightKg: number | null;
@@ -70,8 +72,7 @@ export function formatDuration(seconds: number): string {
 }
 
 export function formatLongDate(date: string): string {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
+  return formatLocalDate(date, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -79,8 +80,7 @@ export function formatLongDate(date: string): string {
 }
 
 export function formatShortDate(date: string): string {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
+  return formatLocalDate(date, {
     month: "short",
     day: "numeric",
     year: "numeric",
