@@ -19,6 +19,7 @@ import {
   type KeyResult,
   type VisionBoardItem,
 } from "@/lib/goals-data-types";
+import { formatLocalDate } from "@/lib/date-utils";
 
 type Props = {
   areas: Area[];
@@ -41,9 +42,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 function formatLongDate(iso: string): string {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-").map((p) => parseInt(p, 10));
-  return new Date(y, m - 1, d, 12).toLocaleDateString("en-US", {
+  return formatLocalDate(iso, {
     month: "long",
     day: "numeric",
     year: "numeric",

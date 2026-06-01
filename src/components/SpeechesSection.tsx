@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Speech } from "@/lib/speeches";
+import { formatLocalDate } from "@/lib/date-utils";
 
 const PLAYLIST_URL =
   "https://www.youtube.com/playlist?list=PL1wWJyVcgZeUrQCKpjyEH7oggv8OMH47y";
@@ -8,9 +9,7 @@ type Mode = "normal" | "compact";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", {
+  return formatLocalDate(iso, {
     month: "short",
     day: "numeric",
     year: "numeric",

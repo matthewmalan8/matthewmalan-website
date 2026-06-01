@@ -1,3 +1,5 @@
+import { formatLocalDate } from "./date-utils";
+
 export type ReadingMeta = { date: string; videoUrl: string };
 export type Reading = {
   date: string;
@@ -84,8 +86,7 @@ export function sortBooks(books: BookMeta[], by: BookSort): BookMeta[] {
 }
 
 export function formatReadOn(date: string): string {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
+  return formatLocalDate(date, {
     year: "numeric",
     month: "long",
     day: "numeric",

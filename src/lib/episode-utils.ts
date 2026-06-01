@@ -1,3 +1,5 @@
+import { formatLocalDate } from "./date-utils";
+
 export type GuestSocials = {
   twitter?: string;
   linkedin?: string;
@@ -21,11 +23,7 @@ export type EpisodeClip = {
 };
 
 export function formatScheduledClipDate(dateStr: string): string {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  return formatLocalDate(dateStr, { month: "short", day: "numeric" });
 }
 
 export type EpisodeFrontmatter = {
@@ -114,7 +112,7 @@ export function getAllTopics(episodes: EpisodeMeta[]): string[] {
 }
 
 export function formatEpisodeDate(date: string): string {
-  return new Date(date).toLocaleDateString("en-US", {
+  return formatLocalDate(date, {
     year: "numeric",
     month: "long",
     day: "numeric",
