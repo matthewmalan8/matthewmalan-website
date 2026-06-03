@@ -32,7 +32,7 @@ guestSocials:
   website: https://franchisecoach.net/
 youtube: https://www.youtube.com/watch?v=G7-_iJH-Dgg
 spotify: https://open.spotify.com/episode/5ITNJKFzR9hMelrRlfZwKZ?si=BW_r0M8qSYClJ86wFe-b6g
-applePodcasts: https://podcasts.apple.com/us/podcast/stay-hungry/id1883421904
+applePodcasts: https://podcasts.apple.com/us/podcast/the-franchise-coach-how-%24125k-gets-your-family-living/id1883421904?i=1000770996780
 ---
 # Key takeaways
 
