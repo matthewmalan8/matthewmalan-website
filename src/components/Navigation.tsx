@@ -8,7 +8,10 @@ const links = [
   { href: "/speaking/", label: "Speaking" },
   { href: "/podcast/", label: "Podcast" },
   { href: "/books/", label: "Books" },
-  { href: "/gym/", label: "Gym" },
+  // Gym page intentionally hidden from the public nav for now.
+  // The page at /gym/ still builds and is reachable by direct URL —
+  // restore by uncommenting this line.
+  // { href: "/gym/", label: "Gym" },
   { href: "/about/", label: "About" },
 ];
 
