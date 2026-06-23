@@ -29,6 +29,7 @@ guestSocials:
   website: https://funent.com/
 youtube: https://www.youtube.com/watch?v=J8zkdQ70ZYw
 spotify: https://open.spotify.com/episode/3GdKPbdrV96980ZXul25y9?si=zSVQPsizSvCTr0ZiC2vjOw
+applePodcasts: https://podcasts.apple.com/us/podcast/the-sales-strategy-that-beat-every-competitor-for-35/id1883421904?i=1000773818163
 ---
 # Key Takeaways
 
