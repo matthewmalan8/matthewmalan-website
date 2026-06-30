@@ -37,6 +37,7 @@ guestSocials:
   website: http://www.vermelho.com.au/
 youtube: https://www.youtube.com/watch?v=_k0FPSRPhIs
 spotify: https://open.spotify.com/episode/2NbQezIKYrwcrS9SYmyVkA?si=TTTqXxf1R9uiHublBmMpdg
+applePodcasts: https://podcasts.apple.com/us/podcast/stop-trying-to-make-everyone-like-you-luisa-hogan/id1883421904?i=1000774777923
 ---
 # Key takeaways
 
