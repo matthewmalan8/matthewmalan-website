@@ -440,8 +440,20 @@ export default function EpisodePage({ episode, related }: Props) {
           </section>
         )}
 
-        {/* Guest's book */}
-        {episode.book && (
+        {/* Guest's book / Special Offer — same yellow card, two layouts */}
+        {episode.book && episode.book.mode === "offer" && (
+          <section className="max-w-4xl mx-auto px-6 lg:px-10 mt-16">
+            <div className="bg-[var(--color-yellow)] rounded-3xl p-8 md:p-12">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-black)]/60">
+                Special Offer
+              </p>
+              <div className="mt-4 text-lg md:text-xl text-[var(--color-black)] leading-relaxed whitespace-pre-line">
+                {episode.book.description}
+              </div>
+            </div>
+          </section>
+        )}
+        {episode.book && episode.book.mode === "book" && (
           <section className="max-w-4xl mx-auto px-6 lg:px-10 mt-16">
             <div className="bg-[var(--color-yellow)] rounded-3xl overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 p-8 md:p-12 items-center">

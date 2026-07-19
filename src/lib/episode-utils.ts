@@ -9,6 +9,9 @@ export type GuestSocials = {
 };
 
 export type GuestBook = {
+  // "book" = full Featured Book card. "offer" = Special Offer card
+  // (description-only, used for guest promo codes).
+  mode: "book" | "offer";
   title: string;
   image: string;
   description: string;
