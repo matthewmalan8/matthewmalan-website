@@ -34,7 +34,7 @@ collections:
           widget: "number",
           value_type: "int",
           required: false,
-          default: 9, # AUTO-EPISODE-NUMBER
+          default: 30, # AUTO-EPISODE-NUMBER
         }
       - {
           label: "Featured (pin to top of archive)",
@@ -181,37 +181,48 @@ collections:
               required: false,
               hint: "Optional — if set and still in the future at build time, the clip shows as 'Dropping <date>' instead of playable. Becomes playable automatically on the next rebuild after this date.",
             }
-      - label: "Guest's Book (optional)"
+      - label: "Guest's Book / Special Offer (optional)"
         name: "book"
         widget: "object"
         required: false
         collapsed: true
-        hint: "Featured book by the guest — appears in a highlighted card on the episode page."
+        hint: "Highlighted yellow card on the episode page. Switch Mode to 'Special Offer' when the guest is giving away a promo code instead of a book."
         fields:
+          - {
+              label: "Mode",
+              name: "mode",
+              widget: "select",
+              options: ["book", "offer"],
+              default: "book",
+              hint: "book = full Featured Book card (title / cover / description / affiliate link). offer = Special Offer card that shows ONLY the Description field (put the promo code + offer text there).",
+            }
           - {
               label: "Book Title",
               name: "title",
               widget: "string",
               required: false,
+              hint: "Ignored in Special Offer mode.",
             }
           - {
               label: "Book Cover Image",
               name: "image",
               widget: "image",
               required: false,
+              hint: "Ignored in Special Offer mode.",
             }
           - {
               label: "Description",
               name: "description",
               widget: "text",
               required: false,
-              hint: "A few sentences about the book.",
+              hint: "In book mode: a few sentences about the book. In Special Offer mode: the ONLY field shown — put the promo code + offer copy here (line breaks preserved).",
             }
           - {
               label: "Link (Amazon, publisher, etc.)",
               name: "link",
               widget: "string",
               required: false,
+              hint: "Ignored in Special Offer mode.",
             }
       - {
           label: "Show Notes",

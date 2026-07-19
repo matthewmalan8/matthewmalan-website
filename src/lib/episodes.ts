@@ -91,12 +91,19 @@ function asClips(value: unknown): EpisodeClip[] {
 function asBook(value: unknown): GuestBook | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Record<string, unknown>;
+  const mode: GuestBook["mode"] = asString(v.mode) === "offer" ? "offer" : "book";
   const title = asString(v.title);
   const image = asString(v.image);
   const description = asString(v.description);
   const link = v.link ? normalizeUrl(String(v.link)) : "";
-  if (!title && !image && !description && !link) return null;
-  return { title, image, description, link };
+  // For "offer" only the description matters — for "book" any field
+  // being present is enough to render the card.
+  if (mode === "offer") {
+    if (!description) return null;
+  } else if (!title && !image && !description && !link) {
+    return null;
+  }
+  return { mode, title, image, description, link };
 }
 
 function readEpisode(slug: string): {
