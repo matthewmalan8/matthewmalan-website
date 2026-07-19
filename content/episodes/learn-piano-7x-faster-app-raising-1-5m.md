@@ -38,6 +38,7 @@ applePodcasts: https://podcasts.apple.com/us/podcast/learn-piano-7x-faster-app-r
 book:
   description: Use code HUNGRY50 for 50% off any MuseFlow subscription for life.
     Available on the App Store or on the web at museflow.ai.
+  mode: offer
 ---
 # Key takeaways
 
