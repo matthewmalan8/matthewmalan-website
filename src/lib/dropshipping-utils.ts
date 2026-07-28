@@ -18,7 +18,13 @@ export type Pledge = {
   recipient: string;
   deadline: string;
   status: "active" | "completed" | "failed";
+  // Original "here's what I'm pledging" video.
   videoUrl: string;
+  // Post-resolution follow-up: written explanation of what happened +
+  // optional follow-up video. Shown as a "What happened" block below
+  // the pledge terms once either field is filled in.
+  outcome: string;
+  outcomeVideoUrl: string;
 };
 
 export type Screenshot = {
