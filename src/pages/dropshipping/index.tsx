@@ -41,20 +41,40 @@ type Props = {
   logs: DailyLog[];
   screenshots: Screenshot[];
   failures: Failure[];
-  goals: DropshippingGoal[];
+  // Active goals shown as cards. Past (successful/failed) goals live
+  // in a collapsed disclosure so the section stays clean at scale.
+  activeGoals: DropshippingGoal[];
+  pastGoals: DropshippingGoal[];
   pinnedGoal: DropshippingGoal | null;
   pledges: Pledge[];
 };
 
+// Deadline-less active goals sort last (Infinity keeps them at the tail
+// of an ascending sort).
+function deadlineTime(iso: string): number {
+  return iso ? new Date(iso).getTime() : Number.POSITIVE_INFINITY;
+}
+function recencyTime(g: DropshippingGoal): number {
+  return new Date(g.lastUpdated || g.deadline || 0).getTime();
+}
+
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const allGoals = getAllGoals();
   const pinned = getPinnedGoal(allGoals);
+  const remaining = allGoals.filter((g) => g !== pinned);
+  const activeGoals = remaining
+    .filter((g) => g.status === "active")
+    .sort((a, b) => deadlineTime(a.deadline) - deadlineTime(b.deadline));
+  const pastGoals = remaining
+    .filter((g) => g.status !== "active")
+    .sort((a, b) => recencyTime(b) - recencyTime(a));
   return {
     props: {
       logs: await getDailyLogs(),
       screenshots: getScreenshots(),
       failures: await getFailures(),
-      goals: allGoals.filter((g) => g !== pinned),
+      activeGoals,
+      pastGoals,
       pinnedGoal: pinned,
       pledges: getPledges(),
     },
@@ -294,6 +314,93 @@ function PledgeCard({ pledge }: { pledge: Pledge }) {
   );
 }
 
+// Compact row for past (successful/failed) goals — much lighter than
+// GoalCard so 30+ resolved goals stay scannable.
+function PastGoalRow({ goal }: { goal: DropshippingGoal }) {
+  return (
+    <li className="py-3 flex items-center justify-between gap-4 flex-wrap">
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-[var(--color-black)] tracking-tight truncate">
+          {goal.title}
+        </p>
+        {goal.description && (
+          <p className="mt-0.5 text-xs text-[var(--color-black)]/60 line-clamp-1">
+            {goal.description}
+          </p>
+        )}
+      </div>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {goal.target > 0 && (
+          <span className="text-xs tabular-nums text-[var(--color-black)]/70">
+            {formatGoalValue(goal.current, goal.unit)} /{" "}
+            {formatGoalValue(goal.target, goal.unit)}
+          </span>
+        )}
+        <StatusPill status={goal.status} />
+        {goal.deadline && (
+          <span className="text-xs text-[var(--color-black)]/50 tabular-nums">
+            {formatShortDate(goal.deadline)}
+          </span>
+        )}
+      </div>
+    </li>
+  );
+}
+
+type PastFilter = "all" | "successful" | "failed";
+
+function PastGoalsList({ goals }: { goals: DropshippingGoal[] }) {
+  const [filter, setFilter] = useState<PastFilter>("all");
+  const counts = {
+    all: goals.length,
+    successful: goals.filter((g) => g.status === "successful").length,
+    failed: goals.filter((g) => g.status === "failed").length,
+  };
+  const filtered =
+    filter === "all" ? goals : goals.filter((g) => g.status === filter);
+  const options: Array<{ value: PastFilter; label: string }> = [
+    { value: "all", label: "All" },
+    { value: "successful", label: "Successful" },
+    { value: "failed", label: "Failed" },
+  ];
+
+  return (
+    <div className="mt-4">
+      <div className="flex flex-wrap gap-2 mb-4">
+        {options.map((opt) => {
+          const active = filter === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setFilter(opt.value)}
+              aria-pressed={active}
+              className={`text-xs uppercase tracking-wider px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
+                active
+                  ? "bg-[var(--color-black)] text-[var(--color-yellow)]"
+                  : "bg-[var(--color-off-white)] text-[var(--color-black)]/60 border border-[var(--color-warm-gray)] hover:border-[var(--color-black)]"
+              }`}
+            >
+              {opt.label} ({counts[opt.value]})
+            </button>
+          );
+        })}
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-sm text-[var(--color-black)]/60 italic">
+          No {filter === "all" ? "" : filter + " "}past goals.
+        </p>
+      ) : (
+        <ul className="divide-y divide-[var(--color-warm-gray)] border-y border-[var(--color-warm-gray)]">
+          {filtered.map((g) => (
+            <PastGoalRow key={g.slug} goal={g} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 type ViewMode = "grid" | "compact";
 
 function ViewToggle({
@@ -345,7 +452,8 @@ export default function DropshippingPage({
   logs,
   screenshots,
   failures,
-  goals,
+  activeGoals,
+  pastGoals,
   pinnedGoal,
   pledges,
 }: Props) {
@@ -475,17 +583,42 @@ export default function DropshippingPage({
         </section>
       )}
 
-      {/* Goals */}
-      {goals.length > 0 && (
+      {/* Goals — active shown as cards, past collapsed under a disclosure
+          with status-filter chips so scale (30+ goals) stays scannable. */}
+      {(activeGoals.length > 0 || pastGoals.length > 0) && (
         <section className="max-w-7xl mx-auto px-6 lg:px-10 mt-16">
-          <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
-          <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {goals.map((g) => (
-              <li key={g.slug}>
-                <GoalCard goal={g} />
-              </li>
-            ))}
-          </ul>
+          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="text-3xl sm:text-4xl tracking-tight">Goals</h2>
+            <p className="text-sm text-[var(--color-black)]/60">
+              {activeGoals.length} active
+              {pastGoals.length > 0 && <> · {pastGoals.length} past</>}
+            </p>
+          </div>
+
+          {activeGoals.length > 0 && (
+            <ul className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+              {activeGoals.map((g) => (
+                <li key={g.slug}>
+                  <GoalCard goal={g} />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {pastGoals.length > 0 && (
+            <details className="mt-6 group">
+              <summary className="cursor-pointer inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-black)]/70 hover:text-[var(--color-black)] select-none list-none [&::-webkit-details-marker]:hidden">
+                <span
+                  aria-hidden="true"
+                  className="inline-block transition-transform group-open:rotate-90"
+                >
+                  ▶
+                </span>
+                Past goals ({pastGoals.length})
+              </summary>
+              <PastGoalsList goals={pastGoals} />
+            </details>
+          )}
         </section>
       )}
 
