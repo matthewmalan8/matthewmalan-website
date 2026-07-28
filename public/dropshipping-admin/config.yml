@@ -312,3 +312,17 @@ collections:
           required: false,
           hint: "Optional — link to the video where you made the pledge public.",
         }
+      - {
+          label: "What Happened (explanation)",
+          name: "outcome",
+          widget: "text",
+          required: false,
+          hint: "Fill in after the deadline. Your own explanation of how it went — success, failure, what you learned. Line breaks are preserved.",
+        }
+      - {
+          label: "Follow-up Video URL",
+          name: "outcomeVideoUrl",
+          widget: "string",
+          required: false,
+          hint: "Optional — link to the follow-up video where you talk about what happened.",
+        }

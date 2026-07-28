@@ -127,6 +127,8 @@ export function getPledges(): Pledge[] {
       deadline: normalizeDate(fm.deadline),
       status,
       videoUrl: normalizeUrl(asString(fm.videoUrl)),
+      outcome: asString(fm.outcome),
+      outcomeVideoUrl: normalizeUrl(asString(fm.outcomeVideoUrl)),
     };
   }).sort(
     (a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime()

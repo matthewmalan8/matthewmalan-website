@@ -265,6 +265,31 @@ function PledgeCard({ pledge }: { pledge: Pledge }) {
           Watch the pledge →
         </a>
       )}
+
+      {/* Post-resolution follow-up — shown once the pledge is done and
+          Matt has written down what happened. */}
+      {(pledge.outcome || pledge.outcomeVideoUrl) && (
+        <div className="mt-6 pt-6 border-t border-[var(--color-off-white)]/15">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-yellow)]">
+            What happened
+          </p>
+          {pledge.outcome && (
+            <p className="mt-3 text-[var(--color-off-white)]/85 leading-relaxed whitespace-pre-line">
+              {pledge.outcome}
+            </p>
+          )}
+          {pledge.outcomeVideoUrl && (
+            <a
+              href={pledge.outcomeVideoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center border border-[var(--color-yellow)] text-[var(--color-yellow)] px-5 py-2.5 text-sm font-semibold rounded-full hover:bg-[var(--color-yellow)] hover:text-[var(--color-black)] transition-colors self-start"
+            >
+              Watch the follow-up →
+            </a>
+          )}
+        </div>
+      )}
     </article>
   );
 }
@@ -361,7 +386,7 @@ export default function DropshippingPage({
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href="https://www.youtube.com/@matthewmalan7"
+              href="https://www.youtube.com/@matthewmalan"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-[var(--color-off-white)] text-[var(--color-black)] rounded-full pl-4 pr-5 py-3 text-sm font-semibold hover:opacity-90 transition-opacity"
@@ -370,7 +395,7 @@ export default function DropshippingPage({
               Follow on YouTube
             </a>
             <a
-              href="https://www.tiktok.com/@matt.malan8"
+              href="https://www.tiktok.com/@matthewmalan7"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-[var(--color-off-white)] text-[var(--color-black)] rounded-full pl-4 pr-5 py-3 text-sm font-semibold hover:opacity-90 transition-opacity"
