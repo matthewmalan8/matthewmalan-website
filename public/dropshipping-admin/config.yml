@@ -1,0 +1,314 @@
+backend:
+  name: github
+  repo: matthewmalan8/matthewmalan-website
+  branch: main
+  base_url: https://decap-oauth.mattasu6.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+
+media_folder: "public/images/dropshipping"
+public_folder: "/images/dropshipping"
+
+site_url: https://matthewmalan.com
+display_url: https://matthewmalan.com/dropshipping/
+logo_url: https://matthewmalan.com/favicon.svg
+
+collections:
+  # ---------------------------------------------------------------------
+  # Daily Logs — one file per work day (hours + video + notes)
+  # ---------------------------------------------------------------------
+  - name: "daily"
+    label: "Daily Logs"
+    label_singular: "Daily Log"
+    folder: "content/dropshipping/daily"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} · {{hoursWorked}}h"
+    sortable_fields: ["date", "hoursWorked"]
+    fields:
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - {
+          label: "Hours Worked",
+          name: "hoursWorked",
+          widget: "number",
+          value_type: "int",
+          min: 0,
+          default: 0,
+        }
+      - {
+          label: "Minutes Worked",
+          name: "minutesWorked",
+          widget: "number",
+          value_type: "int",
+          min: 0,
+          max: 59,
+          required: false,
+          hint: "Optional — additional minutes on top of the hours (0–59).",
+        }
+      - {
+          label: "Video URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+          hint: "TikTok / YouTube / Instagram link to that day's video. Leave blank if no video was posted.",
+        }
+      - {
+          label: "Notes",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Optional — what happened today.",
+        }
+
+  # ---------------------------------------------------------------------
+  # Screenshots — snapshots from the journey
+  # ---------------------------------------------------------------------
+  - name: "screenshots"
+    label: "Screenshots"
+    label_singular: "Screenshot"
+    folder: "content/dropshipping/screenshots"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{date}} · {{caption}}"
+    sortable_fields: ["date"]
+    fields:
+      - { label: "Image", name: "image", widget: "image" }
+      - {
+          label: "Image Alt Text",
+          name: "imageAlt",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - {
+          label: "Caption",
+          name: "caption",
+          widget: "text",
+          required: false,
+          hint: "Short note about what the screenshot shows.",
+        }
+
+  # ---------------------------------------------------------------------
+  # Failure Graveyard — products that didn't work
+  # ---------------------------------------------------------------------
+  - name: "failures"
+    label: "Failure Graveyard"
+    label_singular: "Failure"
+    folder: "content/dropshipping/failures"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{product}} — {{failedOn}}"
+    sortable_fields: ["failedOn", "adSpend"]
+    fields:
+      - { label: "Product Name", name: "product", widget: "string" }
+      - {
+          label: "Product Image",
+          name: "productImage",
+          widget: "image",
+          required: false,
+        }
+      - {
+          label: "Hide product (blur image + name)",
+          name: "blur",
+          widget: "boolean",
+          default: false,
+          hint: "If on, the product name and image are blurred on the page so people can't see your strategy.",
+        }
+      - {
+          label: "Failed On (date)",
+          name: "failedOn",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+        }
+      - {
+          label: "Ad Spend (USD)",
+          name: "adSpend",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+        }
+      - {
+          label: "Why I thought it would work",
+          name: "hypothesis",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Why it failed",
+          name: "reasonFailed",
+          widget: "text",
+          required: false,
+        }
+      - {
+          label: "Video recap URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Lessons Learned",
+          name: "body",
+          widget: "markdown",
+          required: false,
+          hint: "Markdown supported — bullet points work well here.",
+        }
+
+  # ---------------------------------------------------------------------
+  # Goals — dropshipping-specific goals with progress
+  # ---------------------------------------------------------------------
+  - name: "goals"
+    label: "Goals"
+    label_singular: "Goal"
+    folder: "content/dropshipping/goals"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} ({{status}})"
+    sortable_fields: ["deadline", "title", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+          hint: "One or two sentences shown under the title.",
+        }
+      - {
+          label: "Target",
+          name: "target",
+          widget: "number",
+          value_type: "float",
+          default: 1,
+        }
+      - {
+          label: "Current",
+          name: "current",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+        }
+      - {
+          label: "Unit",
+          name: "unit",
+          widget: "string",
+          required: false,
+          hint: "e.g. $, sales, products. Use $ to format Current/Target as dollars.",
+        }
+      - {
+          label: "Deadline",
+          name: "deadline",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          options: ["active", "successful", "failed"],
+          default: "active",
+        }
+      - {
+          label: "Pinned",
+          name: "pinned",
+          widget: "boolean",
+          default: false,
+          required: false,
+          hint: "One pinned goal is featured at the top of /dropshipping/ (above the scorecards).",
+        }
+      - {
+          label: "Last Updated",
+          name: "lastUpdated",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+
+  # ---------------------------------------------------------------------
+  # Pledges — public honor-system pledges
+  # ---------------------------------------------------------------------
+  - name: "pledges"
+    label: "Pledges"
+    label_singular: "Pledge"
+    folder: "content/dropshipping/pledges"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{amount}} to {{recipient}}"
+    sortable_fields: ["deadline", "amount", "status"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+          hint: "What are you pledging to do?",
+        }
+      - {
+          label: "Amount ($)",
+          name: "amount",
+          widget: "number",
+          value_type: "float",
+          default: 0,
+          min: 0,
+          hint: "How much you owe if you fail.",
+        }
+      - {
+          label: "Recipient (if I fail)",
+          name: "recipient",
+          widget: "string",
+          required: false,
+          hint: "e.g. American Red Cross, @some.tiktoker, etc.",
+        }
+      - {
+          label: "Deadline",
+          name: "deadline",
+          widget: "datetime",
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+        }
+      - {
+          label: "Status",
+          name: "status",
+          widget: "select",
+          options: ["active", "completed", "failed"],
+          default: "active",
+        }
+      - {
+          label: "Pledge Video URL",
+          name: "videoUrl",
+          widget: "string",
+          required: false,
+          hint: "Optional — link to the video where you made the pledge public.",
+        }
