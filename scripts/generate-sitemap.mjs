@@ -111,6 +111,7 @@ const staticPages = [
   { path: "/books/", priority: 0.8 },
   { path: "/gym/", priority: 0.7 },
   { path: "/speaking/", priority: 0.7 },
+  { path: "/dropshipping/", priority: 0.6 },
   { path: "/about/", priority: 0.5 },
   { path: "/contact/", priority: 0.5 },
 ];

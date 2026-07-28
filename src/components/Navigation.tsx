@@ -12,6 +12,7 @@ const links = [
   // The page at /gym/ still builds and is reachable by direct URL —
   // restore by uncommenting this line.
   // { href: "/gym/", label: "Gym" },
+  { href: "/dropshipping/", label: "Dropshipping" },
   { href: "/about/", label: "About" },
 ];
 

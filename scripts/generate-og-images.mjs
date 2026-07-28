@@ -77,6 +77,12 @@ const pages = [
     subtitle: "Keynotes on leadership, resilience, and high-stakes execution.",
   },
   {
+    slug: "dropshipping",
+    kicker: "Building in public",
+    title: "Dropshipping — the real numbers.",
+    subtitle: "Daily videos, hours logged, and every failure I'm not hiding.",
+  },
+  {
     slug: "about",
     kicker: "About",
     title: "I'm Matthew Malan.",
