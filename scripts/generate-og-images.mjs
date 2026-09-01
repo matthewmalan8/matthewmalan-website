@@ -47,53 +47,9 @@ function loadFont(p) {
 const pages = [
   {
     slug: "home",
-    kicker: "Welcome.",
-    title: "Speaker. Podcast host. Builder.",
-    subtitle:
-      "Documenting the work — accountability, mindset, and what it actually takes.",
-  },
-  {
-    slug: "podcast",
-    kicker: "Stay Hungry Podcast",
-    title: "Conversations with people who refuse to settle.",
-    subtitle: "New episodes weekly. Hosted by Matthew Malan.",
-  },
-  {
-    slug: "books",
-    kicker: "Reading list",
-    title: "Books that shaped how I think.",
-    subtitle: "Reviews, notes, and the takeaways I'm still using.",
-  },
-  {
-    slug: "gym",
-    kicker: "Train in public",
-    title: "Every rep. Every set. Logged.",
-    subtitle: "Live training data straight from the gym floor.",
-  },
-  {
-    slug: "speaking",
-    kicker: "Speaking",
-    title: "Book Matthew for your next event.",
-    subtitle: "Keynotes on leadership, resilience, and high-stakes execution.",
-  },
-  {
-    slug: "dropshipping",
-    kicker: "Building in public",
-    title: "Dropshipping — the real numbers.",
-    subtitle: "Daily videos, hours logged, and every failure I'm not hiding.",
-  },
-  {
-    slug: "about",
-    kicker: "About",
-    title: "I'm Matthew Malan.",
-    subtitle:
-      "E-commerce consultant, podcast host, and full-time student of the work.",
-  },
-  {
-    slug: "contact",
-    kicker: "Contact",
-    title: "Let's talk.",
-    subtitle: "Speaking inquiries, podcast guests, or just to connect.",
+    kicker: "Matthew Malan",
+    title: "I'll be back.",
+    subtitle: "The site is on pause for now.",
   },
 ];
 

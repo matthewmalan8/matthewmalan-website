@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   InstagramIcon,
   LinkedInIcon,
@@ -35,27 +34,14 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--color-black)] text-[var(--color-off-white)]">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          <div className="md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div>
             <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight">
               Matthew Malan
             </p>
             <p className="mt-3 text-[var(--color-warm-gray)] max-w-sm">
-              E-commerce consultant helping founders scale to six figures.
-              Host of the Stay Hungry Podcast.
+              The site is on pause for now. Back soon.
             </p>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-yellow)]">
-              Site
-            </p>
-            <ul className="mt-4 space-y-2 text-sm">
-              <li><Link href="/speaking/" className="hover:text-[var(--color-yellow)] transition-colors">Speaking</Link></li>
-              <li><Link href="/podcast/" className="hover:text-[var(--color-yellow)] transition-colors">Podcast</Link></li>
-              <li><Link href="/about/" className="hover:text-[var(--color-yellow)] transition-colors">About</Link></li>
-              <li><Link href="/contact/" className="hover:text-[var(--color-yellow)] transition-colors">Contact</Link></li>
-            </ul>
           </div>
 
           <div>
@@ -86,10 +72,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-[var(--color-warm-gray)]/20 text-sm text-[var(--color-warm-gray)] space-y-3">
-          <p className="text-xs italic">
-            As an Amazon Associate, I earn from qualifying purchases.
-          </p>
+        <div className="mt-14 pt-8 border-t border-[var(--color-warm-gray)]/20 text-sm text-[var(--color-warm-gray)]">
           <p>&copy; {year} Matthew Malan. All rights reserved.</p>
         </div>
       </div>
