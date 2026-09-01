@@ -22,7 +22,7 @@ export default function Home() {
       description="Matthew Malan's site is on pause. Back soon."
       jsonLd={personJsonLd}
     >
-      <section className="bg-[var(--color-black)] text-[var(--color-off-white)] min-h-screen -mt-16 pt-16 flex items-center justify-center text-center">
+      <section className="bg-[var(--color-black)] text-[var(--color-off-white)] min-h-screen flex items-center justify-center text-center">
         <div className="max-w-2xl mx-auto px-6 py-24">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl leading-[0.9] tracking-tight">
             <span className="inline-block relative">

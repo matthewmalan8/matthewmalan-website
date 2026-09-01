@@ -1,8 +1,6 @@
 import Head from "next/head";
 import { NextSeo } from "next-seo";
 import { ReactNode } from "react";
-import Navigation from "./Navigation";
-import Footer from "./Footer";
 import { buildSeo, PageSeo } from "@/lib/seoConfig";
 
 type LayoutProps = PageSeo & {
@@ -47,9 +45,7 @@ export default function Layout({
           />
         )}
       </Head>
-      <Navigation />
-      <main className="pt-16 min-h-screen">{children}</main>
-      <Footer />
+      <main className="min-h-screen">{children}</main>
     </>
   );
 }
