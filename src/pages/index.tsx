@@ -33,9 +33,6 @@ export default function Home() {
               />
             </span>
           </h1>
-          <p className="mt-10 text-lg sm:text-xl text-[var(--color-warm-gray)]">
-            The site is on pause for now.
-          </p>
         </div>
       </section>
     </Layout>
